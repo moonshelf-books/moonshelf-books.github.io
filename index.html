@@ -2219,12 +2219,31 @@ function introSheet(){const p=activePet(),k=kindOf(p);
 <p class="center muted" style="line-height:1.5;margin:0 0 20px">${T[2]}</p>
 <button class="btn primary big" data-a="introGo">${L('Добавить первую книгу','Add my first book')}</button>
 <button class="btn ghost big" style="margin-top:8px" data-a="introClose">${L('Сначала осмотрюсь','Let me look around first')}</button>`}
-function backupSheet(){const json=JSON.stringify(S);
-  return `<h3>Резервная копия</h3><p class="hint">Скопируй этот текст и сохрани куда-нибудь (например, в «Заметки» или «Избранное» в Телеграме). Обложки в копию не входят.</p>
-<textarea class="i" id="bkOut" readonly style="min-height:90px;font-size:12px">${esc(json)}</textarea>
-<button class="btn primary big" style="margin:10px 0 ${navigator.share?'8':'22'}px" data-a="copyBackup">Скопировать</button>${navigator.share?`<button class="btn big" style="margin:0 0 22px" data-a="shareBackup">${L('📤 Отправить в Заметки / Телеграм','📤 Send to Notes / Telegram')}</button>`:''}
-<h3>Восстановить из копии</h3><textarea class="i" id="bkIn" placeholder="Вставь сюда сохранённый текст" style="min-height:90px;font-size:12px"></textarea>
-<button class="btn big" style="margin-top:10px" data-a="restore">Восстановить</button>${ONLINE&&IS_MOB&&!IS_STANDALONE?`<button class="btn ghost big" style="margin-top:14px" data-a="a2hs">${L('📲 Как добавить на экран «Домой»','📲 How to add to Home Screen')}</button>`:''}`}
+function bkPayload(all){const o=JSON.parse(JSON.stringify(S));o._cov={};Object.keys(covers).forEach(id=>{const u=covers[id];if(S.books[id]&&u&&(all||/^https?:/.test(u)))o._cov[id]=u});return o}
+function bkPhotoCount(){return Object.keys(covers).filter(id=>S.books[id]&&/^data:/.test(covers[id]||'')).length}
+function backupSheet(){const ph=bkPhotoCount();
+  return `<h3>${L('Резервная копия','Backup')}</h3>
+<p class="hint">${L('Лучше всего — <b>файлом</b>: в нём всё, включая обложки и твои фото обложек. Сохрани его в «Файлы» или отправь себе в «Избранное» в Телеграме.','Best as a <b>file</b>: it holds everything, including covers and your own cover photos. Save it to Files or send it to yourself in Telegram.')}</p>
+<button class="btn primary big" style="margin:10px 0 8px" data-a="fileBackup">${L('💾 Сохранить файлом','💾 Save as file')}</button>
+<details style="margin:0 0 22px"><summary class="hint" style="cursor:pointer;padding:6px 0">${L('Или копией-текстом','Or as text')}</summary>
+<p class="hint" style="margin:6px 0">${ph?L(`В текст войдут книги, записи, духи и обложки из поиска. Твои ${ph} фото обложек — только в файл.`,`Text includes books, logs, spirits and covers from search. Your ${ph} cover photos are only in the file.`):L('В текст войдёт всё, включая обложки.','Text includes everything, covers too.')}</p>
+<textarea class="i" id="bkOut" readonly style="min-height:80px;font-size:12px">${esc(JSON.stringify(bkPayload(false)))}</textarea>
+<button class="btn big" style="margin-top:8px" data-a="copyBackup">${L('Скопировать','Copy')}</button></details>
+<h3>${L('Восстановить','Restore')}</h3>
+<label class="btn big" style="display:block;text-align:center;cursor:pointer">${L('📂 Выбрать файл копии','📂 Choose backup file')}<input type="file" id="bkFile" accept=".json,.txt,application/json,text/plain" style="display:none"></label>
+<textarea class="i" id="bkIn" placeholder="${L('…или вставь сюда сохранённый текст','…or paste the saved text here')}" style="min-height:70px;font-size:12px;margin-top:10px"></textarea>
+<button class="btn big" style="margin-top:8px" data-a="restore">${L('Восстановить из текста','Restore from text')}</button>${ONLINE&&IS_MOB&&!IS_STANDALONE?`<button class="btn ghost big" style="margin-top:14px" data-a="a2hs">${L('📲 Как добавить на экран «Домой»','📲 How to add to Home Screen')}</button>`:''}`}
+function applyRestore(txt){let s2;try{s2=JSON.parse(txt);if(!s2||!Array.isArray(s2.pets)||!s2.pets.length||typeof s2.books!=='object')throw 0}catch(e){toast(L('Не похоже на резервную копию','This doesn’t look like a backup'));return}
+  const cv=s2._cov||{};delete s2._cov;S=s2;S.v=1;migrateBoys(S);let n=0,lost=0;
+  Object.keys(cv).forEach(id=>{if(S.books[id]&&cv[id]){saveCover(id,cv[id]);S.books[id].hasCover=true;n++}});
+  Object.values(S.books).forEach(b=>{if(!covers[b.id]){const c=lsGet(LSC+b.id);if(c)covers[b.id]=c;else{b.covTried=0;if(b.hasCover)lost++}}});
+  save();closeSheet(true);render();toast(L('Готово, всё восстановлено ✓'+(n?' Обложек: '+n:''),'Done, everything restored ✓'+(n?' Covers: '+n:'')))}
+async function fileBackup(){const t=JSON.stringify(bkPayload(true));const d=new Date(),p=x=>String(x).padStart(2,'0');
+  const name=`moonshelf-kopiya-${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}.json`;const blob=new Blob([t],{type:'application/json'});
+  S.bkAt=Date.now();save();
+  try{const f=new File([blob],name,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Moonshelf'});toast(L('Копия готова ✓','Backup ready ✓'));return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{if(DL){await DL.save({filename:name,data:blob});toast(L('Файл сохранён ✓','File saved ✓'));return}}catch(e){}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);toast(L('Файл скачан ✓ Ищи его в «Загрузках»','File downloaded ✓ Look in Downloads'))}catch(e){toast(L('Не получилось сохранить файл — скопируй текстом','Couldn’t save the file — copy as text'))}}
 
 /* ---------- game logic ---------- */
 function feed(xp){
@@ -2296,6 +2315,7 @@ async function handlePaste(e){
   const pb=$('#fPaste');if(pb){pb.textContent='📋 Вставить скопированную';pb.blur()}
 }
 document.addEventListener('paste',handlePaste);
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='bkFile'){const f=e.target.files&&e.target.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>applyRestore(String(fr.result||''));fr.onerror=()=>toast(L('Не получилось прочитать файл','Couldn’t read the file'));fr.readAsText(f)}});
 function resizeImage(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const img=new Image();img.onload=()=>{const W2=220,sc=Math.min(1,W2/img.width);const cv=document.createElement('canvas');cv.width=Math.round(img.width*sc);cv.height=Math.round(img.height*sc);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);res(cv.toDataURL('image/jpeg',.78))};img.onerror=rej;img.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
 async function copyText(t,fallbackEl){try{await navigator.clipboard.writeText(t);toast('Скопировано ✓')}catch(e){if(fallbackEl){fallbackEl.focus();fallbackEl.select();toast('Выдели текст и нажми «Скопировать»')}else toast('Не получилось скопировать')}}
 
@@ -3837,13 +3857,13 @@ const A={
   ...langActions,
   goal:d=>{S.goal=clamp((S.goal||12)+(+d.d),1,365);save();render()},
   backup:()=>openSheet(backupSheet(),'backup'),
-  copyBackup:()=>{S.bkAt=Date.now();save();copyText(JSON.stringify(S),$('#bkOut'))},
-  shareBackup:async()=>{S.bkAt=Date.now();save();const t=JSON.stringify(S);try{await navigator.share({title:'Moonshelf — '+L('резервная копия','backup'),text:t})}catch(e){if(e&&e.name==='AbortError')return;copyText(t,$('#bkOut'))}},
+  copyBackup:()=>{S.bkAt=Date.now();save();copyText(JSON.stringify(bkPayload(false)),$('#bkOut'))},
+  fileBackup:()=>fileBackup(),
   a2hs:()=>openSheet(a2hsSheet(),'a2hs'),
   a2hsHide:()=>{S.a2hsHide=true;save();render();toast(L('Инструкция всегда есть в настройках → «Резервная копия»','The guide is always in Settings → “Backup”'))},
   a2hsHideC:()=>{S.a2hsHide=true;save();closeSheet();render()},
   bkSnooze:()=>{S.bkSnooze=Date.now();save();render();toast(L('Напомню через пару недель','I’ll remind you in a couple of weeks'))},
-  restore:()=>{try{const s=JSON.parse($('#bkIn').value);if(!s||!Array.isArray(s.pets)||!s.pets.length||typeof s.books!=='object')throw 0;S=s;S.v=1;migrateBoys(S);save();closeSheet(true);render();toast('Готово, всё восстановлено ✓')}catch(e){toast('Не похоже на резервную копию')}},
+  restore:()=>applyRestore($('#bkIn').value),
   reset:()=>openSheet(confirmSheet('Начать всё заново? Книги, записи и духи удалятся навсегда.','resetYes','','Удалить всё'),'confirm'),
   resetYes:()=>{Object.keys(S.books).forEach(id=>{if(covers[id])dropCover(id)});S=blank();save();closeSheet(true);tab='home';render();openSheet(chooseSheet(),'intro')},
   choose:d=>{const v=d.v;if(v==='fam'){S.mode='fam';if(!S.famOn){S.famOn=true;const e=newEgg(S.pets.map(p=>p.species),'fam');S.pets.push(e);S.activeFam=e.id}}else if(v==='boys'){S.mode='boys';if(!S.boysOn){S.boysOn=true;const e=newEgg([],'boy');S.pets.push(e);S.activeBoy=e.id}}else S.mode='pets';save();tab='home';render();window.scrollTo(0,0);openSheet(introSheet(),'intro')},
