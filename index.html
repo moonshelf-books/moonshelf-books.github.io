@@ -1396,7 +1396,7 @@ function stageName(p,i){const k=p&&kindOf(p);return k==='boy'?STAGES_BOY[i]:k===
 function eggTitle(p){const k=kindOf(p);return k==='boy'?'Таинственное письмо':k==='fam'?'Зачарованное яйцо':L('Живая книга','Living book')}
 function blank(){const e=newEgg();return {v:1,lang:/^ru|^uk|^be|^kk/i.test(navigator.language||'ru')?'ru':'en',updatedAt:0,pets:[e],activePet:e.id,books:{},log:{},goal:12,totalPages:0,seenIntro:false}}
 function loadLocal(){try{const s=JSON.parse(lsGet(LS)||'null');if(s&&s.v&&Array.isArray(s.pets)&&s.pets.length)return s}catch(e){}return null}
-let S=loadLocal()||blank();if(!S.bxStart)S.bxStart=Date.now()-1000;
+let S=loadLocal()||blank();if(!S.bxStart)S.bxStart=Date.now()-1000;if(!S.bkBase)S.bkBase=Date.now();
 Object.values(S.books).forEach(b=>{if(!b.format){b.format='paper';b.unit='pages'}});migrateBoys(S);
 const covers={};
 setTimeout(()=>{if(!S.ach){checkAch(true)}},0);
@@ -1940,6 +1940,25 @@ function confetti(){const fx=$('#fx');const cols=['#ffd27a','#ff9fd0','#8ff0c8',
   for(let i=0;i<42;i++){const d=document.createElement('i');d.className='cf';d.style.left=Math.random()*100+'%';d.style.background=rnd(cols);d.style.animationDelay=Math.random()*.5+'s';d.style.animationDuration=(2+Math.random()*1.4)+'s';d.style.transform=`rotate(${Math.random()*360}deg)`;fx.appendChild(d);setTimeout(()=>d.remove(),4200)}}
 
 /* ---------- screens ---------- */
+const IS_IOS=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const IS_MOB=IS_IOS||/Android/i.test(navigator.userAgent);
+const IS_STANDALONE=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+const DAY_MS=864e5;
+function bkDue(){if(!Object.keys(S.books).length)return false;const last=Math.max(S.bkAt||0,S.bkSnooze||0,S.bkBase||0);return Date.now()-last>(S.bkAt?14:3)*DAY_MS}
+function tipCard(ic,txt,act,close){return `<div class="card tipc" style="padding:10px 14px;display:flex;gap:10px;align-items:center;cursor:pointer" data-a="${act}"><span style="font-size:20px">${ic}</span><span class="hint" style="flex:1">${txt}</span><button class="chip" style="border:0;padding:4px 8px" data-a="${close}" aria-label="close">✕</button></div>`}
+function tipBanner(){
+  if(ONLINE&&IS_MOB&&!IS_STANDALONE&&!S.a2hsHide)return tipCard('📲',L('Добавь Moonshelf на экран «Домой» — так прогресс точно не потеряется. Нажми, покажу как','Add Moonshelf to your Home Screen so your progress is never lost. Tap to see how'),'a2hs','a2hsHide');
+  if(bkDue()){const d=S.bkAt?Math.floor((Date.now()-S.bkAt)/DAY_MS):0;
+    return tipCard('💾',S.bkAt?L(`Последняя резервная копия была ${d} дн. назад — сделай новую, это 10 секунд`,`Your last backup was ${d} days ago — make a fresh one, it takes 10 seconds`):L('Ты ещё ни разу не делала резервную копию. Нажми — это 10 секунд, и прогресс в безопасности','You have never made a backup. Tap — it takes 10 seconds and keeps your progress safe'),'backup','bkSnooze')}
+  return ''}
+function a2hsSheet(){const st=(n,t)=>`<div style="display:flex;gap:10px;margin:0 0 10px"><b style="min-width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:12px">${n}</b><span style="flex:1;line-height:1.4">${t}</span></div>`;
+  const steps=IS_IOS?[L('Открой сайт именно в <b>Safari</b>. Если открыла из Телеграма или Инстаграма — нажми «•••» и выбери «Открыть в Safari»','Open the site in <b>Safari</b>. If you came from Telegram or Instagram, tap “•••” and choose “Open in Safari”'),L('Нажми кнопку «Поделиться» — квадрат со стрелкой вверх. Если её не видно, сначала нажми «•••» внизу','Tap the Share button — a square with an up arrow. If you can’t see it, tap “•••” at the bottom first'),L('Пролистай вниз и выбери <b>«На экран „Домой“»</b>, потом «Добавить»','Scroll down, choose <b>“Add to Home Screen”</b>, then “Add”'),L('Теперь открывай Moonshelf только через иконку 🌙','From now on, open Moonshelf only from the icon 🌙')]
+   :[L('Открой сайт в <b>Chrome</b>','Open the site in <b>Chrome</b>'),L('Нажми «⋮» в правом верхнем углу','Tap “⋮” in the top right corner'),L('Выбери <b>«Добавить на главный экран»</b> или «Установить приложение»','Choose <b>“Add to Home screen”</b> or “Install app”'),L('Теперь открывай Moonshelf только через иконку 🌙','From now on, open Moonshelf only from the icon 🌙')];
+  return `<h3>${L('Moonshelf на экране «Домой»','Moonshelf on your Home Screen')}</h3><p class="hint" style="margin-bottom:14px">${L('Так сайт открывается как отдельное приложение, а браузер не сотрёт твои записи, даже если долго не заходить.','The site then opens like a separate app, and the browser won’t erase your records even if you don’t visit for a while.')}</p>
+${steps.map((t,i)=>st(i+1,t)).join('')}
+<div class="card" style="padding:10px 14px;margin:14px 0 0"><span class="hint">⚠️ ${L('Важно: у иконки своя память, отдельная от браузера. Если ты уже что-то записала здесь — сначала сделай резервную копию, а потом восстанови её в иконке.','Important: the icon has its own storage, separate from the browser. If you have already logged something here, make a backup first and restore it inside the icon.')}</span></div>
+${Object.keys(S.books).length?`<button class="btn primary big" style="margin-top:12px" data-a="backup">${L('Сделать резервную копию','Make a backup')}</button>`:''}
+<button class="btn ghost big" style="margin-top:8px" data-a="a2hsHideC">${L('Уже добавила 👍','Done already 👍')}</button>`}
 function homeHTML(){
   const p=activePet();let block='';
   const dateStr=new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
@@ -1963,7 +1982,7 @@ ${kindOf(p)==='boy'&&st===0?`<p class="mask-hint" style="margin:8px 0 10px">🎭
   const pets=mine.length>1?`<div class="sec-t">${kindOf(p)==='boy'?'Мои герои':kindOf(p)==='fam'?'Мои хранители':'Мои духи'}</div><div class="pets">${mine.map(x=>`<div class="pchip ${x.id===p.id?'on':''}" data-a="pickPet" data-id="${x.id}">${x.hatched?creatureSVG(x.species,stageOf(x),'happy',{outfit:x.outfit}):eggSVG(x.species,Math.min(x.xp,HATCH),{ready:x.xp>=HATCH})}<span>${x.hatched?esc(x.name||'Без имени'):(x.xp>=HATCH?'Готово!':(kindOf(x)==='boy'?'Письмо':kindOf(x)==='pet'?L('Книга','Book'):'Яйцо'))}</span></div>`).join('')}</div>`:'';
   const reading=Object.values(S.books).filter(b=>b.status==='reading').sort((a,b)=>(b.touchedAt||0)-(a.touchedAt||0));
   const todayP=S.log[today()]||0;
-  return `<div class="top"><h1>${BOYM()?'Книжный бойфренд':FAMM()?'Книжный хранитель':'Книжный дух'}</h1><span class="date" data-a="syncInfo" style="cursor:pointer">${dateStr}<span id="syncLbl">${syncLabel()}</span></span></div>${syncMode!=='cloud'&&Object.keys(S.books).length?(syncErr==='no-cloud'?'<div class="card" style="padding:10px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;border-color:#e0304a" data-a="backup"><span style="font-size:20px">⚠️</span><span class="hint" style="flex:1">В этом окне облако недоступно — после закрытия записи могут пропасть. Нажми и сделай резервную копию</span></div>':'<div class="card" style="padding:10px 14px;display:flex;gap:10px;align-items:center;cursor:pointer" data-a="backup"><span style="font-size:20px">💾</span><span class="hint" style="flex:1">Записи хранятся только в этом браузере. Нажми, чтобы сделать резервную копию</span></div>'):''}
+  return `<div class="top"><h1>${BOYM()?'Книжный бойфренд':FAMM()?'Книжный хранитель':'Книжный дух'}</h1><span class="date" data-a="syncInfo" style="cursor:pointer">${dateStr}<span id="syncLbl">${syncLabel()}</span></span></div>${syncMode!=='cloud'&&Object.keys(S.books).length?(syncErr==='no-cloud'?'<div class="card" style="padding:10px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;border-color:#e0304a" data-a="backup"><span style="font-size:20px">⚠️</span><span class="hint" style="flex:1">В этом окне облако недоступно — после закрытия записи могут пропасть. Нажми и сделай резервную копию</span></div>':tipBanner()):''}
 ${block}
 ${readyEggs.length?`<div class="card" style="margin-top:14px;display:flex;align-items:center;gap:12px;cursor:pointer" data-a="egg" data-id="${readyEggs[0].id}"><div style="width:54px;height:54px;flex:none">${eggSVG(readyEggs[0].species,HATCH,{ready:true})}</div><div><b>${kindOf(p)==='boy'?'Новое письмо можно открыть!':kindOf(p)==='pet'?L('Дух в книге проснулся!','The spirit in the book woke up!'):'Новое яйцо готово!'}</b><div class="hint">Нажми, чтобы узнать, кто там</div></div></div>`:''}
 ${kindOf(p)==='boy'&&p.hatched?inviteCard(p):''}${ritualCard()}<div class="stats3"><div class="mini"><b>${todayP}</b><span>${plural(todayP,PG)} сегодня</span></div><div class="mini"><b>${streak()}🔥</b><span>${plural(streak(),DY)} подряд</span></div><div class="mini"><b>${doneThisYear()}</b><span>${plural(doneThisYear(),BK)} за год</span></div></div>
@@ -2188,7 +2207,7 @@ function nameSheet(p){NAMEP=p;const bb=kindOf(p)==='boy';const sug=[...(bb?(EN()
 function chooseSheet(){const o=(v,sp,ic,ru,en,dru,den,cls)=>`<button class="ch-opt ${cls}" data-a="choose" data-v="${v}"><div class="ch-img">${creatureSVG(sp,2,'happy',{})}</div><div class="ch-t"><b>${ic} ${L(ru,en)}</b><small>${L(dru,den)}</small></div><span class="ch-go">›</span></button>`;
   return `<h2 class="center" style="margin:4px 0 6px">${L('Кого будешь растить?','Who will you raise?')}</h2>
 <p class="center muted" style="line-height:1.45;margin:0 0 14px">${L('Каждая прочитанная страница помогает твоему существу расти. Поменять можно в любой момент.','Every page you read helps your creature grow. You can switch any time.')}</p>
-<div class="ch-list">${o('pets','fox','📖','Книжные духи','Book spirits','Рождаются из книг, которые ты читаешь: каждый жанр дарит своих','Born from the books you read: every genre brings its own','c1')}${o('boys','h_vamp','🖤','Книжные бойфренды','Book boyfriends','Герои тёмной романтики из таинственных писем','Dark-romance heroes from mysterious letters','c2')}${o('fam','f_kitsune','🔮','Хранители','Guardians','Волшебные звери из фэнтези, растут от детёныша до взрослого','Magical beasts from fantasy that grow from cub to adult','c3')}</div>
+${IS_STANDALONE?`<p class="center" style="margin:-6px 0 12px"><button class="chip" style="border:0" data-a="backup">${L('📥 Уже читала в браузере? Перенеси прогресс','📥 Used it in the browser before? Bring your progress')}</button></p>`:''}<div class="ch-list">${o('pets','fox','📖','Книжные духи','Book spirits','Рождаются из книг, которые ты читаешь: каждый жанр дарит своих','Born from the books you read: every genre brings its own','c1')}${o('boys','h_vamp','🖤','Книжные бойфренды','Book boyfriends','Герои тёмной романтики из таинственных писем','Dark-romance heroes from mysterious letters','c2')}${o('fam','f_kitsune','🔮','Хранители','Guardians','Волшебные звери из фэнтези, растут от детёныша до взрослого','Magical beasts from fantasy that grow from cub to adult','c3')}</div>
 <button class="btn ghost big" style="margin-top:12px" data-a="chooseLater">${L('Выберу позже','Choose later')}</button>`}
 function introSheet(){const p=activePet(),k=kindOf(p);
   const T=k==='boy'?[L('Тебе пришло таинственное письмо 💌','A mysterious letter has arrived 💌'),L(`Его прислал книжный герой — кто именно, узнаешь, когда треснет печать. Их ${BORDER.length}, есть редкие и даже легендарные.`,`A book hero sent it — you'll find out who when the seal breaks. There are ${BORDER.length} of them, including rare and even legendary ones.`),L(`Добавь книгу и отмечай, на какой ты странице. Через ${HATCH} страниц письмо откроется, а дальше с каждой главой он будет влюбляться в тебя всё сильнее.`,`Add a book and log which page you're on. After ${HATCH} pages the letter will open, and with every chapter he'll fall for you harder.`)]
@@ -2203,9 +2222,9 @@ function introSheet(){const p=activePet(),k=kindOf(p);
 function backupSheet(){const json=JSON.stringify(S);
   return `<h3>Резервная копия</h3><p class="hint">Скопируй этот текст и сохрани куда-нибудь (например, в «Заметки» или «Избранное» в Телеграме). Обложки в копию не входят.</p>
 <textarea class="i" id="bkOut" readonly style="min-height:90px;font-size:12px">${esc(json)}</textarea>
-<button class="btn primary big" style="margin:10px 0 22px" data-a="copyBackup">Скопировать</button>
+<button class="btn primary big" style="margin:10px 0 ${navigator.share?'8':'22'}px" data-a="copyBackup">Скопировать</button>${navigator.share?`<button class="btn big" style="margin:0 0 22px" data-a="shareBackup">${L('📤 Отправить в Заметки / Телеграм','📤 Send to Notes / Telegram')}</button>`:''}
 <h3>Восстановить из копии</h3><textarea class="i" id="bkIn" placeholder="Вставь сюда сохранённый текст" style="min-height:90px;font-size:12px"></textarea>
-<button class="btn big" style="margin-top:10px" data-a="restore">Восстановить</button>`}
+<button class="btn big" style="margin-top:10px" data-a="restore">Восстановить</button>${ONLINE&&IS_MOB&&!IS_STANDALONE?`<button class="btn ghost big" style="margin-top:14px" data-a="a2hs">${L('📲 Как добавить на экран «Домой»','📲 How to add to Home Screen')}</button>`:''}`}
 
 /* ---------- game logic ---------- */
 function feed(xp){
@@ -3818,7 +3837,12 @@ const A={
   ...langActions,
   goal:d=>{S.goal=clamp((S.goal||12)+(+d.d),1,365);save();render()},
   backup:()=>openSheet(backupSheet(),'backup'),
-  copyBackup:()=>copyText(JSON.stringify(S),$('#bkOut')),
+  copyBackup:()=>{S.bkAt=Date.now();save();copyText(JSON.stringify(S),$('#bkOut'))},
+  shareBackup:async()=>{S.bkAt=Date.now();save();const t=JSON.stringify(S);try{await navigator.share({title:'Moonshelf — '+L('резервная копия','backup'),text:t})}catch(e){if(e&&e.name==='AbortError')return;copyText(t,$('#bkOut'))}},
+  a2hs:()=>openSheet(a2hsSheet(),'a2hs'),
+  a2hsHide:()=>{S.a2hsHide=true;save();render();toast(L('Инструкция всегда есть в настройках → «Резервная копия»','The guide is always in Settings → “Backup”'))},
+  a2hsHideC:()=>{S.a2hsHide=true;save();closeSheet();render()},
+  bkSnooze:()=>{S.bkSnooze=Date.now();save();render();toast(L('Напомню через пару недель','I’ll remind you in a couple of weeks'))},
   restore:()=>{try{const s=JSON.parse($('#bkIn').value);if(!s||!Array.isArray(s.pets)||!s.pets.length||typeof s.books!=='object')throw 0;S=s;S.v=1;migrateBoys(S);save();closeSheet(true);render();toast('Готово, всё восстановлено ✓')}catch(e){toast('Не похоже на резервную копию')}},
   reset:()=>openSheet(confirmSheet('Начать всё заново? Книги, записи и духи удалятся навсегда.','resetYes','','Удалить всё'),'confirm'),
   resetYes:()=>{Object.keys(S.books).forEach(id=>{if(covers[id])dropCover(id)});S=blank();save();closeSheet(true);tab='home';render();openSheet(chooseSheet(),'intro')},
