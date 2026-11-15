@@ -753,10 +753,19 @@ svg .glyph{animation:gly 5s ease-in-out infinite}svg .glyph.g1{animation-delay:1
 .st-witch .plank{height:22px;margin-top:-4px;box-shadow:0 14px 18px -8px rgba(0,0,0,.85)}.st-witch .plank::after{display:none}
 .wcandle{width:26px}.wcandle i{width:26px!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:bottom!important;background-size:100% auto!important;border-radius:0!important}.wcandle.c1 i{height:111px!important}.wcandle.c2 i{height:82px!important}
 .wcandle i::before{left:50%!important;top:-6px!important;width:26px!important;height:26px!important;transform:translateX(-50%);background:radial-gradient(circle,rgba(255,200,110,.45),rgba(255,160,60,0) 70%)!important;box-shadow:none!important;animation:flick2 2.2s ease-in-out infinite!important}@keyframes flick2{50%{opacity:.6;transform:translateX(-50%) scale(1.15)}}
-.spine.cv .sp-t,.spine.cv .sp-a{background:rgba(8,4,6,.55);border-radius:3px;padding:5px 1px}.spine.cv .sp-a{padding:3px 1px}
-.pb.cv span{background:rgba(8,4,6,.55);padding:1px 6px;border-radius:3px}
+.spine.cv .sp-t,.spine.cv .sp-a{text-shadow:0 0 1px #000,0 0 1px #000,0 1px 2px #000,0 0 6px rgba(0,0,0,.9)!important}
+.pb.cv span{text-shadow:0 0 1px #000,0 0 1px #000,0 1px 2px #000,0 0 6px rgba(0,0,0,.9)}
 .spine.bsel,.pb.bsel{outline:2.5px solid #ffd27a;outline-offset:2px;transform:translateY(-10px);z-index:5}.pb.bsel{transform:translateX(-6px)}
 .pile{flex:none}
+.bk-bar{position:fixed;left:50%;transform:translateX(-50%);width:min(460px,calc(100% - 20px));bottom:calc(env(safe-area-inset-bottom) + 80px);z-index:30;background:var(--sheet);border:1px solid var(--line2);border-radius:16px;padding:10px 12px;box-shadow:0 12px 30px rgba(0,0,0,.6)}
+.bk-t{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);line-height:1.35;margin-bottom:8px}.bk-t b{color:var(--ink);font-size:14px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk-x{flex:none;width:28px;height:28px;border-radius:50%;border:1px solid var(--line2);background:none;color:var(--muted)}
+.bk-b{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.spshelf{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.spshelf img{-webkit-touch-callout:none;pointer-events:none}
+.dragsrc{opacity:.25}.bk-ghost{opacity:.92;transform:scale(1.06) rotate(-2deg)!important;box-shadow:0 18px 30px rgba(0,0,0,.6)!important;outline:2px solid #ffd27a}
+.dropL{box-shadow:-5px 0 0 -1px #ffd27a!important}.dropR{box-shadow:5px 0 0 -1px #ffd27a!important}.dropT{box-shadow:0 -4px 0 0 #ffd27a!important}.dropB{box-shadow:0 4px 0 0 #ffd27a!important}
+.sh-edit{top:calc(env(safe-area-inset-top) + 6px)!important}
+.spshelf.editbk{padding-bottom:120px}
 .sdeco.sslot{width:48px;height:54px;border:1.5px dashed var(--line2);border-radius:10px;display:grid;place-items:center;cursor:pointer;margin:0 1px;background:rgba(255,255,255,.03)}
 .sdeco.sslot span{font:900 20px Nunito,sans-serif;color:var(--accent);opacity:.8}
 .sdeco.sslot.on{border-style:solid;border-color:var(--accent);height:auto;padding:2px}
@@ -2022,7 +2031,7 @@ function render(){
   if(tab==='books'||tab==='home')setTimeout(covAuto,300);
   el.innerHTML=tab==='home'?homeHTML():tab==='books'?booksHTML():tab==='settings'?settingsHTML():statsHTML();
   document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.v===tab));
-  $('#fab').classList.toggle('hidden',tab!=='books');
+  $('#fab').classList.toggle('hidden',tab!=='books'||bkEdit||shEdit);
 }
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),2600)}
 const queue=[];
@@ -3955,14 +3964,44 @@ c+=`.wmed2::after{background-image:url(${WITCH_IMG.frame})}.st-witch .plank{back
 const st=document.createElement('style');st.textContent=c;document.head.appendChild(st)})();
 
 let bkEdit=false,bkSelId=null;
+let bkSnapOnce=false;
+(function(){let lp=null,drag=null,sx=0,sy=0,ghost=null,tgt=null,side=0,scrollT=null;
+ const clearT=()=>{document.querySelectorAll('.dropL,.dropR,.dropT,.dropB').forEach(e=>e.classList.remove('dropL','dropR','dropT','dropB'))};
+ const okTab=()=>tab==='books'&&(booksTab==='done'||booksTab==='want')&&(S.shStyle||'live')!=='rainbow'&&!shEdit;
+ document.addEventListener('touchstart',e=>{if(!okTab()||e.touches.length>1)return;const el=e.target.closest('.spshelf [data-a=bookOpen]');if(!el)return;
+   sx=e.touches[0].clientX;sy=e.touches[0].clientY;const id=el.dataset.id;clearTimeout(lp);
+   lp=setTimeout(()=>{lp=null;bkSnapOnce=true;try{if(window._shList)shelfFor(window._shList)}finally{bkSnapOnce=false}const src=el;if(!src.isConnected)return;
+     const r=src.getBoundingClientRect();ghost=src.cloneNode(true);ghost.classList.add('bk-ghost');ghost.style.cssText+=`;position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;margin:0;z-index:99;pointer-events:none`;document.body.appendChild(ghost);
+     src.classList.add('dragsrc');drag={id,src,dx:sx-r.left,dy:sy-r.top};try{navigator.vibrate&&navigator.vibrate(15)}catch(_){}},380)},{passive:true});
+ document.addEventListener('touchmove',e=>{const t=e.touches[0];
+   if(lp&&(Math.abs(t.clientX-sx)>8||Math.abs(t.clientY-sy)>8)){clearTimeout(lp);lp=null}
+   if(!drag)return;if(e.cancelable)e.preventDefault();
+   ghost.style.left=(t.clientX-drag.dx)+'px';ghost.style.top=(t.clientY-drag.dy)+'px';
+   clearT();tgt=null;const under=document.elementFromPoint(t.clientX,t.clientY);
+   const b=under&&under.closest('.spshelf [data-a=bookOpen]');
+   if(b&&b.dataset.id!==drag.id){const r=b.getBoundingClientRect();if(b.classList.contains('pb')){side=t.clientY<r.top+r.height/2?0:1;b.classList.add(side?'dropB':'dropT')}else{side=t.clientX<r.left+r.width/2?0:1;b.classList.add(side?'dropR':'dropL')}tgt={id:b.dataset.id,pile:b.classList.contains('pb')}}
+   else{const row=under&&under.closest('.sp-row');if(row){const bs=row.querySelectorAll('[data-a=bookOpen]');const last=bs[bs.length-1];if(last&&last.dataset.id!==drag.id){side=1;last.classList.add('dropR');tgt={id:last.dataset.id,pile:false}}}}
+   clearInterval(scrollT);scrollT=null;const H=innerHeight;if(t.clientY<90||t.clientY>H-150){const v=t.clientY<90?-8:8;scrollT=setInterval(()=>window.scrollBy(0,v),16)}},{passive:false});
+ const end=()=>{clearTimeout(lp);lp=null;clearInterval(scrollT);scrollT=null;if(!drag)return;window._bkDragT=Date.now();
+   if(ghost)ghost.remove();ghost=null;clearT();const d=drag;drag=null;d.src.classList.remove('dragsrc');
+   if(!tgt){render();return}
+   const a=bkFind(d.id),b=bkFind(tgt.id);if(!a||!b){render();return}
+   if(a[0]!==b[0]){toast(L('Книгу можно переставить только внутри ее года','A book can only move within its year'));render();return}
+   const lay=S.bkLay[a[0]],it=lay.splice(a[1],1)[0];let j=lay.findIndex(x=>x[0]===tgt.id)+side;
+   if(tgt.pile)it[1]='lie';else if(it[1]==='lie')it[1]='spine';
+   lay.splice(j,0,it);tgt=null;save();render()};
+ document.addEventListener('touchend',end,{passive:true});document.addEventListener('touchcancel',end,{passive:true});
+})();
+
 const bkKey=l=>booksTab+':'+String(l).split(' · ')[0];
 function bkFind(id){const L2=S.bkLay||{};for(const k in L2)if(k.startsWith(booksTab+':')){const i=L2[k].findIndex(x=>x[0]===id);if(i>=0)return [k,i]}return null}
 function bkModeOf(id){const f=bkFind(id);return f?S.bkLay[f[0]][f[1]][1]:'spine'}
-function bkTap(id){if(!bkSelId||bkSelId===id){bkSelId=bkSelId===id?null:id;render();return}
+function bkTap(id){if(Date.now()-(window._bkDragT||0)<500)return;{bkSelId=bkSelId===id?null:id;render();return}
   const a=bkFind(bkSelId),b=bkFind(id);if(!a||!b){bkSelId=id;render();return}
   if(a[0]!==b[0]){toast(L('Книгу можно переставить только внутри ее года','A book can only move within its year'));return}
   const lay=S.bkLay[a[0]],it=lay.splice(a[1],1)[0];const j=lay.findIndex(x=>x[0]===id);lay.splice(j,0,it);bkSelId=null;save();render()}
 const bkActions={bkEditGo:()=>{shEdit=false;bkEdit=true;bkSelId=null;render();toast(L('Нажми на книгу, чтобы ее переставить','Tap a book to move it'))},
+  bkUnsel:()=>{bkSelId=null;render()},
   bkDone:()=>{bkEdit=false;bkSelId=null;render();toast(L('Полка расставлена ✓','Shelf arranged ✓'))},
   bkMode:d=>{const f=bkFind(bkSelId);if(!f)return;S.bkLay[f[0]][f[1]][1]=d.v;bkSelId=null;save();render()},
   bkEnd:d=>{const f=bkFind(bkSelId);if(!f)return;const lay=S.bkLay[f[0]],it=lay.splice(f[1],1)[0];if(d.v==='1')lay.push(it);else lay.unshift(it);bkSelId=null;save();render()},
@@ -4026,7 +4065,7 @@ function spineShelf(list,groups){shST=S.shStyle||'live';spFace=new Set();
     let arr=shST==='rainbow'?[...a].sort((x,y)=>colKey(x)-colKey(y)):a;
     if(shST==='vitrine')arr.forEach(b=>spFace.add(b.id));else if(shST==='live'||shST==='moon'){let last=-9;arr.forEach((b,k)=>{if(covers[b.id]&&k-last>6&&(b.rating>=5||hsh(b.title)%6===0)){spFace.add(b.id);last=k}})}
     if(shST!=='vitrine'&&shST!=='rainbow')arr=shPiles(arr);
-    if(bkEdit&&shST!=='rainbow'){S.bkLay=S.bkLay||{};S.bkLay[key]=arr.flatMap(x=>x.pile?x.pile.map(b=>[b.id,'lie']):[[x.id,spFace.has(x.id)&&shST!=='vitrine'?'face':'spine']]);save()}
+    if((bkEdit||bkSnapOnce)&&shST!=='rainbow'){S.bkLay=S.bkLay||{};S.bkLay[key]=arr.flatMap(x=>x.pile?x.pile.map(b=>[b.id,'lie']):[[x.id,spFace.has(x.id)&&shST!=='vitrine'?'face':'spine']]);save()}
     return [l,arr,key]});
   if(shST==='witch')groups=groups.map(([l,a,k])=>{const o=[];a.forEach((x,i)=>{o.push(x);if(i%9===6&&!bkEdit)o.push({candle:1+(i%2)})});return [l,o,k]});let h='',ri=0;const p=activePet(),sp=!!(p&&p.hatched&&!BOYM()),ed=shEdit;
   const free=shFreeGet()||shAutoFree(99,sp);
@@ -4044,17 +4083,14 @@ function spineShelf(list,groups){shST=S.shStyle||'live';spFace=new Set();
   const SS=shSet(),bm=BOYM();const hint=booksTab==='done'&&!ed?`<div class="sh-hint" data-a="shelfPets">${bm?'🌹':'🐾'} ${n<SS.length?(bm?L(`Через ${left} ${plural(left,BK)} он оставит на полке новый подарок`,`He’ll leave a new gift after ${left} more ${left===1?'book':'books'}`):L(`Через ${left} ${plural(left,BK)} на полке поселится новый житель`,`A new dweller moves in after ${left} more ${left===1?'book':'books'}`)):(bm?L('Все его подарки уже на полке','All his gifts are on your shelf'):L('Все жители полки уже с тобой','All shelf dwellers are with you'))} · ${n}/${SS.length} ›</div>`:'';
   let tools='';
   if(bkEdit&&(booksTab==='done'||booksTab==='want')){const sb=bkSelId&&S.books[bkSelId],md=sb?bkModeOf(bkSelId):'';
-    tools=`<div class="sh-edit"><div class="sh-edit-t"><b>📚 ${L('Расстановка книг','Arrange books')}</b><button class="chip on" data-a="bkDone">✓ ${L('Готово','Done')}</button></div>
-<p class="hint" style="margin:4px 0 8px;font-size:12.5px">${sb?L(`Выбрана «${esc(sb.title)}». Нажми на другую книгу — она встанет перед ней. Или выбери, как ей стоять:`,`«${esc(sb.title)}» selected. Tap another book to put it before that one, or choose how it stands:`):L('Нажми на книгу, которую хочешь переставить','Tap the book you want to move')}</p>
-${sb?`<div class="sh-edit-b" style="margin-bottom:8px">${shST==='vitrine'?'':`<button class="chip ${md==='spine'?'on':''}" data-a="bkMode" data-v="spine">${L('Корешком','Spine')}</button><button class="chip ${md==='face'?'on':''}" data-a="bkMode" data-v="face">${L('Обложкой','Cover')}</button><button class="chip ${md==='lie'?'on':''}" data-a="bkMode" data-v="lie">${L('Положить','Lay flat')}</button>`}<button class="chip" data-a="bkEnd" data-v="0">⇤ ${L('В начало','To start')}</button><button class="chip" data-a="bkEnd" data-v="1">${L('В конец','To end')} ⇥</button></div>`:''}
-<div class="sh-edit-b"><button class="chip" data-a="bkReset">↺ ${L('Как было','Reset')}</button></div></div>`}
+    tools=`<div class="bk-bar">${sb?`<div class="bk-t"><b>${esc(sb.title)}</b><button class="bk-x" data-a="bkUnsel" aria-label="close">✕</button></div><div class="bk-b">${shST==='vitrine'?'':`<button class="chip ${md==='spine'?'on':''}" data-a="bkMode" data-v="spine">${L('Корешком','Spine')}</button><button class="chip ${md==='face'?'on':''}" data-a="bkMode" data-v="face">${L('Обложкой','Cover')}</button><button class="chip ${md==='lie'?'on':''}" data-a="bkMode" data-v="lie">${L('Положить','Lay flat')}</button>`}</div>`:`<div class="bk-t"><span>${L('Зажми книгу и перетащи. Нажми на книгу, чтобы поставить ее обложкой или положить','Hold and drag a book. Tap a book to change how it stands')}</span></div><div class="bk-b"><button class="chip" data-a="bkReset">↺ ${L('Как было','Reset')}</button><button class="chip on" data-a="bkDone">✓ ${L('Готово','Done')}</button></div>`}</div>`}
   else if(booksTab==='done'){if(ed){const placed=new Set(free.map(it=>it.v));
       tools=`<div class="sh-edit"><div class="sh-edit-t"><b>${L('Расстановка','Arrange')}</b><button class="chip on" data-a="shEditDone">✓ ${L('Готово','Done')}</button></div>
 <p class="hint" style="margin:4px 0 8px;font-size:12.5px">${shSelV==null?L('1. Выбери предмет ниже. 2. Нажми на любое место на полке — он встанет туда.','1. Pick an item below. 2. Tap any spot on a shelf.'):L('Теперь нажми на место на полке, куда поставить','Now tap a spot on a shelf')}</p>
 <div class="sh-strip">${shAvailList().map(v=>`<div class="sst ${shSelV===v?'sel':''} ${placed.has(v)?'':'boxed'}" data-a="shSel" data-v="${v}">${shIco(shItem(v),'')}</div>`).join('')}<label class="sst add">📷<input type="file" accept="image/*" id="custFile" style="display:none"></label></div>
 <div class="sh-edit-b">${shSelV!=null&&placed.has(shSelV)?`<button class="chip" data-a="shRemove">${L('Убрать с полки','Remove')}</button>`:''}${shSelV!=null&&shSelV>=CUST0?`<button class="chip" data-a="custDel2">🗑 ${L('Удалить фото','Delete photo')}</button>`:''}<button class="chip" data-a="shAuto">↺ ${L('Как было','Reset')}</button></div></div>`}
     else tools=`<div class="sh-tools"><button class="chip" data-a="shStyle">🎨 ${L('Вид полки','Style')}</button>${shST==='rainbow'?'':`<button class="chip" data-a="bkEditGo">📚 ${L('Расставить книги','Arrange books')}</button>`}<button class="chip" data-a="shEditGo">✏️ ${bm?L('Расставить подарки','Arrange gifts'):L('Расставить жителей','Arrange dwellers')}</button></div>`}
-  return `<div class="spshelf st-${shST} ${ed?'editing':''}">${hint}${tools}${h}</div>`}
+  return `<div class="spshelf st-${shST} ${ed?'editing':''} ${bkEdit?'editbk':''}">${hint}${tools}${h}</div>`}
 const shelf2Actions={
   shEditGo:()=>{if(!shUnlocked()&&!(S.cust||[]).some(Boolean)&&!shEdit){}S.shFree=S.shFree||{};if(!S.shFree[shK()]){const p=activePet();S.shFree[shK()]=shAutoFree(99,!!(p&&p.hatched&&!BOYM()))}shEdit=true;shSelV=null;save();render()},
   shEditDone:()=>{shEdit=false;shSelV=null;render();toast(L('Полка расставлена ✓','Shelf arranged ✓'))},
@@ -4066,7 +4102,7 @@ const shelf2Actions={
   custDel2:()=>{const v=shSelV;if(v==null||v<CUST0)return;S.cust[v-CUST0]=null;Object.keys(S.shFree||{}).forEach(k=>{S.shFree[k]=S.shFree[k].filter(it=>it.v!==v)});shSelV=null;save();render()}};
 document.addEventListener('click',e=>{window._lc=e},true);
 
-function shelfFor(list){if(booksTab==='reading'||booksTab==='later')return shelfHTML(list);
+function shelfFor(list){window._shList=list;if(booksTab==='reading'||booksTab==='later')return shelfHTML(list);
   if(booksTab==='want')return spineShelf(list,[[L('Хочу прочитать','Want to read')+' · '+list.length,list]]);
   const by={};list.forEach(b=>{const y=b.finishedAt?new Date(b.finishedAt).getFullYear():L('Без даты','No date');(by[y]=by[y]||[]).push(b)});const tm=b=>b.finishedAt?new Date(b.finishedAt).getTime():0;Object.keys(by).forEach(y=>{const a=by[y].sort((x,z)=>tm(z)-tm(x)),g=new Map();a.forEach(b=>{const k=norm(b.author||'')||b.id;if(!g.has(k))g.set(k,[]);g.get(k).push(b)});by[y]=[...g.values()].flat()});
   return spineShelf(list,Object.keys(by).sort((a,b)=>(+b||0)-(+a||0)).map(y=>[`${y} · ${by[y].length} ${plural(by[y].length,BK)}`,by[y]]))}
@@ -4108,7 +4144,7 @@ function boFlip(dir){if(boBusy)return;const nx=boI+dir;if(nx<0||nx>=boS.length)r
 function boClose(then){const el=$('#bo');if(!el)return;el.classList.remove('opened');void el.offsetWidth;el.classList.remove('open');el.classList.add('closing');
   setTimeout(()=>{el.remove();if(then)then()},then?0:850)}
 const libActions={
-  bookOpen:d=>bkEdit&&tab==='books'&&(booksTab==='done'||booksTab==='want')?bkTap(d.id):boOpen(d.id),
+  bookOpen:d=>Date.now()-(window._bkDragT||0)<500?0:bkEdit&&tab==='books'&&(booksTab==='done'||booksTab==='want')?bkTap(d.id):boOpen(d.id),
   boNext:()=>boFlip(1),boPrev:()=>boFlip(-1),
   boClose:()=>boClose(),
   boCard:()=>{const id=boId;boClose(()=>openSheet(bookSheet(id),'book'))},
