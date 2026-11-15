@@ -753,6 +753,10 @@ svg .glyph{animation:gly 5s ease-in-out infinite}svg .glyph.g1{animation-delay:1
 .st-witch .plank{height:22px;margin-top:-4px;box-shadow:0 14px 18px -8px rgba(0,0,0,.85)}.st-witch .plank::after{display:none}
 .wcandle{width:26px}.wcandle i{width:26px!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:bottom!important;background-size:100% auto!important;border-radius:0!important}.wcandle.c1 i{height:111px!important}.wcandle.c2 i{height:82px!important}
 .wcandle i::before{left:50%!important;top:-6px!important;width:26px!important;height:26px!important;transform:translateX(-50%);background:radial-gradient(circle,rgba(255,200,110,.45),rgba(255,160,60,0) 70%)!important;box-shadow:none!important;animation:flick2 2.2s ease-in-out infinite!important}@keyframes flick2{50%{opacity:.6;transform:translateX(-50%) scale(1.15)}}
+.spine.cv .sp-t,.spine.cv .sp-a{background:rgba(8,4,6,.55);border-radius:3px;padding:5px 1px}.spine.cv .sp-a{padding:3px 1px}
+.pb.cv span{background:rgba(8,4,6,.55);padding:1px 6px;border-radius:3px}
+.spine.bsel,.pb.bsel{outline:2.5px solid #ffd27a;outline-offset:2px;transform:translateY(-10px);z-index:5}.pb.bsel{transform:translateX(-6px)}
+.pile{flex:none}
 .sdeco.sslot{width:48px;height:54px;border:1.5px dashed var(--line2);border-radius:10px;display:grid;place-items:center;cursor:pointer;margin:0 1px;background:rgba(255,255,255,.03)}
 .sdeco.sslot span{font:900 20px Nunito,sans-serif;color:var(--accent);opacity:.8}
 .sdeco.sslot.on{border-style:solid;border-color:var(--accent);height:auto;padding:2px}
@@ -3949,6 +3953,20 @@ const WITCH_IMG={"l0t": "data:image/webp;base64,UklGRrQEAABXRUJQVlA4IKgEAABQEwCd
 (function(){let c='';for(let i=0;i<6;i++){const g=k=>WITCH_IMG['l'+i+k];c+=`.lth${i}{background-image:url(${g('t')}),url(${g('b')}),url(${g('m')});background-size:100% auto,100% auto,100% 100%;background-position:top,bottom,center;background-repeat:no-repeat}.lthp${i}{background:url(${g('m')}) center/100% 100%}`}
 c+=`.wmed2::after{background-image:url(${WITCH_IMG.frame})}.st-witch .plank{background:url(${WITCH_IMG.board}) center/100% 100%}.wcandle.c1 i{background-image:url(${WITCH_IMG.ct})!important}.wcandle.c2 i{background-image:url(${WITCH_IMG.cs})!important}`;
 const st=document.createElement('style');st.textContent=c;document.head.appendChild(st)})();
+
+let bkEdit=false,bkSelId=null;
+const bkKey=l=>booksTab+':'+String(l).split(' · ')[0];
+function bkFind(id){const L2=S.bkLay||{};for(const k in L2)if(k.startsWith(booksTab+':')){const i=L2[k].findIndex(x=>x[0]===id);if(i>=0)return [k,i]}return null}
+function bkModeOf(id){const f=bkFind(id);return f?S.bkLay[f[0]][f[1]][1]:'spine'}
+function bkTap(id){if(!bkSelId||bkSelId===id){bkSelId=bkSelId===id?null:id;render();return}
+  const a=bkFind(bkSelId),b=bkFind(id);if(!a||!b){bkSelId=id;render();return}
+  if(a[0]!==b[0]){toast(L('Книгу можно переставить только внутри ее года','A book can only move within its year'));return}
+  const lay=S.bkLay[a[0]],it=lay.splice(a[1],1)[0];const j=lay.findIndex(x=>x[0]===id);lay.splice(j,0,it);bkSelId=null;save();render()}
+const bkActions={bkEditGo:()=>{shEdit=false;bkEdit=true;bkSelId=null;render();toast(L('Нажми на книгу, чтобы ее переставить','Tap a book to move it'))},
+  bkDone:()=>{bkEdit=false;bkSelId=null;render();toast(L('Полка расставлена ✓','Shelf arranged ✓'))},
+  bkMode:d=>{const f=bkFind(bkSelId);if(!f)return;S.bkLay[f[0]][f[1]][1]=d.v;bkSelId=null;save();render()},
+  bkEnd:d=>{const f=bkFind(bkSelId);if(!f)return;const lay=S.bkLay[f[0]],it=lay.splice(f[1],1)[0];if(d.v==='1')lay.push(it);else lay.unshift(it);bkSelId=null;save();render()},
+  bkReset:()=>{Object.keys(S.bkLay||{}).forEach(k=>{if(k.startsWith(booksTab+':'))delete S.bkLay[k]});bkSelId=null;save();render();toast(L('Вернула как было','Back to default'))}};
 let shST='live';
 const SH_STYLES=[['live',L('Живая полка','Living shelf'),L('Разные корешки, стопки, книги обложкой','Mixed spines, stacks, covers')],['vitrine',L('Витрина','Showcase'),L('Все книги обложкой вперед','All covers facing out')],['witch',L('Ведьмина библиотека','Witch library'),L('Кожа, золото, медальоны, свечи','Leather, gold, cameos, candles')],['rainbow',L('Радуга','Rainbow'),L('Книги по цвету обложки','Books sorted by cover color')],['moon',L('Лунная полка','Moon shelf'),L('Светящиеся полки и звезды','Glowing shelves and stars')]];
 const W_LEATH=[['#4a1018','#22060a'],['#123a2a','#061a12'],['#1d1915','#0a0807'],['#3d2616','#1a0f07'],['#2c1a3a','#12081a'],['#3a1a10','#180804']];
@@ -3969,17 +3987,17 @@ const styleActions={shStyle:()=>openSheet(shStyleSheet(),'shstyle'),shStylePick:
 
 function spineW(b){if(spFace.has(b.id))return shST==='vitrine'?104:96;const p=b.pages||(b.format==='audio'?380:300);return Math.round(18+Math.min(p,900)/900*20)}
 function spineHTML(b,lean){const url=covers[b.id],w=spineW(b),h=spineH(b),hh=hsh(b.title);
-  if((url||shST==='vitrine')&&spFace.has(b.id)){const fh=shST==='vitrine'?150:Math.min(h,150),[fa,fz,ft]=SP_PAL[hh%SP_PAL.length];return `<div class="spine face" data-a="bookOpen" data-id="${b.id}" style="width:${w-6}px;height:${fh}px;background:linear-gradient(160deg,${fa},${fz})"><span class="fct" style="color:${ft}">${esc(b.title)}</span>${url?`<img src="${url}" alt="" loading="lazy" onerror="this.remove()">`:''}<i class="fsh"></i></div>`}
+  if((url||shST==='vitrine')&&spFace.has(b.id)){const fh=shST==='vitrine'?150:Math.min(h,150),[fa,fz,ft]=SP_PAL[hh%SP_PAL.length];return `<div class="spine face ${bkSelId===b.id?'bsel':''}" data-a="bookOpen" data-id="${b.id}" style="width:${w-6}px;height:${fh}px;background:linear-gradient(160deg,${fa},${fz})"><span class="fct" style="color:${ft}">${esc(b.title)}</span>${url?`<img src="${url}" alt="" loading="lazy" onerror="this.remove()">`:''}<i class="fsh"></i></div>`}
   if(shST==='witch'){const capT=Math.round(w*50/64),capB=Math.round(w*59/64),mw=w-2,mh=Math.round(mw*1.2),av=h-capT-capB-mh-12,chh=Math.max(1,(b.title||'').length);let f2=Math.max(7.5,Math.min(12,w*.42,av/(chh*.64))),tw=false;if(f2<8.6&&w>=25){tw=true;f2=Math.min(10.5,(w-5)/2.25,av*2/(chh*.64))}f2=Math.max(f2,7.5);
-    return `<div class="spine wsp lth${hh%6} ${lean?'lean':''}" data-a="bookOpen" data-id="${b.id}" style="width:${w}px;height:${h}px;padding:${capT}px 0 ${capB}px"><i class="wmed2" style="width:${mw}px;height:${mh}px"><b style="${url?`background-image:url('${url}')`:''}"></b></i><span class="sp-t ${tw?'two':''}" style="font-size:${f2.toFixed(1)}px;max-height:${av}px;color:#e9c97f;text-shadow:0 1px 1px #000,0 0 3px rgba(0,0,0,.8)">${esc(b.title)}</span></div>`}
+    return `<div class="spine wsp lth${hh%6} ${bkSelId===b.id?'bsel':''} ${lean?'lean':''}" data-a="bookOpen" data-id="${b.id}" style="width:${w}px;height:${h}px;padding:${capT}px 0 ${capB}px"><i class="wmed2" style="width:${mw}px;height:${mh}px"><b style="${url?`background-image:url('${url}')`:''}"></b></i><span class="sp-t ${tw?'two':''}" style="font-size:${f2.toFixed(1)}px;max-height:${av}px;color:#e9c97f;text-shadow:0 1px 1px #000,0 0 3px rgba(0,0,0,.8)">${esc(b.title)}</span></div>`}
   const [a,z,tc,ac]=SP_PAL[hh%SP_PAL.length],v=(hh>>>4)%4;
   const showA=w>=24&&b.author;const avail=h-(showA?74:40)-(v===1?18:0),ch=Math.max(1,(b.title||'').length);let fs=Math.min(13,w*.46,avail/(ch*.64)),two=false;if(fs<8.6&&w>=25){two=true;fs=Math.min(11,(w-5)/2.25,avail*2/(ch*.64))}fs=Math.max(fs,8);const an=showA?b.author.split(/[ ,]/).filter(Boolean).slice(-1)[0]:'';const afs=Math.max(6.5,Math.min(8.5,46/(an.length*.78||1)));
   const sh='linear-gradient(90deg,rgba(0,0,0,.32),rgba(255,255,255,.18) 22%,rgba(255,255,255,0) 45%,rgba(0,0,0,.08) 70%,rgba(0,0,0,.4))';
-  const bg=url?`background-color:${z};background-image:${sh},linear-gradient(rgba(0,0,0,.3),rgba(0,0,0,.3)),url('${url}');background-size:100% 100%,100% 100%,auto 100%;background-position:center`:`background:${sh},linear-gradient(180deg,${a},${z})`;
+  const bg=url?`background-color:${z};background-image:${sh},linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1)),url('${url}');background-size:100% 100%,100% 100%,auto 100%;background-position:center`:`background:${sh},linear-gradient(180deg,${a},${z})`;
   const col=url?'#fff8ec':tc,acc=url?'#f0d9a8':ac,ts=url?'0 1px 3px rgba(0,0,0,.95)':(tc.startsWith('#f')||tc.startsWith('#e')?'0 1px 2px rgba(0,0,0,.6)':'none');
   const deco=url?'':v===0?`<i class="sb t" style="border-color:${ac}"></i><i class="sb b" style="border-color:${ac}"></i>`:v===1?`<i class="sbk" style="background:${ac}"></i>`:v===3?`<i class="sb b" style="border-color:${ac}"></i>`:'';
   const rib=hh%5===1?`<i class="rib" style="left:${30+hh%40}%;background:${['#8e1b2c','#1d1d22','#c9a05a','#3a2a5c'][(hh>>>5)%4]}"></i>`:'';
-  return `<div class="spine ${lean?'lean':''} ${rib?'hasrib':''}" data-a="bookOpen" data-id="${b.id}" style="width:${w}px;height:${h}px;${bg};${v===1&&!url?'padding-top:30px;':''}">${deco}${rib}${showA?`<span class="sp-a" style="font-size:${afs.toFixed(1)}px;color:${acc};text-shadow:${ts}" translate="no">${esc(an)}</span>`:''}<span class="sp-t ${two?'two':''}" style="font-size:${fs.toFixed(1)}px;max-height:${avail}px;color:${col};text-shadow:${ts}" translate="no">${esc(b.title)}</span></div>`}
+  return `<div class="spine ${url?'cv':''} ${bkSelId===b.id?'bsel':''} ${lean?'lean':''} ${rib?'hasrib':''}" data-a="bookOpen" data-id="${b.id}" style="width:${w}px;height:${h}px;${bg};${v===1&&!url?'padding-top:30px;':''}">${deco}${rib}${showA?`<span class="sp-a" style="font-size:${afs.toFixed(1)}px;color:${acc};text-shadow:${ts}" translate="no">${esc(an)}</span>`:''}<span class="sp-t ${two?'two':''}" style="font-size:${fs.toFixed(1)}px;max-height:${avail}px;color:${col};text-shadow:${ts}" translate="no">${esc(b.title)}</span></div>`}
 function shelfDeco(k,first){const p=activePet();
   if(BOYM())return '';if(0)return `<div class="sdeco"><svg viewBox="0 0 40 70"><path d="M14 69H26L24 50H16Z" fill="#1a1a24" stroke="#d9b46a" stroke-width=".8"/><path d="M20 50Q17 34 21 20" stroke="#2f5a2a" stroke-width="1.6" fill="none"/>${lf(19,38,200,.8)}${rh(21,16,8,k%2?'#2a0a14':RED,k%2?'#000':RDK)}</svg></div>`;
   if(first&&p&&p.hatched)return `<div class="sdeco pet">${creatureSVG(p.species,stageOf(p),'happy',{anim:true})}</div>`;
@@ -3993,14 +4011,24 @@ function shAvailList(){const a=[...Array(shUnlocked()).keys()];(S.cust||[]).forE
 function shAutoFree(nRows,sp){const items=[...Array(shUnlocked()).keys()].reverse(),out=[];let r=0,k=0;
   for(const v of items){while(true){const cap=r===0&&sp?1:2;if(k<cap){out.push({v,r,x:r===0&&sp?.6:(k===0?.92:.78)});k++;break}r++;k=0}}return out}
 
-function pileHTML(P){return `<div class="pile">${P.map(b=>{const hh=hsh(b.title),[a,z,tc]=shST==='witch'?[...W_LEATH[hh%W_LEATH.length],'#e6c47e']:SP_PAL[(hh>>>2)%SP_PAL.length],w=100+hh%24,t=Math.round(19+Math.min(b.pages||300,900)/900*9),off=(hh>>>3)%9-4,url=covers[b.id];
-  if(shST==='witch')return `<div class="pb lthp${hh%6}" data-a="bookOpen" data-id="${b.id}" style="width:${w}px;height:${t}px;margin-left:${off}px;color:#e9c97f"><span>${esc(b.title)}</span></div>`;
-  return `<div class="pb" data-a="bookOpen" data-id="${b.id}" style="width:${w}px;height:${t}px;margin-left:${off}px;${url&&shST!=='witch'?`background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(0,0,0,.3)),linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),url('${url}') center/100% auto,${z};color:#fff8ec`:`background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(0,0,0,.22)),linear-gradient(90deg,${a},${z});color:${tc}`}"><span>${esc(b.title)}</span></div>`}).join('')}</div>`}
+function pileW(P){return Math.max(...P.map(b=>100+hsh(b.title)%24))+10}
+function pileHTML(P){return `<div class="pile" style="width:${pileW(P)}px">${P.map(b=>{const hh=hsh(b.title),[a,z,tc]=shST==='witch'?[...W_LEATH[hh%W_LEATH.length],'#e6c47e']:SP_PAL[(hh>>>2)%SP_PAL.length],w=100+hh%24,t=Math.round(19+Math.min(b.pages||300,900)/900*9),off=(hh>>>3)%9-4,url=covers[b.id];
+  if(shST==='witch')return `<div class="pb lthp${hh%6} ${bkSelId===b.id?'bsel':''}" data-a="bookOpen" data-id="${b.id}" style="width:${w}px;height:${t}px;margin-left:${off}px;color:#e9c97f"><span>${esc(b.title)}</span></div>`;
+  return `<div class="pb ${url?'cv':''} ${bkSelId===b.id?'bsel':''}" data-a="bookOpen" data-id="${b.id}" style="width:${w}px;height:${t}px;margin-left:${off}px;${url&&shST!=='witch'?`background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(0,0,0,.25)),url('${url}') center/cover,${z};color:#fff8ec`:`background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(0,0,0,.22)),linear-gradient(90deg,${a},${z});color:${tc}`}"><span>${esc(b.title)}</span></div>`}).join('')}</div>`}
 function shPiles(arr){if(booksTab!=='done'||arr.length<8)return arr;const out=[];let k=0,since=0;
   while(k<arr.length){const b=arr[k],n=3+(hsh(b.title)%2);if(since>=9&&k+n<=arr.length&&!arr.slice(k,k+n).some(x=>spFace.has(x.id))){out.push({pile:arr.slice(k,k+n)});k+=n;since=0}else{out.push(b);k++;since++}}return out}
-const itemW=x=>x.pile?128:x.candle?32:spineW(x);
-function spineShelf(list,groups){shST=S.shStyle||'live';spFace=new Set();if(shST==='rainbow')groups=groups.map(([l,a])=>[l,[...a].sort((x,y)=>colKey(x)-colKey(y))]);
-  if(shST==='vitrine')groups.forEach(([,a])=>a.forEach(b=>spFace.add(b.id)));else if(shST==='live'||shST==='moon')groups.forEach(([,arr])=>{let last=-9;arr.forEach((b,k)=>{if(covers[b.id]&&k-last>6&&(b.rating>=5||hsh(b.title)%6===0)){spFace.add(b.id);last=k}})});if(shST!=='vitrine'&&shST!=='rainbow')groups=groups.map(([l,a])=>[l,shPiles(a)]);if(shST==='witch')groups=groups.map(([l,a])=>{const o=[];a.forEach((x,i)=>{o.push(x);if(i%9===6)o.push({candle:1+(i%2)})});return [l,o]});let h='',ri=0;const p=activePet(),sp=!!(p&&p.hatched&&!BOYM()),ed=shEdit;
+const itemW=x=>x.pile?pileW(x.pile)+6:x.candle?32:spineW(x);
+function spineShelf(list,groups){shST=S.shStyle||'live';spFace=new Set();
+  groups=groups.map(([l,a])=>{const key=bkKey(l),lay=shST!=='rainbow'&&S.bkLay&&S.bkLay[key];
+    if(lay){const m=new Map(a.map(b=>[b.id,b])),seen=new Set(),seq=[];a.forEach(b=>{if(!lay.some(x=>x[0]===b.id))seq.push([b,'spine'])});lay.forEach(([id,md])=>{const b=m.get(id);if(b&&!seen.has(id)){seen.add(id);seq.push([b,md])}});
+      const out=[];let pile=[];const flush=()=>{for(let k=0;k<pile.length;k+=5)out.push({pile:pile.slice(k,k+5)});pile=[]};
+      seq.forEach(([b,md])=>{if(md==='lie'&&shST!=='vitrine'){pile.push(b);return}flush();if(md==='face'||shST==='vitrine')spFace.add(b.id);out.push(b)});flush();return [l,out,key]}
+    let arr=shST==='rainbow'?[...a].sort((x,y)=>colKey(x)-colKey(y)):a;
+    if(shST==='vitrine')arr.forEach(b=>spFace.add(b.id));else if(shST==='live'||shST==='moon'){let last=-9;arr.forEach((b,k)=>{if(covers[b.id]&&k-last>6&&(b.rating>=5||hsh(b.title)%6===0)){spFace.add(b.id);last=k}})}
+    if(shST!=='vitrine'&&shST!=='rainbow')arr=shPiles(arr);
+    if(bkEdit&&shST!=='rainbow'){S.bkLay=S.bkLay||{};S.bkLay[key]=arr.flatMap(x=>x.pile?x.pile.map(b=>[b.id,'lie']):[[x.id,spFace.has(x.id)&&shST!=='vitrine'?'face':'spine']]);save()}
+    return [l,arr,key]});
+  if(shST==='witch')groups=groups.map(([l,a,k])=>{const o=[];a.forEach((x,i)=>{o.push(x);if(i%9===6&&!bkEdit)o.push({candle:1+(i%2)})});return [l,o,k]});let h='',ri=0;const p=activePet(),sp=!!(p&&p.hatched&&!BOYM()),ed=shEdit;
   const free=shFreeGet()||shAutoFree(99,sp);
   const itemsAt=r=>free.filter(it=>it.r===r&&shAvail(it.v)).map(it=>`<div class="sfi ${ed&&shSelV===it.v?'sel':''}" style="left:${(it.x*100).toFixed(1)}%" data-a="${ed?'shSel':'shPet'}" data-v="${it.v}">${shIco(shItem(it.v),'')}</div>`).join('');
   const catcher=r=>ed?`<div class="scatch" data-a="shAt" data-r="${r}"></div>`:'';
@@ -4015,12 +4043,17 @@ function spineShelf(list,groups){shST=S.shStyle||'live';spFace=new Set();if(shST
   const n=shUnlocked(),dn=liveDone().length,left=Math.max(1,shNeed(n)-dn);
   const SS=shSet(),bm=BOYM();const hint=booksTab==='done'&&!ed?`<div class="sh-hint" data-a="shelfPets">${bm?'🌹':'🐾'} ${n<SS.length?(bm?L(`Через ${left} ${plural(left,BK)} он оставит на полке новый подарок`,`He’ll leave a new gift after ${left} more ${left===1?'book':'books'}`):L(`Через ${left} ${plural(left,BK)} на полке поселится новый житель`,`A new dweller moves in after ${left} more ${left===1?'book':'books'}`)):(bm?L('Все его подарки уже на полке','All his gifts are on your shelf'):L('Все жители полки уже с тобой','All shelf dwellers are with you'))} · ${n}/${SS.length} ›</div>`:'';
   let tools='';
-  if(booksTab==='done'){if(ed){const placed=new Set(free.map(it=>it.v));
+  if(bkEdit&&(booksTab==='done'||booksTab==='want')){const sb=bkSelId&&S.books[bkSelId],md=sb?bkModeOf(bkSelId):'';
+    tools=`<div class="sh-edit"><div class="sh-edit-t"><b>📚 ${L('Расстановка книг','Arrange books')}</b><button class="chip on" data-a="bkDone">✓ ${L('Готово','Done')}</button></div>
+<p class="hint" style="margin:4px 0 8px;font-size:12.5px">${sb?L(`Выбрана «${esc(sb.title)}». Нажми на другую книгу — она встанет перед ней. Или выбери, как ей стоять:`,`«${esc(sb.title)}» selected. Tap another book to put it before that one, or choose how it stands:`):L('Нажми на книгу, которую хочешь переставить','Tap the book you want to move')}</p>
+${sb?`<div class="sh-edit-b" style="margin-bottom:8px">${shST==='vitrine'?'':`<button class="chip ${md==='spine'?'on':''}" data-a="bkMode" data-v="spine">${L('Корешком','Spine')}</button><button class="chip ${md==='face'?'on':''}" data-a="bkMode" data-v="face">${L('Обложкой','Cover')}</button><button class="chip ${md==='lie'?'on':''}" data-a="bkMode" data-v="lie">${L('Положить','Lay flat')}</button>`}<button class="chip" data-a="bkEnd" data-v="0">⇤ ${L('В начало','To start')}</button><button class="chip" data-a="bkEnd" data-v="1">${L('В конец','To end')} ⇥</button></div>`:''}
+<div class="sh-edit-b"><button class="chip" data-a="bkReset">↺ ${L('Как было','Reset')}</button></div></div>`}
+  else if(booksTab==='done'){if(ed){const placed=new Set(free.map(it=>it.v));
       tools=`<div class="sh-edit"><div class="sh-edit-t"><b>${L('Расстановка','Arrange')}</b><button class="chip on" data-a="shEditDone">✓ ${L('Готово','Done')}</button></div>
 <p class="hint" style="margin:4px 0 8px;font-size:12.5px">${shSelV==null?L('1. Выбери предмет ниже. 2. Нажми на любое место на полке — он встанет туда.','1. Pick an item below. 2. Tap any spot on a shelf.'):L('Теперь нажми на место на полке, куда поставить','Now tap a spot on a shelf')}</p>
 <div class="sh-strip">${shAvailList().map(v=>`<div class="sst ${shSelV===v?'sel':''} ${placed.has(v)?'':'boxed'}" data-a="shSel" data-v="${v}">${shIco(shItem(v),'')}</div>`).join('')}<label class="sst add">📷<input type="file" accept="image/*" id="custFile" style="display:none"></label></div>
 <div class="sh-edit-b">${shSelV!=null&&placed.has(shSelV)?`<button class="chip" data-a="shRemove">${L('Убрать с полки','Remove')}</button>`:''}${shSelV!=null&&shSelV>=CUST0?`<button class="chip" data-a="custDel2">🗑 ${L('Удалить фото','Delete photo')}</button>`:''}<button class="chip" data-a="shAuto">↺ ${L('Как было','Reset')}</button></div></div>`}
-    else tools=`<div class="sh-tools"><button class="chip" data-a="shStyle">🎨 ${L('Вид полки','Style')}</button><button class="chip" data-a="shEditGo">✏️ ${bm?L('Расставить подарки','Arrange gifts'):L('Расставить жителей','Arrange dwellers')}</button></div>`}
+    else tools=`<div class="sh-tools"><button class="chip" data-a="shStyle">🎨 ${L('Вид полки','Style')}</button>${shST==='rainbow'?'':`<button class="chip" data-a="bkEditGo">📚 ${L('Расставить книги','Arrange books')}</button>`}<button class="chip" data-a="shEditGo">✏️ ${bm?L('Расставить подарки','Arrange gifts'):L('Расставить жителей','Arrange dwellers')}</button></div>`}
   return `<div class="spshelf st-${shST} ${ed?'editing':''}">${hint}${tools}${h}</div>`}
 const shelf2Actions={
   shEditGo:()=>{if(!shUnlocked()&&!(S.cust||[]).some(Boolean)&&!shEdit){}S.shFree=S.shFree||{};if(!S.shFree[shK()]){const p=activePet();S.shFree[shK()]=shAutoFree(99,!!(p&&p.hatched&&!BOYM()))}shEdit=true;shSelV=null;save();render()},
@@ -4075,7 +4108,7 @@ function boFlip(dir){if(boBusy)return;const nx=boI+dir;if(nx<0||nx>=boS.length)r
 function boClose(then){const el=$('#bo');if(!el)return;el.classList.remove('opened');void el.offsetWidth;el.classList.remove('open');el.classList.add('closing');
   setTimeout(()=>{el.remove();if(then)then()},then?0:850)}
 const libActions={
-  bookOpen:d=>boOpen(d.id),
+  bookOpen:d=>bkEdit&&tab==='books'&&(booksTab==='done'||booksTab==='want')?bkTap(d.id):boOpen(d.id),
   boNext:()=>boFlip(1),boPrev:()=>boFlip(-1),
   boClose:()=>boClose(),
   boCard:()=>{const id=boId;boClose(()=>openSheet(bookSheet(id),'book'))},
@@ -4151,8 +4184,8 @@ const authActions={
 };
 /* ---------- actions ---------- */
 const A={
-  tab:d=>{tab=d.v;render();window.scrollTo(0,0)},
-  btab:d=>{booksTab=d.v;render()},
+  tab:d=>{tab=d.v;bkEdit=false;bkSelId=null;render();window.scrollTo(0,0)},
+  btab:d=>{booksTab=d.v;bkSelId=null;render()},
   setPause:d=>{const b=S.books[d.id];if(!b)return;b.status=d.v;b.pausedAt=Date.now();b.touchedAt=Date.now();save();closeSheet(true);booksTab='later';tab='books';render();toast(d.v==='pause'?L('Книга на паузе — вернешься, когда захочешь','Paused — come back anytime'):L('Книга брошена. Бывает 🤍','Dropped. It happens 🤍'))},
   close:()=>closeSheet(),
   egg:d=>{const p=S.pets.find(x=>x.id===d.id);if(!p)return;if(p.xp>=HATCH)startHatch(p.id);else{const left=HATCH-p.xp;say(kindOf(p)==='boy'?`Печать ещё держится… ${left} ${plural(left,PGs)}`:`Тёпленько… ещё ${left} ${plural(left,PGs)}`)}},
@@ -4215,7 +4248,7 @@ const A={
   copyNote:d=>{const b=S.books[d.id];const n=(b.notes||[]).find(x=>x.id===d.n);if(n)copyText((n.type==='quote'?'«'+n.text+'»':n.text)+(b.author?`\n— ${b.author}, «${b.title}»`:`\n— «${b.title}»`))},
   delBook:d=>openSheet(confirmSheet('Удалить книгу «'+esc(S.books[d.id].title)+'»?','delBookYes',d.id),'confirm'),
   delBookYes:d=>{if(S.books[d.id]&&S.books[d.id].hasCover)dropCover(d.id);delete S.books[d.id];save();closeSheet(true);render();toast('Книга удалена')},
-  ...tmrActions,...emoActions,...wheelActions,...tarotActions,...letterActions,...dateActions,...shelfActions,...guideActions,...impActions,...shelf2Actions,...sheetActs,...styleActions,...ritActions,...libActions,...authActions,
+  ...tmrActions,...emoActions,...wheelActions,...tarotActions,...letterActions,...dateActions,...shelfActions,...guideActions,...impActions,...shelf2Actions,...sheetActs,...styleActions,...bkActions,...ritActions,...libActions,...authActions,
   findCover:d=>{const b=S.books[d.id];if(!b)return;b.covTried=0;covQ.unshift(d.id);toast('🔎 Ищу обложку…');covRun(d.id)},
   syncInfo:()=>openSheet(syncSheet(),'sync'),
   syncNow:()=>{if(!dbOK){initDB.tries=0;initDB();toast('Подключаюсь к облаку…');return}const w=W.state;if(w){w.last='';w.next=0}dbQueue('state',()=>S);flushAll();toast('Сохраняю…');setTimeout(()=>{if(sheetKind==='sync')openSheet(syncSheet(),'sync')},2500)},
