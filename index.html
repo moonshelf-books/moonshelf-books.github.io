@@ -327,6 +327,7 @@ select.i option{color:#000}
 /* sheet */
 .ov{position:fixed;inset:0;background:rgba(8,4,22,.62);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
 .sheet{width:100%;max-width:480px;max-height:90vh;overflow:auto;background:var(--sheet);border-radius:28px 28px 0 0;border:1px solid var(--line);border-bottom:0;padding:10px 18px calc(env(safe-area-inset-bottom) + 22px);animation:up .28s cubic-bezier(.2,.9,.3,1);-webkit-overflow-scrolling:touch}
+.shxw{position:sticky;top:0;height:0;z-index:6;text-align:right}.shx{width:34px;height:34px;border-radius:50%;border:1px solid var(--line2);background:color-mix(in srgb,var(--sheet) 80%,#000);color:var(--muted);font-size:15px;line-height:1;margin:-6px -6px 0 0;cursor:pointer;backdrop-filter:blur(6px)}
 .grab{width:44px;height:5px;border-radius:9px;background:var(--faint);margin:0 auto 14px}
 @keyframes up{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
@@ -724,6 +725,8 @@ svg .glyph{animation:gly 5s ease-in-out infinite}svg .glyph.g1{animation-delay:1
 .sst.boxed{opacity:.6}.sst.add{font-size:24px;border:1.5px dashed var(--line2)}
 .sh-edit-b{display:flex;gap:8px;flex-wrap:wrap}
 .sp-year{display:flex;align-items:baseline;gap:10px;margin:22px 16px 6px;padding-bottom:6px;border-bottom:1px solid var(--line2)}.sp-year:first-of-type{margin-top:6px}.sp-year b{font:800 26px 'Playfair Display',Georgia,serif;color:var(--ink)}.sp-year span{font-size:13px;color:var(--muted);font-weight:700}
+.impw{margin:10px 0;font-size:13px}.impw summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}.impw p{margin:6px 0;line-height:1.4;color:var(--muted)}.impw b{color:var(--ink)}
+.impor{text-align:center;color:var(--muted);font-size:12.5px;margin:12px 0 8px;display:flex;align-items:center;gap:10px}.impor::before,.impor::after{content:'';flex:1;height:1px;background:var(--line2)}
 .sdeco.sslot{width:48px;height:54px;border:1.5px dashed var(--line2);border-radius:10px;display:grid;place-items:center;cursor:pointer;margin:0 1px;background:rgba(255,255,255,.03)}
 .sdeco.sslot span{font:900 20px Nunito,sans-serif;color:var(--accent);opacity:.8}
 .sdeco.sslot.on{border-style:solid;border-color:var(--accent);height:auto;padding:2px}
@@ -1993,7 +1996,7 @@ function render(){
 }
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),2600)}
 const queue=[];
-function openSheet(html,kind){sheetKind=kind||'sheet';$('#sheet').innerHTML='<div class="grab"></div>'+html;$('#ov').classList.remove('hidden');$('#sheet').scrollTop=0;if($('#fXp'))updFormHint();if($('#lgBox'))updDelta()}
+function openSheet(html,kind){sheetKind=kind||'sheet';$('#sheet').innerHTML='<div class="grab"></div>'+(sheetKind==='intro'?'':'<div class="shxw"><button class="shx" data-a="sheetX" aria-label="close">✕</button></div>')+html;$('#sheet').style.transform='';$('#ov').classList.remove('hidden');$('#sheet').scrollTop=0;if($('#fXp'))updFormHint();if($('#lgBox'))updDelta()}
 function closeSheet(silent){$('#ov').classList.add('hidden');$('#sheet').innerHTML='';const k=sheetKind;sheetKind=null;pendingCover=undefined;if(!silent)setTimeout(nextCeleb,260);return k}
 function celebrate(html){queue.push(html);if(!sheetKind&&$('#hatch').classList.contains('hidden'))nextCeleb()}
 function nextCeleb(){if(sheetKind||!queue.length||!$('#hatch').classList.contains('hidden'))return;openSheet(queue.shift(),'celeb');confetti()}
@@ -2119,7 +2122,7 @@ function setRow(a,icon,title,val){return `<div class="srow" data-a="${a}"><span 
 function settingsHTML(){const th=THEMES.find(t=>t.id===curTheme())||THEMES[0];
   return `<div class="top"><h1>Настройки</h1><span class="date">всё под рукой</span></div>
 <div class="card slist">${setRow('setMode',BOYM()?'🖤':FAMM()?'🔮':'📖','Кого растим',BOYM()?'Книжные бойфренды':FAMM()?'Хранители':'Книжные духи')}${setRow('setTheme','🎨','Оформление',th.name+(BOYM()?' · для бойфрендов':FAMM()?' · для хранителей':' · для духов'))}${setRow('setGoal','🎯','Цель на год',`${S.goal||12} ${plural(S.goal||12,BK)}`)}${setRow('setLang','🌐','Язык',EN()?'English':'Русский')}</div>
-<div class="card slist">${(FBON()?setRow('account','👤','Аккаунт',FBUSER?esc(FBUSER.email||'Вход выполнен'):'Войти, чтобы сохранять в облаке'):'')+setRow('backup',syncMode==='cloud'?'☁️':'💾','Сохранение и резервная копия',syncMode==='cloud'?(window.claude?'Сохраняется в аккаунте Claude':'Сохраняется в твоём аккаунте'):'Хранится только в этом браузере')}${setRow('importBooks','📥',L('Перенести книги','Import books'),L('Из Bookmory','From Bookmory'))}${setRow('reset','🗑️','Начать заново','Удалить все книги и духов')}</div>
+<div class="card slist">${(FBON()?setRow('account','👤','Аккаунт',FBUSER?esc(FBUSER.email||'Вход выполнен'):'Войти, чтобы сохранять в облаке'):'')+setRow('backup',syncMode==='cloud'?'☁️':'💾','Сохранение и резервная копия',syncMode==='cloud'?(window.claude?'Сохраняется в аккаунте Claude':'Сохраняется в твоём аккаунте'):'Хранится только в этом браузере')}${setRow('importBooks','📥',L('Перенести книги','Import books'),'')}${setRow('reset','🗑️','Начать заново','Удалить все книги и духов')}</div>
 <div class="card slist">${setRow('guide','📘',L('Как пользоваться','How to use'),L('Короткая инструкция по приложению','A quick guide to the app'))}${setRow('feedback','💌',L('Пожелания и идеи','Ideas and wishes'),L('Напиши, что сделать лучше','Tell us what to improve'))}</div>
 <p class="hint center" style="margin-top:18px">${BOYM()?'Книжный бойфренд 🖤':FAMM()?'Книжный хранитель 🔮':'Книжный дух 🐾'}</p>`}
 function themeSheet(){return `<h3>Оформление</h3><p class="hint" style="margin:-6px 0 12px">${BOYM()?'Тема для режима бойфрендов. У духов своя.':FAMM()?'Тема для режима хранителей. У других режимов свои.':'Тема для режима духов. У бойфрендов своя.'}</p><div class="themes" style="grid-template-columns:repeat(3,1fr);gap:14px">${themesFor(curKind()).map(t=>`<button data-a="theme" data-v="${t.id}" class="${curTheme()===t.id?'on':''}"><i ${t.boy?'class="sct"':''} style="background:${t.sw}">${t.boy?sceneSVG(t.id,true):''}</i>${t.name}</button>`).join('')}</div>`}
@@ -3749,13 +3752,10 @@ function feedbackSheet(){return `<h3>💌 ${L('Пожелания и идеи','
 const CDN_SQL='https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/',CDN_FF='https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js';
 const IMP_GENRE=[['dark',/darkromance|dark\b|#dark|stalker|bdsm|mafia|smut|эротич/i],['fantasy',/fantasy|romantasy|фэнтез|dragon|magic|witch|paranormal/i],['horror',/horror|ужас|мистик/i],['detective',/mystery|thriller|детектив|остросюжет/i],['scifi',/sci-?fi|фантастик/i],['romance',/romance|любовн|роман(?!ы\b)|newadult|contemporary/i],['ya',/young|молодеж|ya\b|college/i],['classic',/классич|classic/i],['nonfic',/биограф|мемуар|nonfic|нон-?фикшн/i],['adventure',/adventure|приключ/i]];
 function impGenre(tags){if(!tags)return null;for(const [g,re] of IMP_GENRE)if(re.test(tags))return g;return null}
-function impSheet(){return `<h3>📥 ${L('Перенести книги','Import books')}</h3><p class="hint" style="margin:-6px 0 12px">${L('Из Bookmory: в нем «Резервное копирование» → нажми на копию → «Экспорт» → «Сохранить в Файлы». Потом выбери этот файл здесь.','From Bookmory: Backup → tap the backup → Export → Save to Files. Then pick that file here.')}</p>
-<label class="btn primary big" style="display:block;text-align:center;cursor:pointer">📂 ${L('Выбрать файл .bookmory','Choose .bookmory file')}<input type="file" id="impFile" style="display:none"></label>
-<p class="hint" style="margin-top:12px;font-size:12.5px">${L('Книги встанут на полки с датами, оценками и историей чтения по дням. Перенесенные книги не открывают подарки и существ — только те, что дочитаешь здесь. Книги, которые уже есть в Moonshelf, не задвоятся.','Books keep dates, ratings and daily reading history. Imported books do not unlock gifts or creatures — only books you finish here do. Books already in Moonshelf are not duplicated.')}</p><div id="impMsg" class="hint center" style="margin-top:10px"></div>`}
 async function impBookmory(file){const msg=t=>{const el=$('#impMsg');if(el)el.textContent=t};
   msg(L('Открываю файл…','Opening the file…'));
   if(!window.fflate)await loadScript(CDN_FF);
-  const buf=new Uint8Array(await file.arrayBuffer());let files;try{files=fflate.unzipSync(buf)}catch(e){throw new Error(L('Это не похоже на файл Bookmory','This is not a Bookmory file'))}
+  const buf=new Uint8Array(await file.arrayBuffer());let files;try{files=fflate.unzipSync(buf)}catch(e){throw new Error(L('Не получилось прочитать этот файл','Could not read this file'))}
   const dbName=Object.keys(files).find(n=>/\.db$/i.test(n));if(!dbName)throw new Error(L('В файле нет базы книг','No book database in the file'));
   msg(L('Читаю книги…','Reading books…'));
   if(!window.initSqlJs)await loadScript(CDN_SQL+'sql-wasm.js');
@@ -3786,10 +3786,116 @@ async function impBookmory(file){const msg=t=>{const el=$('#impMsg');if(el)el.te
   for(const [id,data] of pics){try{const url=await resizeImage(new Blob([data],{type:'image/jpeg'}));saveCover(id,url);S.books[id].hasCover=true}catch(e){}}
   Object.values(S.books).forEach(b=>{if(b.imp&&!b.hasCover)b.covTried=0});
   save();return {n,skip}}
-const impActions={importBooks:()=>openSheet(impSheet(),'imp')};
+function impSheet(){const st=S.impSt||'done';return `<h3>📥 ${L('Перенести книги','Import books')}</h3>
+<label class="btn primary big" style="display:block;text-align:center;cursor:pointer">📂 ${L('Выбрать файл','Choose a file')}<input type="file" id="impFile" style="display:none"></label>
+<div id="impMsg" class="hint center" style="margin-top:8px"></div>
+<p class="hint" style="margin:10px 2px 0;font-size:12.5px;text-align:center">${L('Подойдет резервная копия из другой читалки или таблица с книгами. Если откроется меню — выбери «Выбрать файлы».','A backup from another reading app or a spreadsheet works. If a menu opens, choose “Choose Files”.')}</p>
+<div class="impor">${L('или вставь список','or paste a list')}</div>
+<textarea class="i" id="impTxt" rows="5" placeholder="${L('Каждая книга с новой строки:\nНазвание — Автор','One book per line:\nTitle — Author')}" style="width:100%;resize:vertical"></textarea>
+<div id="impPrev" class="hint" style="font-size:12.5px;margin:6px 2px"></div>
+<div class="row" style="gap:8px;align-items:center;margin:8px 0"><span class="hint" style="font-size:13px">${L('Куда поставить','Put them in')}:</span>
+<select class="i" id="impSt" style="flex:1">${[['done',L('Прочитано','Read')],['want',L('Хочу прочитать','Want to read')],['reading',L('Читаю','Reading')]].map(([v,t])=>`<option value="${v}" ${st===v?'selected':''}>${t}</option>`).join('')}</select></div>
+<button class="btn big" style="width:100%" data-a="impPaste">${L('Добавить из списка','Add from the list')}</button>
+<p class="hint" style="margin-top:12px;font-size:12.5px">${L('Если в файле нет статуса, книги встанут туда, что выбрано выше. Обложки подтянутся сами. Перенесенные книги не открывают подарки и существ — только те, что дочитаешь здесь. Книги, которые уже есть, не задвоятся.','If a file has no status, books go where chosen above. Covers load by themselves. Imported books do not unlock gifts or creatures. Books already here are not duplicated.')}</p>`}
+
+/* --- общий добавлятор --- */
+function impHave(){return new Set(Object.values(S.books).map(b=>norm(b.title)+'|'+norm(b.author||'')))}
+function impDate(v){if(v==null||v==='')return null;if(v instanceof Date){if(isNaN(v))return null;const d=new Date(v.getTime()+432e5);return new Date(d.getFullYear(),d.getMonth(),d.getDate(),12).getTime()}if(typeof v==='number'){if(v>20000&&v<80000)return Math.round((v-25569)*864e5);return v>1e11?v:null}
+  v=String(v).trim().replace(/^=?"?|"$/g,'');if(!v)return null;let m;
+  if(m=v.match(/(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})/))return new Date(+m[1],m[2]-1,+m[3],12).getTime();
+  if(m=v.match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})/))return new Date(+m[3],m[2]-1,+m[1],12).getTime();
+  if(m=v.match(/^(\d{4})$/))return new Date(+m[1],6,1,12).getTime();
+  const t=Date.parse(v);return isNaN(t)?null:t}
+function impStatus(v,def){v=String(v||'').toLowerCase();if(!v)return def;
+  if(/did.?not|dnf|брос|забро|abandon|give.?up/.test(v))return 'dnf';
+  if(/pause|пауз|отлож|hold/.test(v))return 'pause';
+  if(/currently|reading|читаю|в процессе|сейчас/.test(v))return 'reading';
+  if(/to.?read|want|хочу|планир|wish|tbr|буду/.test(v))return 'want';
+  if(/read|прочит|done|finish|готово|да/.test(v))return 'done';return def}
+function impAdd(o,have,tag){let title=String(o.title||'').trim().replace(/\s*\([^)]*#\s*[\d.]+[^)]*\)\s*$/,'');const author=String(o.author||'').trim().replace(/\s+/g,' ');
+  if(!title)return 0;const key=norm(title)+'|'+norm(author);if(have.has(key))return -1;have.add(key);
+  const status=o.status||'done',pages=Math.max(0,Math.round(+o.pages||0));let rating=+String(o.rating||'').replace(',','.')||0;if(rating>5)rating=rating/2;
+  const fin=status==='done'?(o.finished||null):null,id='b'+uid(),now=Date.now();
+  S.books[id]={id,title,author,genre:impGenre(o.tags||''),format:o.format||'paper',unit:'pages',pages,chapters:0,duration:0,desc:'',
+    current:status==='done'?pages:0,status,addedAt:o.added||fin||now,touchedAt:fin||o.added||now,startedAt:o.started||null,finishedAt:fin,
+    rating:rating?Math.max(1,Math.min(5,Math.round(rating))):0,notes:[],color:Math.floor(Math.random()*COLORS.length),hasCover:false,imp:tag,covTried:0};
+  if(status==='pause')S.books[id].pausedAt=now;return 1}
+
+/* --- CSV / таблицы --- */
+function impCSV(txt){txt=txt.replace(/^﻿/,'');const first=txt.split(/\r?\n/)[0]||'';const d=[',',';','\t'].sort((a,b)=>first.split(b).length-first.split(a).length)[0];
+  const rows=[];let row=[],f='',q=false;for(let i=0;i<txt.length;i++){const c=txt[i];
+    if(q){if(c==='"'){if(txt[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===d){row.push(f);f=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&txt[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f=''}else f+=c}
+  if(f||row.length){row.push(f);rows.push(row)}return rows.filter(r=>r.some(x=>String(x).trim()))}
+const IMP_COLS={title:/^(title|book title|name|название|название книги|книга|наименование|произведение)$/,author:/^(author|authors|автор|авторы|писатель)$/,
+  status:/^(exclusive shelf|read status|status|shelf|статус|полка|состояние)$/,rating:/^(my rating|star rating|rating|оценка|моя оценка|рейтинг|звезды)$/,
+  finished:/^(date read|last date read|date finished|finished|read date|дата прочтения|прочитано|дата окончания|закончила|закончил|дочитано|когда прочитала|дата)$/,
+  started:/^(date started|started|начало|дата начала|начала)$/,added:/^(date added|added|добавлено|дата добавления)$/,
+  pages:/^(number of pages|pages|page count|страниц|страницы|кол во страниц|количество страниц|объем)$/,format:/^(format|binding|формат|тип)$/,
+  tags:/^(bookshelves|tags|genres|genre|moods|жанр|жанры|теги|метки)$/,dates:/^(dates read)$/};
+function impTable(rows,def,tag){if(rows.length<2)throw new Error(L('В файле нет строк с книгами','No book rows in the file'));
+  const hd=rows[0].map(h=>norm(h)),col={};
+  for(const k in IMP_COLS){const i=hd.findIndex(h=>IMP_COLS[k].test(h));if(i>=0)col[k]=i}
+  if(col.title==null){const i=hd.findIndex(h=>/title|назван|книг/.test(h));if(i>=0)col.title=i}
+  if(col.author==null){const i=hd.findIndex(h=>/^author|автор/.test(h));if(i>=0)col.author=i}
+  if(col.title==null)throw new Error(L('Не нашла колонку «Название». Подпиши первую строку: Название, Автор','No Title column found. Name the first row: Title, Author'));
+  const g=(r,k)=>col[k]!=null?r[col[k]]:'';const have=impHave();let n=0,skip=0;
+  const isGR=hd.includes('exclusive shelf'),isSG=hd.includes('read status');
+  rows.slice(1).forEach(r=>{let st=col.status!=null?impStatus(g(r,'status'),def):def;
+    let fin=impDate(g(r,'finished'));if(!fin&&col.dates!=null){const p=String(g(r,'dates')).split(/[-,]/).pop();fin=impDate(p)}
+    if(col.status==null&&!fin&&(isGR||isSG))st=def;
+    const fm=String(g(r,'format')).toLowerCase(),format=/audio|аудио/.test(fm)?'audio':/digital|kindle|ebook|электрон|e-?book/.test(fm)?'ebook':'paper';
+    const res=impAdd({title:g(r,'title'),author:g(r,'author'),status:st,rating:g(r,'rating'),finished:fin,started:impDate(g(r,'started')),added:impDate(g(r,'added')),pages:g(r,'pages'),format,tags:g(r,'tags')},have,tag);
+    if(res>0)n++;else if(res<0)skip++});
+  save();return {n,skip}}
+async function impFileAny(f){const msg=t=>{const el=$('#impMsg');if(el)el.textContent=t};const nm=(f.name||'').toLowerCase(),def=($('#impSt')||{}).value||'done';
+  const head=new Uint8Array(await f.slice(0,4).arrayBuffer());const zip=head[0]===0x50&&head[1]===0x4b;
+  if(/\.bookmory$/.test(nm)||(zip&&!/\.xlsx?$/.test(nm)&&!/\.numbers$/.test(nm)))return impBookmory(f);
+  if(/\.numbers$/.test(nm))throw new Error(L('Эту таблицу сначала сохрани как Excel или CSV (в Numbers: «Поделиться» → «Экспорт»), и выбери тот файл.','Export this spreadsheet as Excel or CSV first.'));
+  if(/\.xlsx?$/.test(nm)||zip||(head[0]===0xD0&&head[1]===0xCF)){msg(L('Открываю таблицу…','Opening the spreadsheet…'));if(!window.XLSX)await loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js');
+    const wb=XLSX.read(new Uint8Array(await f.arrayBuffer()),{type:'array',cellDates:true});let best=null;
+    wb.SheetNames.forEach(s=>{const r=XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,raw:true,defval:''}).filter(x=>x.some(c=>String(c).trim()));if(!best||r.length>best.length)best=r});
+    return impTable(best||[],def,'xlsx')}
+  const buf=await f.arrayBuffer();let txt=new TextDecoder('utf-8').decode(buf);if((txt.match(/\uFFFD/g)||[]).length>3)txt=new TextDecoder('windows-1251').decode(buf);
+  if(/^\s*[\[{]/.test(txt)){try{let j=JSON.parse(txt);if(!Array.isArray(j))j=j.books||Object.values(j).find(Array.isArray)||[];const keys=[...new Set(j.flatMap(o=>Object.keys(o||{})))];return impTable([keys,...j.map(o=>keys.map(k=>o[k]==null?'':typeof o[k]==='object'?JSON.stringify(o[k]):o[k]))],def,'json')}catch(e){}}
+  const rows=impCSV(txt);const hd=(rows[0]||[]).map(norm);
+  if(rows.length&&rows[0].length>1&&hd.some(h=>Object.values(IMP_COLS).some(re=>re.test(h))||/назван|title/.test(h)))return impTable(rows,def,'csv');
+  return impLines(txt,def,false)}
+
+/* --- вставка списком --- */
+const IMP_SEP=/\s+[—–-]\s+|\s*\|\s*|\t|\s+\/\s+/;
+function impParseLine(l){l=l.replace(/^\s*(\d+[.)]|[-•*·●▪️✓✔️☑️]+)\s*/,'').replace(/\s*[⭐★☆]+.*$/,'').trim();if(l.length<2)return null;
+  let m=l.match(/^(.*?)[«"“](.+?)[»"”](.*)$/);if(m){const au=(m[1]+' '+m[3]).replace(/^[\s,.:—–-]+|[\s,.:—–-]+$/g,'').trim();return {title:m[2].trim(),author:au}}
+  const p=l.split(IMP_SEP).map(x=>x.trim()).filter(Boolean);if(p.length<2){m=l.match(/^(.+?),\s*([^,]+)$/);return m&&m[2].split(' ').length<=4?{title:m[1],author:m[2]}:{title:l,author:''}}
+  let [t,a]=p;const aSet=window._impAu||(window._impAu=new Set(CATALOG.map(c=>c._a))),tSet=window._impTi||(window._impTi=new Set(CATALOG.map(c=>c._t)));
+  if((aSet.has(norm(t))&&!aSet.has(norm(a)))||(tSet.has(norm(a))&&!tSet.has(norm(t)))||(/^[А-ЯA-Z]\.\s?([А-ЯA-Z]\.\s?)?[А-ЯЁA-Z]/.test(t)&&!/^[А-ЯA-Z]\.\s?[А-ЯA-Z]/.test(a)))[t,a]=[a,t];
+  return {title:t,author:a}}
+function impLinesParse(txt){return txt.split(/\r?\n/).map(impParseLine).filter(Boolean).map(o=>window._impSwap?{title:o.author||o.title,author:o.author?o.title:''}:o)}
+function impLines(txt,def,fromPaste){const list=impLinesParse(txt);if(!list.length)throw new Error(L('Не нашла ни одной книги','No books found'));const have=impHave();let n=0,skip=0;
+  list.forEach(o=>{const r=impAdd({...o,status:def},have,'list');if(r>0)n++;else if(r<0)skip++});save();return {n,skip}}
+function impPrevUpd(){const el=$('#impPrev'),ta=$('#impTxt');if(!el||!ta)return;const list=impLinesParse(ta.value);if(!list.length){el.innerHTML='';return}
+  el.innerHTML=`${L('Найдено книг','Books found')}: <b>${list.length}</b><br>`+list.slice(0,3).map(o=>`📖 <b>${esc(o.title)}</b>${o.author?' · '+esc(o.author):''}`).join('<br>')+`<br><a href="#" data-a="impSwap" style="color:var(--accent)">⇄ ${L('Перепутала название и автора? Поменять','Title and author swapped? Fix')}</a>`}
+function impDone(r){closeSheet(true);tab='books';render();setTimeout(()=>covAuto(),500);
+  toast(L(`Перенесено книг: ${r.n}`+(r.skip?` · уже были: ${r.skip}`:''),`Imported: ${r.n}`+(r.skip?` · already here: ${r.skip}`:'')))}
+
+{let y0=null,dy=0,drag=false;const sh=()=>$('#sheet');
+ document.addEventListener('touchstart',e=>{const s=sh();if(!s||!e.target.closest('#sheet')||sheetKind==='intro'){y0=null;return}
+   if(e.target.closest('textarea,select,input[type=range]')){y0=null;return}
+   const top=e.touches[0].clientY-s.getBoundingClientRect().top;y0=e.touches[0].clientY;dy=0;drag=top<64;s._st=s.scrollTop},{passive:true});
+ document.addEventListener('touchmove',e=>{if(y0==null)return;const s=sh();const d=e.touches[0].clientY-y0;
+   if(!drag){if(d>8&&s.scrollTop<=0&&s._st<=0)drag=true;else return}
+   dy=Math.max(0,d);s.style.transition='none';s.style.transform=`translateY(${dy}px)`;if(e.cancelable)e.preventDefault()},{passive:false});
+ document.addEventListener('touchend',()=>{if(y0==null)return;const s=sh();y0=null;if(!drag)return;drag=false;
+   s.style.transition='transform .22s ease';if(dy>90){s.style.transform='translateY(100%)';setTimeout(()=>{s.style.transition='';closeSheet()},200)}else{s.style.transform='';setTimeout(()=>s.style.transition='',230)}},{passive:true});}
+const sheetActs={sheetX:()=>closeSheet()};
+const impActions={importBooks:()=>{window._impSwap=false;openSheet(impSheet(),'imp')},
+  impSwap:()=>{window._impSwap=!window._impSwap;impPrevUpd()},
+  impPaste:()=>{const t=($('#impTxt')||{}).value||'',st=($('#impSt')||{}).value||'done';if(!t.trim()){toast(L('Сначала вставь список','Paste a list first'));return}
+    try{const r=impLines(t,st,true);booksTab=st;impDone(r)}catch(e){toast('⚠️ '+e.message)}}};
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='impTxt')impPrevUpd()});
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='impSt'){S.impSt=e.target.value;save()}});
 document.addEventListener('change',async e=>{if(!e.target||e.target.id!=='impFile')return;const f=e.target.files&&e.target.files[0];if(!f)return;
-  try{const r=await impBookmory(f);closeSheet(true);booksTab='done';tab='books';render();setTimeout(()=>covAuto(),500);
-    toast(L(`Перенесено книг: ${r.n}`+(r.skip?` · уже были: ${r.skip}`:''),`Imported: ${r.n}`+(r.skip?` · already here: ${r.skip}`:'')))}
+  try{const r=await impFileAny(f);booksTab='done';impDone(r)}
   catch(err){const el=$('#impMsg');if(el)el.textContent='⚠️ '+(err&&err.message&&!/Failed to fetch|load/i.test(err.message)?err.message:L('Не получилось загрузить нужные файлы — проверь интернет и попробуй еще раз','Could not load the needed files — check your connection and try again'))}});
 
 const guideActions={feedback:()=>openSheet(feedbackSheet(),'feedback'),
@@ -4043,7 +4149,7 @@ const A={
   copyNote:d=>{const b=S.books[d.id];const n=(b.notes||[]).find(x=>x.id===d.n);if(n)copyText((n.type==='quote'?'«'+n.text+'»':n.text)+(b.author?`\n— ${b.author}, «${b.title}»`:`\n— «${b.title}»`))},
   delBook:d=>openSheet(confirmSheet('Удалить книгу «'+esc(S.books[d.id].title)+'»?','delBookYes',d.id),'confirm'),
   delBookYes:d=>{if(S.books[d.id]&&S.books[d.id].hasCover)dropCover(d.id);delete S.books[d.id];save();closeSheet(true);render();toast('Книга удалена')},
-  ...tmrActions,...emoActions,...wheelActions,...tarotActions,...letterActions,...dateActions,...shelfActions,...guideActions,...impActions,...shelf2Actions,...ritActions,...libActions,...authActions,
+  ...tmrActions,...emoActions,...wheelActions,...tarotActions,...letterActions,...dateActions,...shelfActions,...guideActions,...impActions,...shelf2Actions,...sheetActs,...ritActions,...libActions,...authActions,
   findCover:d=>{const b=S.books[d.id];if(!b)return;b.covTried=0;covQ.unshift(d.id);toast('🔎 Ищу обложку…');covRun(d.id)},
   syncInfo:()=>openSheet(syncSheet(),'sync'),
   syncNow:()=>{if(!dbOK){initDB.tries=0;initDB();toast('Подключаюсь к облаку…');return}const w=W.state;if(w){w.last='';w.next=0}dbQueue('state',()=>S);flushAll();toast('Сохраняю…');setTimeout(()=>{if(sheetKind==='sync')openSheet(syncSheet(),'sync')},2500)},
