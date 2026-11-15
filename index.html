@@ -3949,7 +3949,12 @@ const guideActions={feedback:()=>openSheet(feedbackSheet(),'feedback'),
     const btn=$('[data-a=fbSend]');if(btn){btn.disabled=true;btn.textContent=L('Отправляю…','Sending…')}
     const mode={boys:L('герои','heroes'),fam:L('хранители','guardians')}[S.mode]||L('духи','spirits');
     const body=new URLSearchParams();body.append(FB_ENTRY,t+'\n\n('+L('режим','mode')+': '+mode+')');
-    try{await fetch(FB_URL+'/formResponse',{method:'POST',mode:'no-cors',body});closeSheet(true);toast(L('Спасибо! Пожелание отправлено 💌','Thank you! Sent 💌'))}
+    try{const msg=t+'\n\n('+L('режим','mode')+': '+mode+')';
+      let fr=document.getElementById('fbFrame');if(!fr){fr=document.createElement('iframe');fr.name=fr.id='fbFrame';fr.style.display='none';document.body.appendChild(fr)}
+      const f=document.createElement('form');f.method='POST';f.action=FB_URL+'/formResponse';f.target='fbFrame';f.style.display='none';
+      const i=document.createElement('textarea');i.name=FB_ENTRY;i.value=msg;f.appendChild(i);document.body.appendChild(f);f.submit();setTimeout(()=>f.remove(),3000);
+      try{new Image().src=''}catch(_){}
+      closeSheet(true);toast(L('Спасибо! Пожелание отправлено 💌','Thank you! Sent 💌'))}
     catch(e){if(btn){btn.disabled=false;btn.textContent=L('📨 Отправить','📨 Send')}toast(L('Не получилось отправить — проверь интернет','Could not send — check your connection'))}},guide:()=>{S.guideSeen=true;save();openSheet(guideSheet(),'guide')},guideOk:()=>{S.guideSeen=true;save();closeSheet();render()},guideHide:()=>{S.guideSeen=true;save();render()}};
 const shelfActions={
   shEditGo:()=>{if(!shUnlocked()){toast(BOYM()?L('Дочитай первую книгу — и он оставит первый подарок','Finish your first book to get his first gift'):L('Дочитай первую книгу — и появится первый житель','Finish your first book to get the first dweller'));return}S.shPlace=S.shPlace||{};if(!S.shPlace[shK()])S.shPlace[shK()]=JSON.parse(JSON.stringify(shAutoLay));shEdit=true;save();render()},
