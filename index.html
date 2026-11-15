@@ -3783,10 +3783,11 @@ function shelfPetsSheet(){const n=shUnlocked(),dn=liveDone().length,bm=BOYM();
 function checkShelfPet(prevDone){const was=Math.min(shSet().length,shCount(prevDone)),now=shUnlocked();
   if(now>was){const fr=shFreeGet();if(fr&&!fr.some(it=>it.v===now-1)){const cnt={};fr.forEach(it=>cnt[it.r]=(cnt[it.r]||0)+1);let r=0;while((cnt[r]||0)>=2)r++;fr.push({v:now-1,r,x:(cnt[r]?.77:.9)})}const P=shSet()[now-1],bm=BOYM();celebrate(`<div style="width:120px;margin:0 auto">${shIco(P,'')}</div><h2 class="center" style="margin:6px 0 8px">${bm?L('Он оставил тебе подарок!','He left you a gift!'):L('На полке новый житель!','A new shelf dweller!')}</h2><p class="center" style="font-weight:800;color:var(--accent);margin:0 0 6px">${L(P.ru,P.en)}</p><p class="center muted" style="margin:0 0 18px;line-height:1.5">${L(P.dru,P.den)}</p><button class="btn primary big" data-a="close">${bm?L('Поставить на полку','Put it on the shelf'):L('Поселить','Welcome in')}</button>`)}}
 const FEEDBACK_TG='';
-function feedbackSheet(){return `<h3>💌 ${L('Пожелания и идеи','Ideas and wishes')}</h3><p class="hint" style="margin:-6px 0 12px">${L('Что нравится, что бесит, каких героев или функций не хватает? Мы читаем всё и делаем Moonshelf лучше.','What do you love, what annoys you, what heroes or features are missing? We read everything.')}</p>
+const FB_URL='https://docs.google.com/forms/d/e/1FAIpQLSfOqneFxiyoULVzt-YWDE5X8j5Cmy2XdPM5fC1lntbI4j2b8A',FB_ENTRY='entry.1740907627';
+function feedbackSheet(){return `<h3>💌 ${L('Пожелания и идеи','Ideas and wishes')}</h3><p class="hint" style="margin:-6px 0 12px">${L('Что нравится, что бесит, каких героев или функций не хватает? Я читаю все и делаю Moonshelf лучше.','What do you love, what annoys you, what heroes or features are missing? I read everything.')}</p>
 <textarea class="i" id="fbTxt" placeholder="${L('Напиши здесь…','Write here…')}" style="min-height:130px"></textarea>
-<button class="btn primary big" style="margin-top:12px" data-a="fbSend">${FEEDBACK_TG?L('📨 Отправить в Телеграм','📨 Send via Telegram'):L('📋 Скопировать','📋 Copy')}</button>
-<p class="hint center" style="margin-top:10px;font-size:12.5px">${FEEDBACK_TG?L('Текст скопируется, откроется чат — просто вставь и отправь','The text is copied and the chat opens — just paste and send'):''}</p>`}
+<button class="btn primary big" style="margin-top:12px;width:100%" data-a="fbSend">${L('📨 Отправить','📨 Send')}</button>
+<p class="hint center" style="margin-top:10px;font-size:12.5px">${L('Анонимно — без имени и почты','Anonymous — no name or email')}</p>`}
 /* ---------- импорт из Bookmory ---------- */
 const CDN_SQL='https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/',CDN_FF='https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js';
 const IMP_GENRE=[['dark',/darkromance|dark\b|#dark|stalker|bdsm|mafia|smut|эротич/i],['fantasy',/fantasy|romantasy|фэнтез|dragon|magic|witch|paranormal/i],['horror',/horror|ужас|мистик/i],['detective',/mystery|thriller|детектив|остросюжет/i],['scifi',/sci-?fi|фантастик/i],['romance',/romance|любовн|роман(?!ы\b)|newadult|contemporary/i],['ya',/young|молодеж|ya\b|college/i],['classic',/классич|classic/i],['nonfic',/биограф|мемуар|nonfic|нон-?фикшн/i],['adventure',/adventure|приключ/i]];
@@ -3938,9 +3939,12 @@ document.addEventListener('change',async e=>{if(!e.target||e.target.id!=='impFil
   catch(err){const el=$('#impMsg');if(el)el.textContent='⚠️ '+(err&&err.message&&!/Failed to fetch|load/i.test(err.message)?err.message:L('Не получилось загрузить нужные файлы — проверь интернет и попробуй еще раз','Could not load the needed files — check your connection and try again'))}});
 
 const guideActions={feedback:()=>openSheet(feedbackSheet(),'feedback'),
-  fbSend:async()=>{const t=($('#fbTxt').value||'').trim();if(!t){toast(L('Сначала напиши пару слов','Write a few words first'));return}
-    try{await navigator.clipboard.writeText('Moonshelf: '+t)}catch(e){}
-    if(FEEDBACK_TG){window.open('https://t.me/'+FEEDBACK_TG,'_blank');toast(L('Текст скопирован — вставь его в чат','Copied — paste it in the chat'))}else toast(L('Скопировано ✓','Copied ✓'))},guide:()=>{S.guideSeen=true;save();openSheet(guideSheet(),'guide')},guideOk:()=>{S.guideSeen=true;save();closeSheet();render()},guideHide:()=>{S.guideSeen=true;save();render()}};
+  fbSend:async()=>{const ta=$('#fbTxt'),t=(ta&&ta.value||'').trim();if(!t){toast(L('Сначала напиши пару слов','Write a few words first'));return}
+    const btn=$('[data-a=fbSend]');if(btn){btn.disabled=true;btn.textContent=L('Отправляю…','Sending…')}
+    const mode={boys:L('герои','heroes'),fam:L('хранители','guardians')}[S.mode]||L('духи','spirits');
+    const body=new URLSearchParams();body.append(FB_ENTRY,t+'\n\n('+L('режим','mode')+': '+mode+')');
+    try{await fetch(FB_URL+'/formResponse',{method:'POST',mode:'no-cors',body});closeSheet(true);toast(L('Спасибо! Пожелание отправлено 💌','Thank you! Sent 💌'))}
+    catch(e){if(btn){btn.disabled=false;btn.textContent=L('📨 Отправить','📨 Send')}toast(L('Не получилось отправить — проверь интернет','Could not send — check your connection'))}},guide:()=>{S.guideSeen=true;save();openSheet(guideSheet(),'guide')},guideOk:()=>{S.guideSeen=true;save();closeSheet();render()},guideHide:()=>{S.guideSeen=true;save();render()}};
 const shelfActions={
   shEditGo:()=>{if(!shUnlocked()){toast(BOYM()?L('Дочитай первую книгу — и он оставит первый подарок','Finish your first book to get his first gift'):L('Дочитай первую книгу — и появится первый житель','Finish your first book to get the first dweller'));return}S.shPlace=S.shPlace||{};if(!S.shPlace[shK()])S.shPlace[shK()]=JSON.parse(JSON.stringify(shAutoLay));shEdit=true;save();render()},
   shEditDone:()=>{shEdit=false;render();toast(L('Полка расставлена ✓','Shelf arranged ✓'))},
