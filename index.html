@@ -710,6 +710,20 @@ svg .glyph{animation:gly 5s ease-in-out infinite}svg .glyph.g1{animation-delay:1
 .sdeco.shp{width:48px;cursor:pointer;transition:transform .2s}
 .sdeco.shp .shimg{width:100%;display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))}.sdeco.shp:has(.shimg){width:54px}.art .shimg{width:64px;height:64px;object-fit:contain}.art.lock .shimg{filter:brightness(0) opacity(.35)}
 .shimg.shframe{border:3px solid #c9a05a;border-radius:4px;box-shadow:0 0 0 1px #3a2410,0 4px 8px rgba(0,0,0,.6);object-fit:cover;aspect-ratio:3/4;background:#140a06}.cdel{position:absolute;top:4px;right:4px;border:0;border-radius:50%;width:24px;height:24px;background:rgba(0,0,0,.55);color:#fff;font-size:12px}
+.sp-books .sfi{position:absolute;bottom:0;width:52px;transform:translateX(-50%);z-index:4;cursor:pointer}
+.sp-books .sfi .shimg,.sp-books .sfi svg{width:100%;display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))}
+.sp-books .sfi.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:6px}
+.spshelf.editing .sp-books .sfi{animation:wig 1.2s ease-in-out infinite}@keyframes wig{50%{transform:translateX(-50%) rotate(2deg)}}
+.scatch{position:absolute;inset:0;z-index:3;cursor:crosshair;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.03) 22px 24px);border:1px dashed var(--line2);border-radius:8px}
+.sh-edit{position:sticky;top:0;z-index:20;background:var(--sheet);border:1px solid var(--line2);border-radius:16px;padding:10px 12px;margin:0 0 14px;box-shadow:0 10px 24px rgba(0,0,0,.45)}
+.sh-edit-t{display:flex;justify-content:space-between;align-items:center}
+.sh-strip{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 6px}
+.sst{flex:none;width:54px;height:62px;border-radius:12px;background:var(--card2);display:grid;place-items:center;cursor:pointer;border:1.5px solid transparent;padding:3px}
+.sst .shimg,.sst svg{max-width:100%;max-height:100%;object-fit:contain}
+.sst.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.sst.boxed{opacity:.6}.sst.add{font-size:24px;border:1.5px dashed var(--line2)}
+.sh-edit-b{display:flex;gap:8px;flex-wrap:wrap}
+.sp-year{display:flex;align-items:baseline;gap:10px;margin:22px 16px 6px;padding-bottom:6px;border-bottom:1px solid var(--line2)}.sp-year:first-of-type{margin-top:6px}.sp-year b{font:800 26px 'Playfair Display',Georgia,serif;color:var(--ink)}.sp-year span{font-size:13px;color:var(--muted);font-weight:700}
 .sdeco.sslot{width:48px;height:54px;border:1.5px dashed var(--line2);border-radius:10px;display:grid;place-items:center;cursor:pointer;margin:0 1px;background:rgba(255,255,255,.03)}
 .sdeco.sslot span{font:900 20px Nunito,sans-serif;color:var(--accent);opacity:.8}
 .sdeco.sslot.on{border-style:solid;border-color:var(--accent);height:auto;padding:2px}
@@ -2386,8 +2400,8 @@ async function handlePaste(e){
   const pb=$('#fPaste');if(pb){pb.textContent='📋 Вставить скопированную';pb.blur()}
 }
 document.addEventListener('paste',handlePaste);
-document.addEventListener('change',async e=>{if(e.target&&e.target.id==='custFile'){const f=e.target.files&&e.target.files[0];if(!f)return;const r=+e.target.dataset.r,sl=+e.target.dataset.s;
-    try{const url=await resizeImage(f);S.cust=S.cust||[];S.cust.push({img:url,frame:1,name:L('Мой предмет','My item')});const v=CUST0+S.cust.length-1;A.shPut({r,s:sl,v});toast(L('Поставила на полку ✓','Placed on the shelf ✓'))}catch(err){toast(L('Не получилось открыть фото','Could not open the photo'))}return}
+document.addEventListener('change',async e=>{if(e.target&&e.target.id==='custFile'){const f=e.target.files&&e.target.files[0];if(!f)return;
+    try{const url=await resizeImage(f);S.cust=S.cust||[];S.cust.push({img:url,frame:1,name:L('Мой предмет','My item')});shSelV=CUST0+S.cust.length-1;save();render();toast(L('Теперь нажми место на полке','Now tap a spot on the shelf'))}catch(err){toast(L('Не получилось открыть фото','Could not open the photo'))}return}
   if(e.target&&e.target.id==='bkFile'){const f=e.target.files&&e.target.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>applyRestore(String(fr.result||''));fr.onerror=()=>toast(L('Не получилось прочитать файл','Couldn’t read the file'));fr.readAsText(f)}});
 function resizeImage(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const img=new Image();img.onload=()=>{const W2=220,sc=Math.min(1,W2/img.width);const cv=document.createElement('canvas');cv.width=Math.round(img.width*sc);cv.height=Math.round(img.height*sc);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);res(cv.toDataURL('image/jpeg',.78))};img.onerror=rej;img.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
 async function copyText(t,fallbackEl){try{await navigator.clipboard.writeText(t);toast('Скопировано ✓')}catch(e){if(fallbackEl){fallbackEl.focus();fallbackEl.select();toast('Выдели текст и нажми «Скопировать»')}else toast('Не получилось скопировать')}}
@@ -3725,7 +3739,7 @@ function shPetHTML(i){const P=shItem(i);return `<div class="sdeco shp" data-a="s
 function shelfPetsSheet(){const n=shUnlocked(),dn=liveDone().length,bm=BOYM();
   return `<h3>${bm?'🌹 '+L('Его подарки на полке','His gifts on your shelf'):'🐾 '+L('Жители полки','Shelf dwellers')}</h3><p class="hint" style="margin:-6px 0 12px">${bm?L(`Первый подарок — за первую дочитанную книгу, дальше каждые ${SH_EVERY} книг.`,`The first gift comes with your first finished book, then every ${SH_EVERY} books.`):L(`Первый житель — за первую дочитанную книгу, дальше каждые ${SH_EVERY} книг.`,`The first dweller comes with your first finished book, then every ${SH_EVERY} books.`)}</p><div class="arts">${shSet().map((P,i)=>i<n?`<div class="art">${shIco(P,'width:64px;height:64px')}<b>${L(P.ru,P.en)}</b><small>${L(P.dru,P.den)}</small></div>`:`<div class="art lock">${shIco(P,P.img?'width:64px;height:64px;filter:grayscale(1) brightness(.45)':'width:64px;height:64px;filter:brightness(0) opacity(.35)')}<b>???</b><small>${(shNeed(i)===1?L('после первой книги','after the first book'):L(`после ${shNeed(i)} книг`,`after ${shNeed(i)} books`))}</small></div>`).join('')}</div>`}
 function checkShelfPet(prevDone){const was=Math.min(shSet().length,shCount(prevDone)),now=shUnlocked();
-  if(now>was){const P=shSet()[now-1],bm=BOYM();celebrate(`<div style="width:120px;margin:0 auto">${shIco(P,'')}</div><h2 class="center" style="margin:6px 0 8px">${bm?L('Он оставил тебе подарок!','He left you a gift!'):L('На полке новый житель!','A new shelf dweller!')}</h2><p class="center" style="font-weight:800;color:var(--accent);margin:0 0 6px">${L(P.ru,P.en)}</p><p class="center muted" style="margin:0 0 18px;line-height:1.5">${L(P.dru,P.den)}</p><button class="btn primary big" data-a="close">${bm?L('Поставить на полку','Put it on the shelf'):L('Поселить','Welcome in')}</button>`)}}
+  if(now>was){const fr=shFreeGet();if(fr&&!fr.some(it=>it.v===now-1)){const cnt={};fr.forEach(it=>cnt[it.r]=(cnt[it.r]||0)+1);let r=0;while((cnt[r]||0)>=2)r++;fr.push({v:now-1,r,x:(cnt[r]?.77:.9)})}const P=shSet()[now-1],bm=BOYM();celebrate(`<div style="width:120px;margin:0 auto">${shIco(P,'')}</div><h2 class="center" style="margin:6px 0 8px">${bm?L('Он оставил тебе подарок!','He left you a gift!'):L('На полке новый житель!','A new shelf dweller!')}</h2><p class="center" style="font-weight:800;color:var(--accent);margin:0 0 6px">${L(P.ru,P.en)}</p><p class="center muted" style="margin:0 0 18px;line-height:1.5">${L(P.dru,P.den)}</p><button class="btn primary big" data-a="close">${bm?L('Поставить на полку','Put it on the shelf'):L('Поселить','Welcome in')}</button>`)}}
 const FEEDBACK_TG='';
 function feedbackSheet(){return `<h3>💌 ${L('Пожелания и идеи','Ideas and wishes')}</h3><p class="hint" style="margin:-6px 0 12px">${L('Что нравится, что бесит, каких героев или функций не хватает? Мы читаем всё и делаем Moonshelf лучше.','What do you love, what annoys you, what heroes or features are missing? We read everything.')}</p>
 <textarea class="i" id="fbTxt" placeholder="${L('Напиши здесь…','Write here…')}" style="min-height:130px"></textarea>
@@ -3810,25 +3824,46 @@ function shelfDeco(k,first){const p=activePet();
    `<svg viewBox="0 0 40 70"><rect x="8" y="6" width="24" height="4" rx="2" fill="#c9a05a"/><rect x="8" y="60" width="24" height="4" rx="2" fill="#c9a05a"/><path d="M11 10H29Q29 26 21 35Q29 44 29 60H11Q11 44 19 35Q11 26 11 10Z" fill="rgba(220,235,255,.25)" stroke="#e8d3a8" stroke-width="1.2"/><path d="M15 50Q20 44 25 50L27 59H13Z" fill="#e8c27a"/><path d="M20 36V48" stroke="#e8c27a" stroke-width="1.2" stroke-dasharray="1.5 2" class="sand"/></svg>`,
    `<svg viewBox="0 0 70 50"><rect x="4" y="34" width="60" height="12" rx="2" fill="#5a1a2a"/><rect x="4" y="38" width="60" height="1.5" fill="#d9b46a"/><rect x="9" y="23" width="52" height="11" rx="2" fill="#1f3b5c"/><rect x="9" y="27" width="52" height="1.5" fill="#e8d3a8"/><rect x="6" y="13" width="48" height="10" rx="2" fill="#2f4a2a"/><circle cx="46" cy="9" r="6" fill="#bfa5ff" opacity=".85"/><circle cx="44" cy="7" r="2" fill="#fff" opacity=".7"/></svg>`];
   return `<div class="sdeco">${D[k%D.length]}</div>`}
-function spineShelf(list,groups){const W=Math.min(innerWidth,520)-64;let h='',ri=0;const pets=[...Array(shUnlocked()).keys()].reverse();let pi=0;const man=shMan(),ed=shEdit&&shUnlocked()>0;shAutoLay={};
-  const manDeco=(r,cap)=>{const a=(man&&man[r])||[];let d='';for(let k=0;k<cap;k++)d+=ed?shSlotHTML(r,k,a[k]):(shAvail(a[k])?shPetHTML(a[k]):'');return d};
-  const rowsOf=arr=>{const rows=[];let cur=[],w=0;arr.forEach(b=>{const bw=spineW(b)+2;if(w+bw>W-104&&cur.length){rows.push(cur);cur=[];w=0}cur.push(b);w+=bw});if(cur.length)rows.push(cur);return rows};
-  groups.forEach(([label,arr])=>{rowsOf(arr).forEach((row,i)=>{let deco='';const p=activePet();
-    const sp=ri===0&&p&&p.hatched&&!BOYM();
-    if(man||ed){if(sp)deco+=`<div class="sdeco pet">${creatureSVG(p.species,stageOf(p),'happy',{anim:true})}</div>`;const md=manDeco(ri,sp?1:2);deco+=md;if(!deco&&!ed)deco=shelfDeco(ri,false)}
-    else if(sp){deco+=`<div class="sdeco pet">${creatureSVG(p.species,stageOf(p),'happy',{anim:true})}</div>`;if(pi<pets.length){shAutoLay[ri]=[pets[pi]];deco+=shPetHTML(pets[pi++])}}
-    else{let k=0;const a=[];while(k<2&&pi<pets.length){a.push(pets[pi]);deco+=shPetHTML(pets[pi++]);k++}if(a.length)shAutoLay[ri]=a;if(!k)deco=shelfDeco(ri,false)}
-    h+=`<div class="sp-row"><div class="sp-books">${row.map((b,j)=>spineHTML(b,j===row.length-1&&row.length>3&&hsh(b.title)%3===0)).join('')}<div class="sdecos">${deco}</div></div><div class="plank">${i===0&&label?`<span class="plaque">${label}</span>`:''}</div></div>`;ri++})});
-  if(man||ed){const extra=Object.keys(man||{}).map(Number).filter(r=>r>=ri&&(man[r]||[]).some(v=>shAvail(v)));let last=Math.max(ri-1,...extra);if(ed)last++;
-    for(let r=ri;r<=last;r++){h+=`<div class="sp-row"><div class="sp-books" style="min-height:70px;justify-content:center"><div class="sdecos" style="margin:0 auto">${manDeco(r,4)}</div></div><div class="plank"></div></div>`}}
-  else while(pi<pets.length){let d='';const a=[];for(let k=0;k<4&&pi<pets.length;k++){a.push(pets[pi]);d+=shPetHTML(pets[pi++])}shAutoLay[ri++]=a;h+=`<div class="sp-row"><div class="sp-books" style="min-height:70px;justify-content:center"><div class="sdecos" style="margin:0 auto">${d}</div></div><div class="plank"></div></div>`}
+let shSelV=null;
+const shFreeGet=()=>S.shFree&&S.shFree[shK()];
+function shAvailList(){const a=[...Array(shUnlocked()).keys()];(S.cust||[]).forEach((c,j)=>{if(c)a.push(CUST0+j)});return a}
+function shAutoFree(nRows,sp){const items=[...Array(shUnlocked()).keys()].reverse(),out=[];let r=0,k=0;
+  for(const v of items){while(true){const cap=r===0&&sp?1:2;if(k<cap){out.push({v,r,x:r===0&&sp?.6:(k===0?.9:.77)});k++;break}r++;k=0}}return out}
+function spineShelf(list,groups){const W=Math.min(innerWidth,520)-64;let h='',ri=0;const p=activePet(),sp=!!(p&&p.hatched&&!BOYM()),ed=shEdit;
+  const free=shFreeGet()||shAutoFree(99,sp);
+  const itemsAt=r=>free.filter(it=>it.r===r&&shAvail(it.v)).map(it=>`<div class="sfi ${ed&&shSelV===it.v?'sel':''}" style="left:${(it.x*100).toFixed(1)}%" data-a="${ed?'shSel':'shPet'}" data-v="${it.v}">${shIco(shItem(it.v),'')}</div>`).join('');
+  const catcher=r=>ed?`<div class="scatch" data-a="shAt" data-r="${r}"></div>`:'';
+  const rowsOf=(arr,first)=>{const rows=[];let cur=[],w=0;arr.forEach(b=>{const bw=spineW(b)+2,lim=W-(rows.length===0&&first&&sp?96:52);if(w+bw>lim&&cur.length){rows.push(cur);cur=[];w=0}cur.push(b);w+=bw});if(cur.length)rows.push(cur);return rows};
+  groups.forEach(([label,arr],gi)=>{rowsOf(arr,gi===0).forEach((row,i)=>{
+    const deco=ri===0&&sp?`<div class="sdecos"><div class="sdeco pet">${creatureSVG(p.species,stageOf(p),'happy',{anim:true})}</div></div>`:'';
+    if(i===0&&label){const [a,c]=label.split(' · ');h+=`<div class="sp-year"><b>${a}</b>${c?`<span>${c}</span>`:''}</div>`}
+    h+=`<div class="sp-row"><div class="sp-books">${row.map((b,j)=>spineHTML(b,j===row.length-1&&row.length>3&&hsh(b.title)%3===0)).join('')}${deco}${catcher(ri)}${itemsAt(ri)}</div><div class="plank"></div></div>`;ri++})});
+  let last=Math.max(ri-1,...free.filter(it=>shAvail(it.v)).map(it=>it.r));if(ed)last++;
+  for(let r=ri;r<=last;r++)h+=`<div class="sp-row"><div class="sp-books" style="min-height:80px">${catcher(r)}${itemsAt(r)}</div><div class="plank"></div></div>`;
   const n=shUnlocked(),dn=liveDone().length,left=Math.max(1,shNeed(n)-dn);
-  const SS=shSet(),bm=BOYM();const hint=booksTab==='done'?`<div class="sh-hint" data-a="shelfPets">${bm?'🌹':'🐾'} ${n<SS.length?(bm?L(`Через ${left} ${plural(left,BK)} он оставит на полке новый подарок`,`He’ll leave a new gift after ${left} more ${left===1?'book':'books'}`):L(`Через ${left} ${plural(left,BK)} на полке поселится новый житель`,`A new dweller moves in after ${left} more ${left===1?'book':'books'}`)):(bm?L('Все его подарки уже на полке','All his gifts are on your shelf'):L('Все жители полки уже с тобой','All shelf dwellers are with you'))} · ${n}/${SS.length} ›</div>`:'';
-  const tools=booksTab==='done'?`<div class="sh-tools">${shEdit?`<span class="hint">${bm?L('Нажимай на места с ＋, чтобы поставить подарок','Tap ＋ spots to place a gift'):L('Нажимай на места с ＋, чтобы поселить жителя','Tap ＋ spots to place a dweller')}</span><button class="chip on" data-a="shEditDone">✓ ${L('Готово','Done')}</button>`:`<button class="chip" data-a="shEditGo">✏️ ${bm?L('Расставить подарки','Arrange gifts'):L('Расставить жителей','Arrange dwellers')}</button>${man?`<button class="chip" data-a="shAuto">↺ ${L('Как было','Reset')}</button>`:''}`}</div>`:'';
-  return `<div class="spshelf ${shEdit?'editing':''}">${hint}${tools}${h}</div>`}
+  const SS=shSet(),bm=BOYM();const hint=booksTab==='done'&&!ed?`<div class="sh-hint" data-a="shelfPets">${bm?'🌹':'🐾'} ${n<SS.length?(bm?L(`Через ${left} ${plural(left,BK)} он оставит на полке новый подарок`,`He’ll leave a new gift after ${left} more ${left===1?'book':'books'}`):L(`Через ${left} ${plural(left,BK)} на полке поселится новый житель`,`A new dweller moves in after ${left} more ${left===1?'book':'books'}`)):(bm?L('Все его подарки уже на полке','All his gifts are on your shelf'):L('Все жители полки уже с тобой','All shelf dwellers are with you'))} · ${n}/${SS.length} ›</div>`:'';
+  let tools='';
+  if(booksTab==='done'){if(ed){const placed=new Set(free.map(it=>it.v));
+      tools=`<div class="sh-edit"><div class="sh-edit-t"><b>${L('Расстановка','Arrange')}</b><button class="chip on" data-a="shEditDone">✓ ${L('Готово','Done')}</button></div>
+<p class="hint" style="margin:4px 0 8px;font-size:12.5px">${shSelV==null?L('1. Выбери предмет ниже. 2. Нажми на любое место на полке — он встанет туда.','1. Pick an item below. 2. Tap any spot on a shelf.'):L('Теперь нажми на место на полке, куда поставить','Now tap a spot on a shelf')}</p>
+<div class="sh-strip">${shAvailList().map(v=>`<div class="sst ${shSelV===v?'sel':''} ${placed.has(v)?'':'boxed'}" data-a="shSel" data-v="${v}">${shIco(shItem(v),'')}</div>`).join('')}<label class="sst add">📷<input type="file" accept="image/*" id="custFile" style="display:none"></label></div>
+<div class="sh-edit-b">${shSelV!=null&&placed.has(shSelV)?`<button class="chip" data-a="shRemove">${L('Убрать с полки','Remove')}</button>`:''}${shSelV!=null&&shSelV>=CUST0?`<button class="chip" data-a="custDel2">🗑 ${L('Удалить фото','Delete photo')}</button>`:''}<button class="chip" data-a="shAuto">↺ ${L('Как было','Reset')}</button></div></div>`}
+    else tools=`<div class="sh-tools"><button class="chip" data-a="shEditGo">✏️ ${bm?L('Расставить подарки','Arrange gifts'):L('Расставить жителей','Arrange dwellers')}</button></div>`}
+  return `<div class="spshelf ${ed?'editing':''}">${hint}${tools}${h}</div>`}
+const shelf2Actions={
+  shEditGo:()=>{if(!shUnlocked()&&!(S.cust||[]).some(Boolean)&&!shEdit){}S.shFree=S.shFree||{};if(!S.shFree[shK()]){const p=activePet();S.shFree[shK()]=shAutoFree(99,!!(p&&p.hatched&&!BOYM()))}shEdit=true;shSelV=null;save();render()},
+  shEditDone:()=>{shEdit=false;shSelV=null;render();toast(L('Полка расставлена ✓','Shelf arranged ✓'))},
+  shAuto:()=>{if(S.shFree)delete S.shFree[shK()];if(S.shPlace)delete S.shPlace[shK()];shSelV=null;save();if(shEdit){const p=activePet();S.shFree=S.shFree||{};S.shFree[shK()]=shAutoFree(99,!!(p&&p.hatched&&!BOYM()))}render();toast(L('Вернула как было','Back to default'))},
+  shSel:d=>{const v=+d.v;shSelV=shSelV===v?null:v;render()},
+  shAt:(d,el)=>{if(shSelV==null){toast(L('Сначала выбери предмет сверху','Pick an item above first'));return}const e=window._lc,rc=el.getBoundingClientRect();let x=e?(e.clientX-rc.left)/rc.width:.5;x=Math.max(.06,Math.min(.94,x));
+    const f=S.shFree[shK()]=(S.shFree[shK()]||[]).filter(it=>it.v!==shSelV);f.push({v:shSelV,r:+d.r,x});shSelV=null;save();render()},
+  shRemove:()=>{S.shFree[shK()]=(S.shFree[shK()]||[]).filter(it=>it.v!==shSelV);shSelV=null;save();render()},
+  custDel2:()=>{const v=shSelV;if(v==null||v<CUST0)return;S.cust[v-CUST0]=null;Object.keys(S.shFree||{}).forEach(k=>{S.shFree[k]=S.shFree[k].filter(it=>it.v!==v)});shSelV=null;save();render()}};
+document.addEventListener('click',e=>{window._lc=e},true);
+
 function shelfFor(list){if(booksTab==='reading'||booksTab==='later')return shelfHTML(list);
   if(booksTab==='want')return spineShelf(list,[[L('Хочу прочитать','Want to read')+' · '+list.length,list]]);
-  const by={};list.forEach(b=>{const y=b.finishedAt?new Date(b.finishedAt).getFullYear():L('Без даты','No date');(by[y]=by[y]||[]).push(b)});
+  const by={};list.forEach(b=>{const y=b.finishedAt?new Date(b.finishedAt).getFullYear():L('Без даты','No date');(by[y]=by[y]||[]).push(b)});const tm=b=>b.finishedAt?new Date(b.finishedAt).getTime():0;Object.values(by).forEach(a=>a.sort((x,z)=>tm(z)-tm(x)));
   return spineShelf(list,Object.keys(by).sort((a,b)=>(+b||0)-(+a||0)).map(y=>[`${y} · ${by[y].length} ${plural(by[y].length,BK)}`,by[y]]))}
 function shelfHTML(list){let h='';for(let i=0;i<list.length;i+=3){const row=list.slice(i,i+3);
   h+=`<div class="shelf-row"><div class="sbooks">${row.map(b=>{const pr=Math.round(fracOf(b)*100);const badge=b.status==='pause'?`<span class="sbadge">⏸ ${pr}%</span>`:b.status==='dnf'?`<span class="sbadge">✖ ${pr}%</span>`:b.status==='reading'&&totalOf(b)?`<span class="sbadge">${pr}%</span>`:b.status==='done'&&b.rating?`<span class="sbadge gold">★${b.rating}</span>`:'';
@@ -4008,7 +4043,7 @@ const A={
   copyNote:d=>{const b=S.books[d.id];const n=(b.notes||[]).find(x=>x.id===d.n);if(n)copyText((n.type==='quote'?'«'+n.text+'»':n.text)+(b.author?`\n— ${b.author}, «${b.title}»`:`\n— «${b.title}»`))},
   delBook:d=>openSheet(confirmSheet('Удалить книгу «'+esc(S.books[d.id].title)+'»?','delBookYes',d.id),'confirm'),
   delBookYes:d=>{if(S.books[d.id]&&S.books[d.id].hasCover)dropCover(d.id);delete S.books[d.id];save();closeSheet(true);render();toast('Книга удалена')},
-  ...tmrActions,...emoActions,...wheelActions,...tarotActions,...letterActions,...dateActions,...shelfActions,...guideActions,...impActions,...ritActions,...libActions,...authActions,
+  ...tmrActions,...emoActions,...wheelActions,...tarotActions,...letterActions,...dateActions,...shelfActions,...guideActions,...impActions,...shelf2Actions,...ritActions,...libActions,...authActions,
   findCover:d=>{const b=S.books[d.id];if(!b)return;b.covTried=0;covQ.unshift(d.id);toast('🔎 Ищу обложку…');covRun(d.id)},
   syncInfo:()=>openSheet(syncSheet(),'sync'),
   syncNow:()=>{if(!dbOK){initDB.tries=0;initDB();toast('Подключаюсь к облаку…');return}const w=W.state;if(w){w.last='';w.next=0}dbQueue('state',()=>S);flushAll();toast('Сохраняю…');setTimeout(()=>{if(sheetKind==='sync')openSheet(syncSheet(),'sync')},2500)},
