@@ -2184,7 +2184,7 @@ function statsHTML(){
 <div class="card goal"><svg class="ring" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${R}" style="stroke:var(--field)" stroke-width="11" fill="none"/><circle cx="55" cy="55" r="${R}" stroke="url(#rg)" stroke-width="11" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}" transform="rotate(-90 55 55)"/><defs><linearGradient id="rg"><stop offset="0" style="stop-color:var(--bar1)"/><stop offset="1" style="stop-color:var(--bar2)"/></linearGradient></defs><text x="55" y="53" text-anchor="middle" style="fill:var(--text)" font-size="26" font-weight="900" font-family="Comfortaa,Nunito,system-ui,sans-serif">${done}</text><text x="55" y="72" text-anchor="middle" style="fill:var(--muted)" font-size="12" font-weight="800" font-family="Nunito">из ${g}</text></svg>
 <div class="gc"><b>Цель на ${y} год</b><div class="hint">${done>=g?'Цель выполнена! 🎉':`Осталось ${g-done} ${plural(g-done,BK)}`}</div><div class="stepper"><button data-a="goal" data-d="-1">−</button><b>${g} ${plural(g,BK)}</b><button data-a="goal" data-d="1">+</button></div></div></div>
 <div class="btns" style="margin-bottom:14px"><button class="btn" data-a="wrapped">🎁 Итоги года</button><button class="btn" data-a="monthCard">📸 Итоги месяца</button></div>
-<div class="grid2"><div class="mini"><b>${yearPages}</b><span>${plural(yearPages,PG)} в ${y}</span></div><div class="mini"><b>${dn}</b><span>${plural(dn,BK)} всего</span></div><div class="mini"><b>${streak()}🔥</b><span>серия сейчас</span></div><div class="mini"><b>${bestStreak()}</b><span>лучшая серия</span></div></div>
+<div class="grid2"><div class="mini"><b>${yearPages}</b><span>${plural(yearPages,PG)} в ${y}</span></div><div class="mini"><b>${doneBooks().length}</b><span>${L('прочитано всего','read in total')}</span></div><div class="mini"><b>${streak()}🔥</b><span>серия сейчас</span></div><div class="mini"><b>${bestStreak()}</b><span>лучшая серия</span></div></div>
 ${calHTML()}<div class="sec-t">Последние 12 недель</div>
 <div class="card"><div class="heat">${cells}</div><p class="hint" style="margin:8px 0 0">Нажми на день, чтобы увидеть, что читала</p><div class="legend">меньше <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i> больше</div></div>
 ${diaryHTML()}${tasteHTML()}${achHTML()}
@@ -4394,6 +4394,7 @@ document.addEventListener('change',async e=>{
 });
 
 /* ---------- start ---------- */
+if(!S.impFix1){S.impFix1=1;let ch=0;Object.values(S.books).forEach(b=>{if(b.imp==='bookmory'&&b.status==='done'&&b.finishedAt&&b.finishedAt===b.touchedAt){b.finishedAt=null;ch++}});if(ch)save()}
 render();
 if(FBON())fbInit();else startFlow();
 initDB();initSample();initDL();
