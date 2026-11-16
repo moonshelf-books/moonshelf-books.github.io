@@ -1493,16 +1493,33 @@ function stageName(p,i){const k=p&&kindOf(p);return k==='boy'?STAGES_BOY[i]:k===
 function eggTitle(p){const k=kindOf(p);return k==='boy'?'Таинственное письмо':k==='fam'?'Зачарованное яйцо':L('Живая книга','Living book')}
 function blank(){const e=newEgg();return {v:1,lang:/^ru|^uk|^be|^kk/i.test(navigator.language||'ru')?'ru':'en',updatedAt:0,pets:[e],activePet:e.id,books:{},log:{},goal:12,totalPages:0,seenIntro:false}}
 function loadLocal(){try{const s=JSON.parse(lsGet(LS)||'null');if(s&&s.v&&Array.isArray(s.pets)&&s.pets.length)return s}catch(e){}return null}
-let S=loadLocal()||blank();if(!S.liveMig){Object.values(S.books||{}).forEach(b=>{if(b.status==='done')b.live=1});S.liveMig=1}if(!S.bxStart)S.bxStart=Date.now()-1000;if(!S.bkBase)S.bkBase=Date.now();
-Object.values(S.books).forEach(b=>{if(!b.format){b.format='paper';b.unit='pages'}});migrateBoys(S);
+/* ---------- надежное хранилище: IndexedDB + localStorage ---------- */
+const IDB={db:null,p:null,open(){if(this.p)return this.p;this.p=new Promise(res=>{try{const r=indexedDB.open('moonshelf',1);r.onupgradeneeded=()=>{r.result.createObjectStore('kv')};r.onsuccess=()=>{this.db=r.result;res(this.db)};r.onerror=()=>res(null);r.onblocked=()=>res(null)}catch(e){res(null)}});return this.p},
+  async get(k){const db=await this.open();if(!db)return undefined;return new Promise(res=>{try{const q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>res(undefined)}catch(e){res(undefined)}})},
+  async set(k,v){const db=await this.open();if(!db)return false;return new Promise(res=>{try{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>res(true);t.onerror=()=>res(false);t.onabort=()=>res(false)}catch(e){res(false)}})},
+  async del(k){const db=await this.open();if(!db)return;try{db.transaction('kv','readwrite').objectStore('kv').delete(k)}catch(e){}},
+  async all(prefix){const db=await this.open();if(!db)return [];return new Promise(res=>{const out=[];try{const q=db.transaction('kv').objectStore('kv').openCursor();q.onsuccess=()=>{const c=q.result;if(c){if(String(c.key).startsWith(prefix))out.push([c.key,c.value]);c.continue()}else res(out)};q.onerror=()=>res(out)}catch(e){res(out)}})}};
+function postLoad(){if(!S.liveMig){Object.values(S.books||{}).forEach(b=>{if(b.status==='done')b.live=1});S.liveMig=1}if(!S.bxStart)S.bxStart=Date.now()-1000;if(!S.bkBase)S.bkBase=Date.now();
+  Object.values(S.books).forEach(b=>{if(!b.format){b.format='paper';b.unit='pages'}});migrateBoys(S)}
+let S=loadLocal()||blank();postLoad();
 const covers={};
 setTimeout(()=>{if(!S.ach){checkAch(true)}},0);
 Object.values(S.books).forEach(b=>{if(b.hasCover){const c=lsGet(LSC+b.id);if(c)covers[b.id]=c}});
+let lsFull=false,idbT=null;
+function idbSaveState(){clearTimeout(idbT);idbT=setTimeout(()=>{try{IDB.set('state',JSON.parse(JSON.stringify(S)))}catch(e){}},300)}
+(async()=>{try{
+  // переносим обложки из localStorage в IndexedDB, чтобы освободить место
+  for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(LSC)){const v=localStorage.getItem(k);if(v&&await IDB.set('cv:'+k.slice(LSC.length),v))localStorage.removeItem(k)}}
+  const cv=await IDB.all('cv:');let ch=false;cv.forEach(([k,v])=>{const id=k.slice(3);if(!covers[id]&&v){covers[id]=v;ch=true}});
+  const st=await IDB.get('state');
+  if(st&&st.v&&Array.isArray(st.pets)&&st.pets.length&&((st.updatedAt||0)>(S.updatedAt||0)+1000||(isTrivial(S)&&!isTrivial(st)))){S=st;postLoad();ch=true;try{lsSet(LS,JSON.stringify(S))}catch(e){}if(sheetKind==='intro'&&S.seenIntro)closeSheet(true)}
+  else idbSaveState();
+  if(ch)render()}catch(e){}})();
 function isTrivial(s){return !Object.keys(s.books||{}).length&&s.pets.every(p=>!p.hatched&&!p.xp)}
 
-function save(){checkQuest();try{checkRitual()}catch(e){}checkAch();checkTarot();S.updatedAt=Date.now();lsSet(LS,JSON.stringify(S));dbQueue('state',()=>S)}
-function saveCover(id,url){covers[id]=url;lsSet(LSC+id,url);dbQueue('cover_'+id,()=>({d:url}))}
-function dropCover(id){delete covers[id];lsDel(LSC+id);dbQueue('cover_'+id,()=>null)}
+function save(){checkQuest();try{checkRitual()}catch(e){}checkAch();checkTarot();S.updatedAt=Date.now();const ok=lsSet(LS,JSON.stringify(S));if(!ok&&!lsFull){lsFull=true}idbSaveState();dbQueue('state',()=>S)}
+function saveCover(id,url){covers[id]=url;IDB.set('cv:'+id,url);dbQueue('cover_'+id,()=>({d:url}))}
+function dropCover(id){delete covers[id];lsDel(LSC+id);IDB.del('cv:'+id);dbQueue('cover_'+id,()=>null)}
 
 /* ---------- cloud sync (works for the owner / people with edit access) ---------- */
 let DB=null,UID=null,dbOK=false;const W={};
@@ -1528,7 +1545,8 @@ async function dbFlush(key){
 let syncMode='local';
 function flushAll(){Object.keys(W).forEach(k=>{const w=W[k];if(w&&w.fn&&!w.busy){clearTimeout(w.t);dbFlush(k)}})}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){lsSet(LS,JSON.stringify(S));flushAll()}});
-window.addEventListener('pagehide',()=>{lsSet(LS,JSON.stringify(S));flushAll()});
+window.addEventListener('pagehide',()=>{lsSet(LS,JSON.stringify(S));try{IDB.set('state',JSON.parse(JSON.stringify(S)))}catch(e){}flushAll()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){lsSet(LS,JSON.stringify(S));try{IDB.set('state',JSON.parse(JSON.stringify(S)))}catch(e){}}});
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}
 function timeout(p,ms){return Promise.race([p,new Promise((_,r)=>setTimeout(()=>r({code:'timeout'}),ms))])}
 function mergeStates(a,b){
@@ -2047,11 +2065,14 @@ function confetti(){const fx=$('#fx');const cols=['#ffd27a','#ff9fd0','#8ff0c8',
 /* ---------- screens ---------- */
 const IS_IOS=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const IS_MOB=IS_IOS||/Android/i.test(navigator.userAgent);
+const IN_APP=/Instagram|Barcelona|FBAN|FBAV|FB_IAB|Threads|Line\/|VKClient|TikTok|musical_ly|Snapchat/i.test(navigator.userAgent);
+const IN_APP_NAME=/Barcelona|Threads/i.test(navigator.userAgent)?'Threads':/Instagram/i.test(navigator.userAgent)?'Инстаграма':/TikTok|musical_ly/i.test(navigator.userAgent)?'ТикТока':'приложения';
 const IS_STANDALONE=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
 const DAY_MS=864e5;
 function bkDue(){if(!Object.keys(S.books).length)return false;const last=Math.max(S.bkAt||0,S.bkSnooze||0,S.bkBase||0);return Date.now()-last>(S.bkAt?14:3)*DAY_MS}
 function tipCard(ic,txt,act,close){return `<div class="card tipc" style="padding:10px 14px;display:flex;gap:10px;align-items:center;cursor:pointer" data-a="${act}"><span style="font-size:20px">${ic}</span><span class="hint" style="flex:1">${txt}</span><button class="chip" style="border:0;padding:4px 8px" data-a="${close}" aria-label="close">✕</button></div>`}
 function tipBanner(){
+  if(IN_APP)return `<div class="card" style="padding:12px 14px;border:1.5px solid #e0a040;background:rgba(224,160,64,.12)"><b>⚠️ ${L(`Ты открыла Moonshelf внутри ${IN_APP_NAME}`,'You opened Moonshelf inside another app')}</b><div class="hint" style="margin-top:4px;line-height:1.4">${L('Здесь прогресс может пропасть. Нажми «•••» сверху и выбери «Открыть в браузере» или «Открыть в Safari», а там добавь на экран «Домой».','Progress may be lost here. Tap “•••” and choose “Open in browser”, then add it to your Home Screen.')}</div></div>`;
   if(!S.guideSeen&&S.seenIntro)return tipCard('📘',L('Впервые здесь? Короткая инструкция, как все устроено','New here? A quick guide to how it all works'),'guide','guideHide');
   if(ONLINE&&IS_MOB&&!IS_STANDALONE&&!S.a2hsHide)return tipCard('📲',L('Добавь Moonshelf на экран «Домой» — так прогресс точно не потеряется. Нажми, покажу как','Add Moonshelf to your Home Screen so your progress is never lost. Tap to see how'),'a2hs','a2hsHide');
   if(bkDue()){const d=S.bkAt?Math.floor((Date.now()-S.bkAt)/DAY_MS):0;
@@ -2095,7 +2116,7 @@ ${kindOf(p)==='boy'&&st===0?`<p class="mask-hint" style="margin:8px 0 10px">🎭
   const pets=mine.length>1?`<div class="sec-t">${kindOf(p)==='boy'?'Мои герои':kindOf(p)==='fam'?'Мои хранители':'Мои духи'}</div><div class="pets">${mine.map(x=>`<div class="pchip ${x.id===p.id?'on':''}" data-a="pickPet" data-id="${x.id}">${x.hatched?creatureSVG(x.species,stageOf(x),'happy',{outfit:x.outfit}):eggSVG(x.species,Math.min(x.xp,HATCH),{ready:x.xp>=HATCH})}<span>${x.hatched?esc(x.name||'Без имени'):(x.xp>=HATCH?'Готово!':(kindOf(x)==='boy'?'Письмо':kindOf(x)==='pet'?L('Книга','Book'):'Яйцо'))}</span></div>`).join('')}</div>`:'';
   const reading=Object.values(S.books).filter(b=>b.status==='reading').sort((a,b)=>(b.touchedAt||0)-(a.touchedAt||0));
   const todayP=S.log[today()]||0;
-  return `<div class="top"><h1>${BOYM()?'Книжный бойфренд':FAMM()?'Книжный хранитель':'Книжный дух'}</h1><span class="date" data-a="syncInfo" style="cursor:pointer">${dateStr}<span id="syncLbl">${syncLabel()}</span></span></div>${syncMode!=='cloud'&&Object.keys(S.books).length?(syncErr==='no-cloud'?'<div class="card" style="padding:10px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;border-color:#e0304a" data-a="backup"><span style="font-size:20px">⚠️</span><span class="hint" style="flex:1">В этом окне облако недоступно — после закрытия записи могут пропасть. Нажми и сделай резервную копию</span></div>':tipBanner()):''}
+  return `<div class="top"><h1>${BOYM()?'Книжный бойфренд':FAMM()?'Книжный хранитель':'Книжный дух'}</h1><span class="date" data-a="syncInfo" style="cursor:pointer">${dateStr}<span id="syncLbl">${syncLabel()}</span></span></div>${IN_APP?tipBanner():''}${!IN_APP&&syncMode!=='cloud'&&Object.keys(S.books).length?(syncErr==='no-cloud'?'<div class="card" style="padding:10px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;border-color:#e0304a" data-a="backup"><span style="font-size:20px">⚠️</span><span class="hint" style="flex:1">В этом окне облако недоступно — после закрытия записи могут пропасть. Нажми и сделай резервную копию</span></div>':tipBanner()):''}
 ${block}
 ${readyEggs.length?`<div class="card" style="margin-top:14px;display:flex;align-items:center;gap:12px;cursor:pointer" data-a="egg" data-id="${readyEggs[0].id}"><div style="width:54px;height:54px;flex:none">${eggSVG(readyEggs[0].species,HATCH,{ready:true})}</div><div><b>${kindOf(p)==='boy'?'Новое письмо можно открыть!':kindOf(p)==='pet'?L('Дух в книге проснулся!','The spirit in the book woke up!'):'Новое яйцо готово!'}</b><div class="hint">Нажми, чтобы узнать, кто там</div></div></div>`:''}
 ${kindOf(p)==='boy'&&p.hatched?inviteCard(p):''}${ritualCard()}<div class="stats3"><div class="mini"><b>${todayP}</b><span>${(()=>{const b=curRead();return b&&unitOf(b)!=='pages'?L('опыта сегодня','XP today'):plural(todayP,PG)+' сегодня'})()}</span></div><div class="mini"><b>${streak()}🔥</b><span>${plural(streak(),DY)} подряд</span></div><div class="mini"><b>${doneThisYear()}</b><span>${plural(doneThisYear(),BK)} за год</span></div></div>
