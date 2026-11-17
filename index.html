@@ -2198,7 +2198,7 @@ function statsHTML(){
   const end=new Date();const dow=(end.getDay()+6)%7;const start=new Date(end);start.setDate(end.getDate()-dow-7*11);
   let cells='';for(let i=0;i<84;i++){const d=new Date(start);d.setDate(start.getDate()+i);const k=dayKey(d);const v=S.log[k]||0;const fut=d>end;
     cells+=`<i class="${v>=30?'l3':v>=10?'l2':v>0?'l1':''} ${k===today()?'today':''}" style="${fut?'opacity:0':'cursor:pointer'}" ${fut?'':`data-a="dayInfo" data-v="${k}"`} title="${k}: ${v}"></i>`}
-  const owned=sp=>S.pets.filter(p=>p.hatched&&p.species===sp);const LIST=BOYM()?BORDER:FAMM()?FORDER:ORDER;
+  const owned=sp=>S.pets.filter(p=>p.hatched&&p.species===sp);const LIST=[...(BOYM()?BORDER:FAMM()?FORDER:ORDER)].sort((x,y)=>({common:0,rare:1,legend:2}[SPECIES[x].rarity]||0)-({common:0,rare:1,legend:2}[SPECIES[y].rarity]||0));
   const found=LIST.filter(sp=>owned(sp).length).length;
   const dn=liveDone().length,toEgg=BOOKS_PER_EGG-(dn%BOOKS_PER_EGG);
   return `<div class="top"><h1>Статистика</h1><span class="date">${y}</span></div>
