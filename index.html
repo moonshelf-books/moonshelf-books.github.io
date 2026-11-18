@@ -875,11 +875,11 @@ body[data-ui] .top h1{font-family:'Cormorant Garamond','Playfair Display',Georgi
 body[data-ui] .top .date{text-transform:uppercase;letter-spacing:.32em;font-size:10px;font-weight:800;margin-top:4px}
 body[data-ui] .pet-info h2,body[data-ui] .sheet h3{font-family:'Cormorant Garamond','Playfair Display',Georgia,serif!important;font-style:italic;font-weight:500;font-size:30px;letter-spacing:0}
 body[data-ui] .chip{background:transparent;border:1px solid var(--uline);text-transform:uppercase;letter-spacing:.12em;font-size:10.5px;padding:5px 10px}
-body[data-ui] .card,body[data-ui] .mini,body[data-ui] .srow{background:var(--ucard)!important;border:1px solid var(--uline)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-body[data-ui] .btn{background:rgba(255,255,255,.04);border:1px solid var(--uline);border-radius:40px}
+body[data-ui] .card,body[data-ui] .mini,body[data-ui] .srow{background-color:var(--ucard)!important;border:1px solid var(--uline)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+body[data-ui] .btn{background-color:rgba(255,255,255,.04);border:1px solid var(--uline);border-radius:40px}
 body[data-ui] .btn.primary{border:0;text-transform:uppercase;letter-spacing:.22em;font-size:12.5px}
 body[data-ui] .bar{background:rgba(255,255,255,.07);height:6px}
-body[data-ui] .sheet{background:var(--usheet);border-color:var(--uline);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+body[data-ui] .sheet{background:var(--usheet);border-color:var(--uline)}
 body[data-ui] .tabbar{left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 10px);border-radius:40px;border:1px solid var(--uline);background:var(--utab);padding:6px 8px;max-width:452px;margin:0 auto}
 body[data-ui] .tabbar button{font-size:0;gap:2px;opacity:.75}
 body[data-ui] .tabbar button svg{width:24px;height:24px;display:block;margin:0 auto;padding:9px;box-sizing:content-box;border-radius:50%;transition:.25s}
@@ -4095,14 +4095,14 @@ const ICM={'🖤':'heart','❤️':'heart','❤':'heart','💛':'heart','💗':'
 '👗':'hanger','🧥':'hanger','🎄':'tree','🚀':'rocket','💬':'chat','💭':'chat','🎁':'gift','📋':'list','🕯':'candle','🕯️':'candle','🔒':'lock','⏱':'timer','⏱️':'timer',
 '⌛':'hglass','⏳':'hglass','🎨':'palette','📲':'phone','📱':'phone','🗝':'key','🗝️':'key','🔑':'key','📥':'inbox','📂':'inbox','📁':'inbox','👑':'crown','🏆':'trophy',
 '🌐':'globe','✏️':'pen','🖋️':'pen','🖋':'pen','🪶':'pen','📝':'pen','🗑':'trash','🗑️':'trash','👤':'user','⚙️':'gear','⚙':'gear','💡':'bulb','🏛️':'lib','🏛':'lib',
-'🧭':'compass','📤':'share','🐾':'paw','🐉':'dragon','🦉':'owl','✅':'check','✔️':'check','✔':'check','💯':'check'};
+'🧭':'compass','🎡':'compass','🎲':'compass','📏':'list','📊':'list','📈':'list','🏅':'trophy','🥇':'trophy','🎀':'gift','💍':'star','💎':'star','🌧':'cloud','☔':'cloud','🌧️':'cloud','🔔':'alert','❓':'search','❗':'alert','🔁':'compass','📌':'pen','🔗':'share','🧻':'list','💃':'spark','🫂':'heart','🤝':'heart','👍':'check','📤':'share','🐾':'paw','🐉':'dragon','🦉':'owl','✅':'check','✔️':'check','✔':'check','💯':'check'};
 const icoSVG=k=>`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICP[k]}</svg>`;
 const EMO_RE=/\p{Extended_Pictographic}️?(?:‍\p{Extended_Pictographic}️?)*/gu;
 const EMO_KEEP=new Set(['✓','✕','✎','★','☆','✦','☾','✧','✶','❋','❀','❦','♡','↺','✖','⏸','⏹','©','®','™','↩','↪','▶','◀','➜','→','←']);
 const EMO_FACE=/^[\u{1F600}-\u{1F64F}\u{1F910}-\u{1F92F}\u{1F970}-\u{1F97A}\u{1FAE0}-\u{1FAE8}\u{1F440}\u{1F441}\u{1F648}-\u{1F64A}]/u;
 function iconize(root){if(!document.body.dataset.ui||!root)return;
   const SKIP={SVG:1,svg:1,CANVAS:1,INPUT:1,TEXTAREA:1,SCRIPT:1,STYLE:1,SELECT:1,OPTION:1};
-  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{let p=n.parentNode;while(p&&p!==root){if(SKIP[p.nodeName]||(p.classList&&p.classList.contains('noico')))return NodeFilter.FILTER_REJECT;p=p.parentNode}EMO_RE.lastIndex=0;return EMO_RE.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP}});
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{let p=n.parentNode;while(p&&p!==root){if(SKIP[p.nodeName]||(p.classList&&(p.classList.contains('noico')||p.classList.contains('emo')||p.classList.contains('icw'))))return NodeFilter.FILTER_REJECT;p=p.parentNode}EMO_RE.lastIndex=0;return EMO_RE.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP}});
   const list=[];while(w.nextNode())list.push(w.currentNode);
   list.forEach(n=>{const t=n.nodeValue;EMO_RE.lastIndex=0;let m,last=0,html='',ch=false;
     while((m=EMO_RE.exec(t))){const e=m[0];if(EMO_KEEP.has(e.replace('️','')))continue;ch=true;html+=esc(t.slice(last,m.index));last=m.index+e.length;
