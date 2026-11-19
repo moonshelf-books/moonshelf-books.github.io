@@ -951,6 +951,10 @@ body[data-ui] .srow .ico,body[data-ui] .slist .ico{width:24px;height:24px}
 .mineb{position:absolute;top:0;right:7px;width:9px;height:15px;background:linear-gradient(180deg,var(--gold),var(--gold2));clip-path:polygon(0 0,100% 0,100% 100%,50% 72%,0 100%);z-index:4;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
 .spine .mineb{right:50%;transform:translateX(50%);width:8px;height:13px}
 .mineb.inl{position:relative;display:inline-block;right:auto;top:1px;margin-right:6px;width:7px;height:11px}
+
+.app .seg:has(>[data-v=bought]){overflow-x:auto;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.app .seg:has(>[data-v=bought])::-webkit-scrollbar{display:none}
+.app .seg:has(>[data-v=bought])>button{flex:none;white-space:nowrap;padding-left:11px;padding-right:11px}.app .seg:has(>[data-v=bought])>button:last-child{margin-right:24px}
 </style>
 </head>
 <body>
@@ -1940,7 +1944,7 @@ const emoActions={
 /* ---------- рулетка ---------- */
 let wheelBooks=[];
 function wheelSheet(){
-  let want=Object.values(S.books).filter(b=>b.status==='want');
+  let want=Object.values(S.books).filter(b=>b.status===(booksTab==='bought'?'bought':'want'));
   if(want.length>10)want=[...want].sort(()=>Math.random()-.5).slice(0,10);
   wheelBooks=want;const n=want.length,seg=360/n,R=130,c=140;
   const pt=(a,r)=>[(c+r*Math.cos(a*Math.PI/180)).toFixed(2),(c+r*Math.sin(a*Math.PI/180)).toFixed(2)];
@@ -1953,7 +1957,7 @@ function wheelSheet(){
 }
 let wheelRot=0;
 const wheelActions={
-  wheel:()=>{if(Object.values(S.books).filter(b=>b.status==='want').length<2){toast('Добавь хотя бы 2 книги в «Хочу», и колесо выберет одну');return}openSheet(wheelSheet(),'wheel');wheelRot=0},
+  wheel:()=>{if(Object.values(S.books).filter(b=>b.status===(booksTab==='bought'?'bought':'want')).length<2){toast('Добавь хотя бы 2 книги в «Хочу», и колесо выберет одну');return}openSheet(wheelSheet(),'wheel');wheelRot=0},
   spin:()=>{const n=wheelBooks.length,seg=360/n,idx=Math.floor(Math.random()*n);const w=$('#wheel');$('#spinBtn').disabled=true;$('#wheelRes').innerHTML='';
     const target=360-(idx*seg+seg/2);wheelRot=wheelRot-(wheelRot%360)+360*5+target;w.style.transform=`rotate(${wheelRot}deg)`;
     setTimeout(()=>{const b=wheelBooks[idx];if(!$('#wheelRes'))return;$('#wheelRes').innerHTML=`<div class="bighead" style="justify-content:center;align-items:center;margin:14px 0">${coverHTML(b)}<div style="text-align:left"><div class="muted small">Дух выбрал:</div><div class="t" translate="no">${esc(b.title)}</div><div class="muted small">${esc(b.author||'')}</div></div></div><button class="btn big" style="margin-bottom:8px" data-a="start" data-id="${b.id}">Начать читать</button>`;$('#spinBtn').disabled=false;$('#spinBtn').textContent='Крутить ещё';confetti()},4300)}
@@ -2198,6 +2202,7 @@ function render(){
   if(tab==='books'||tab==='home')setTimeout(covAuto,300);
   el.innerHTML='<div class="brandln" translate="no"><b>☾</b>Moonshelf</div>'+(tab==='home'?homeHTML():tab==='books'?booksHTML():tab==='settings'?settingsHTML():statsHTML());
   iconize(el);
+  if(tab==='books'){const sb=el.querySelector('.seg:has(>[data-v=bought])');const on=sb&&sb.querySelector('button.on');if(on&&sb.scrollWidth>sb.clientWidth)sb.scrollLeft=Math.max(0,on.offsetLeft-sb.clientWidth/2+on.offsetWidth/2)}
   document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.v===tab));
   $('#fab').classList.toggle('hidden',tab!=='books'||bkEdit||shEdit);
 }
@@ -2282,7 +2287,7 @@ function bookRow(b){
   if(b.status==='reading')sub=`<div class="bar thin mint"><i style="width:${pr}%"></i></div><div class="bar-l"><span>${progressText(b)}</span><span>${hasT&&unitOf(b)!=='percent'?pr+'%':''}</span></div>`;
   else if(b.status==='done')sub=`<div class="stars">${starsTxt(b.rating)||'<span class="muted small">без оценки</span>'}</div><div class="bar-l"><span>${b.finishedAt?'прочитано '+fmtDate(b.finishedAt):''}</span><span>${(b.notes||[]).length?'💬 '+b.notes.length:''}</span></div>`;
   else sub=`<div class="bar-l" style="margin-top:0"><span>${b.pages?b.pages+' стр.':''}</span></div>`;
-  const act=b.status==='reading'?`<button class="plus" data-a="log" data-id="${b.id}" aria-label="Отметить чтение">+</button>`:b.status==='want'?`<button class="btn sm" data-a="start" data-id="${b.id}">Начать</button>`:'';
+  const act=b.status==='reading'?`<button class="plus" data-a="log" data-id="${b.id}" aria-label="Отметить чтение">+</button>`:(b.status==='want'||b.status==='bought')?`<button class="btn sm" data-a="start" data-id="${b.id}">Начать</button>`:'';
   return `<div class="book" data-a="openBook" data-id="${b.id}">${coverHTML(b)}<div class="bi"><div class="bt" translate="no">${esc(b.title)}</div><div class="ba">${FMT[b.format||'paper'].icon} ${esc(b.author||'Автор не указан')}</div>${sub}</div>${act}</div>`;
 }
 /* ---------- свои полки (коллекции) ---------- */
@@ -2436,10 +2441,10 @@ document.addEventListener('change',async e=>{const t=e.target;if(!t)return;
 function booksHTML(){
   const all=Object.values(S.books);const inTab=(b,t)=>t==='later'?(b.status==='pause'||b.status==='dnf'):b.status===t;const cnt=t=>all.filter(b=>inTab(b,t)).length;
   if(collF&&collF!=='__own'&&!collList().some(c=>c.id===collF))collF=null;const tabList=all.filter(b=>inTab(b,booksTab));const list=tabList.filter(b=>!collF||(collF==='__own'?b.own:(b.colls||[]).includes(collF))).sort((a,b)=>booksTab==='done'?(b.finishedAt||0)-(a.finishedAt||0):(b.touchedAt||b.addedAt||0)-(a.touchedAt||a.addedAt||0));
-  const empt={reading:['📖','Здесь будут книги, которые ты читаешь сейчас'],want:['🌙','Сюда можно складывать книги, которые хочется прочитать'],done:['🏆','Здесь соберутся прочитанные книги'],later:['⏸','Здесь будут книги на паузе и те, что ты бросила']}[booksTab];
+  const empt={reading:['📖','Здесь будут книги, которые ты читаешь сейчас'],want:['🌙','Сюда можно складывать книги, которые хочется прочитать'],bought:['📚','Тут будут купленные книги, которые ждут своей очереди'],done:['🏆','Здесь соберутся прочитанные книги'],later:['⏸','Здесь будут книги на паузе и те, что ты бросила']}[booksTab];
   return `<div class="top"><h1>Мои книги</h1><span class="date">${all.length} ${plural(all.length,BK)}</span><button class="icon vt" data-a="viewT" aria-label="${S.listView?'Полка':'Список'}">${S.listView?'📚':'☰'}</button></div>
-<div class="seg">${[['reading','Читаю'],['want','Хочу'],['done','Прочитано'],['later','Отложено']].map(([k,t])=>`<button class="${booksTab===k?'on':''}" data-a="btab" data-v="${k}">${t} ${cnt(k)||''}</button>`).join('')}</div>
-${collBar(tabList)}${booksTab==='want'&&cnt('want')>=2?'<button class="btn big" style="margin-bottom:12px" data-a="wheel">🎡 Что читать дальше?</button>':''}${booksTab==='later'&&list.length?`<p class="hint" style="margin:-4px 0 12px">⏸ ${L('на паузе','paused')} · ✖ ${L('брошена','dropped')}</p>`:''}${list.length?(S.listView?list.map(bookRow).join(''):shelfFor(list)):`<div class="empty"><div class="e">${empt[0]}</div>${empt[1]}<div style="margin-top:16px"><button class="btn primary" data-a="addBook" data-st="${booksTab==='later'?'reading':booksTab}">＋ Добавить книгу</button></div></div>`}`;
+<div class="seg">${[['reading','Читаю'],['want','Хочу'],['bought','Куплено'],['done','Прочитано'],['later','Отложено']].map(([k,t])=>`<button class="${booksTab===k?'on':''}" data-a="btab" data-v="${k}">${t} ${cnt(k)||''}</button>`).join('')}</div>
+${collBar(tabList)}${(booksTab==='want'||booksTab==='bought')&&cnt(booksTab)>=2?'<button class="btn big" style="margin-bottom:12px" data-a="wheel">🎡 Что читать дальше?</button>':''}${booksTab==='later'&&list.length?`<p class="hint" style="margin:-4px 0 12px">⏸ ${L('на паузе','paused')} · ✖ ${L('брошена','dropped')}</p>`:''}${list.length?(S.listView?list.map(bookRow).join(''):shelfFor(list)):`<div class="empty"><div class="e">${empt[0]}</div>${empt[1]}<div style="margin-top:16px"><button class="btn primary" data-a="addBook" data-st="${booksTab==='later'?'reading':booksTab}">＋ Добавить книгу</button></div></div>`}`;
 }
 
 let calOff=0;
@@ -2524,8 +2529,8 @@ function bookForm(id,st){
 <label class="f ${format==='audio'?'hidden':''}" id="fPagesW">Сколько страниц в книге<input class="i" id="fPages" type="number" inputmode="numeric" min="0" value="${b&&b.pages?b.pages:''}" placeholder="320"></label>
 <div class="xp-hint" id="fXp"></div>
 <div class="flabel">Статус</div>
-<div class="seg wrap" id="fStatus" data-v="${status}">${[['reading','Читаю'],['want','Хочу'],['done','Прочитано'],['pause','На паузе'],['dnf','Бросила']].map(([k,t])=>`<button type="button" class="${status===k?'on':''}" data-a="fStatus" data-v="${k}">${t}</button>`).join('')}</div>
-<button type="button" class="owntg ${b&&b.own?'on':''}" id="fOwn" data-a="fOwn"><i class="owsw"></i><span><b>${L('Есть у меня','I own it')}</b><small>${L('Купила или подарили — книга на твоей полке','Bought or gifted — it is on your shelf')}</small></span></button>
+<div class="seg wrap" id="fStatus" data-v="${status}">${[['reading','Читаю'],['want','Хочу'],['bought','Куплено'],['done','Прочитано'],['pause','На паузе'],['dnf','Бросила']].map(([k,t])=>`<button type="button" class="${status===k?'on':''}" data-a="fStatus" data-v="${k}">${t}</button>`).join('')}</div>
+<button type="button" class="owntg ${b&&b.own?'on':''} ${status==='bought'?'hidden':''}" id="fOwn" data-a="fOwn"><i class="owsw"></i><span><b>${L('Есть у меня','I own it')}</b><small>${L('Купила или подарили — книга на твоей полке','Bought or gifted — it is on your shelf')}</small></span></button>
 ${b?'':`<div id="fCurW" class="${status==='reading'?'':'hidden'}">${curFields(unit)}</div>`}
 <div class="flabel">Обложка</div>
 <div class="coverpick" style="align-items:flex-start"><div id="fCovPrev" data-id="${b?b.id:''}">${b?coverHTML(b):coverHTML({title:'?',color:formColor})}</div><div style="flex:1;min-width:0"><label class="btn sm">📷 Из галереи<input type="file" accept="image/*" id="fCover" hidden></label><br><div class="pastebox" id="fPaste" contenteditable="true" inputmode="none" spellcheck="false" aria-label="Вставить скопированную обложку">📋 Вставить скопированную</div>${b&&covers[b.id]?`<div style="margin-top:8px"><button class="btn sm ghost" data-a="rmCover">Убрать обложку</button></div>`:''}<div class="hint" style="margin-top:8px">Без фото будет нарисованная обложка. Чтобы вставить: в Safari удерживай палец на обложке → «Скопировать», потом удерживай кнопку выше → «Вставить».</div></div></div>
@@ -2614,18 +2619,18 @@ function diaryHTML(){const ks=Object.keys(S.log).filter(k=>S.log[k]>0).sort().re
   return `<div class="sec-t">Дневник чтения</div><div class="card" style="padding:4px 14px">${ks.map(k=>{const bs=Object.values(S.books).filter(b=>b.hist&&b.hist[k]>0);return `<div class="kv" data-a="dayInfo" data-v="${k}" style="cursor:pointer;gap:10px"><span>${fmtDate(keyToDate(k))}</span><span style="text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:62%">${bs.length?bs.map(b=>esc(b.title)).join(', ')+' · ':''}<b>${S.log[k]} стр.</b></span></div>`}).join('')}</div>`}
 function bookSheet(id){
   const b=S.books[id];if(!b)return '';const pr=Math.round(fracOf(b)*100);
-  const st={reading:'Читаю',want:'Хочу прочитать',done:'Прочитано'}[b.status];
+  const st={reading:'Читаю',want:'Хочу прочитать',bought:'Куплено',done:'Прочитано'}[b.status];
   const notes=(b.notes||[]);
   return `<div class="bighead">${coverHTML(b,true)}<div style="flex:1;min-width:0"><div class="t" translate="no">${esc(b.title)}</div><div class="muted" style="margin:4px 0 10px">${esc(b.author||'Автор не указан')}</div><span class="chip ${b.status==='done'?'gold':''}">${st}</span>
 ${b.status==='reading'?`<div style="margin-top:14px"><div class="bar thin mint"><i style="width:${pr}%"></i></div><div class="bar-l"><span>${progressText(b)}</span><span>${totalOf(b)&&unitOf(b)!=='percent'?pr+'%':''}</span></div></div>`:''}
 ${b.status==='done'?`<div class="rate sm" id="rateBox">${rateBtns(b)}</div>`:''}</div></div>
 ${b.status==='reading'?`<button class="btn primary big" data-a="log" data-id="${b.id}">📖 Отметить чтение</button>`:''}
-${b.status==='want'?`<button class="btn primary big" data-a="start" data-id="${b.id}">Начать читать</button>`:''}${b.status==='pause'||b.status==='dnf'?`<p class="hint center" style="margin:0 0 8px">${b.status==='pause'?L('⏸ На паузе','⏸ Paused'):L('✖ Ты бросила эту книгу','✖ You dropped this book')}${b.pausedAt?' · '+fmtDate(b.pausedAt):''}</p><button class="btn primary big" data-a="start" data-id="${b.id}">▶ ${L('Продолжить читать','Continue reading')}</button>`:''}${b.status==='reading'?`<div class="btns" style="margin-top:8px"><button class="btn sm" data-a="setPause" data-id="${b.id}" data-v="pause">⏸ ${L('На паузу','Pause')}</button><button class="btn sm" data-a="setPause" data-id="${b.id}" data-v="dnf">✖ ${L('Бросить','Drop')}</button></div>`:''}
+${(b.status==='want'||b.status==='bought')?`<button class="btn primary big" data-a="start" data-id="${b.id}">Начать читать</button>`:''}${b.status==='pause'||b.status==='dnf'?`<p class="hint center" style="margin:0 0 8px">${b.status==='pause'?L('⏸ На паузе','⏸ Paused'):L('✖ Ты бросила эту книгу','✖ You dropped this book')}${b.pausedAt?' · '+fmtDate(b.pausedAt):''}</p><button class="btn primary big" data-a="start" data-id="${b.id}">▶ ${L('Продолжить читать','Continue reading')}</button>`:''}${b.status==='reading'?`<div class="btns" style="margin-top:8px"><button class="btn sm" data-a="setPause" data-id="${b.id}" data-v="pause">⏸ ${L('На паузу','Pause')}</button><button class="btn sm" data-a="setPause" data-id="${b.id}" data-v="dnf">✖ ${L('Бросить','Drop')}</button></div>`:''}
 <div class="btns" style="margin-top:10px"><button class="btn sm" data-a="addNote" data-id="${b.id}">＋ Цитата или мысль</button><button class="btn sm" data-a="editBook" data-id="${b.id}">✎ Изменить</button></div>
 <div style="margin-top:14px"><div class="kv"><span>Формат</span><span>${FMT[b.format||'paper'].icon} ${FMT[b.format||'paper'].label}</span></div>${b.pages?`<div class="kv"><span>Страниц</span><span>${b.pages}</span></div>`:''}${unitOf(b)==='time'&&b.duration?`<div class="kv"><span>Длительность</span><span>${fmtMin(b.duration)}</span></div>`:''}${unitOf(b)==='chapters'&&b.chapters?`<div class="kv"><span>Глав</span><span>${b.chapters}</span></div>`:''}${pagesEq(b)?`<div class="kv"><span>Духу за книгу</span><span>≈ ${pagesEq(b)+finishBonus(b)} опыта</span></div>`:''}${b.startedAt?`<div class="kv"><span>Начато</span><span>${fmtDate(b.startedAt)}</span></div>`:''}${b.finishedAt?`<div class="kv"><span>Прочитано</span><span>${fmtDate(b.finishedAt)}</span></div>`:''}</div>
 <div id="descBox">${b.desc?`<div class="desc ${b.desc.length>220?'clamp':''}" data-a="descToggle" translate="no">${esc(b.desc)}</div>`:((ONLINE||SAMPLE)?`<button class="btn sm ghost" style="margin-top:12px" data-a="findDesc" data-id="${b.id}">✨ Подтянуть описание</button>`:'')}</div>${ONLINE&&!covers[b.id]?`<button class="btn sm ghost" style="margin-top:8px" data-a="findCover" data-id="${b.id}">🖼 Найти обложку</button>`:''}
-${b.status!=='want'?histHTML(b):''}
-${b.status!=='want'?bookExtras(b):''}${b.status==='done'?`<button class="btn big" style="margin-top:14px" data-a="card" data-id="${b.id}">📸 Карточка для сторис</button>`:''}
+${b.status!=='want'&&b.status!=='bought'?histHTML(b):''}
+${b.status!=='want'&&b.status!=='bought'?bookExtras(b):''}${b.status==='done'?`<button class="btn big" style="margin-top:14px" data-a="card" data-id="${b.id}">📸 Карточка для сторис</button>`:''}
 ${dosBookHTML(b)}
 <div style="margin-top:10px">${serBookHTML(b)}<div class="kv"><span>${L('Свой корешок','Own spine')}</span><span><label style="color:var(--accent);cursor:pointer">📷 ${spines[b.id]?L('Заменить','Replace'):L('Загрузить фото','Upload photo')}<input type="file" accept="image/*" id="spFile" data-id="${b.id}" style="display:none"></label>${spines[b.id]?` · <a href="#" data-a="spDel" data-id="${b.id}" style="color:var(--muted)">${L('убрать','remove')}</a>`:''}</span></div></div>
 ${collBookHTML(b)}
@@ -3459,6 +3464,8 @@ const EN_RAW=`Дух	Spirit
 Здесь соберутся прочитанные книги	Your finished books will gather here
 Мои книги	My books
 Читаю	Reading
+Куплено	Bought
+Тут будут купленные книги, которые ждут своей очереди	Bought books waiting for their turn will be here
 Хочу	Want
 Прочитано	Finished
 Цель выполнена! 🎉	Goal reached! 🎉
@@ -4400,7 +4407,7 @@ let bkEdit=false,bkSelId=null;
 let bkSnapOnce=false;
 (function(){let lp=null,drag=null,sx=0,sy=0,ghost=null,tgt=null,side=0,scrollT=null;
  const clearT=()=>{document.querySelectorAll('.dropL,.dropR,.dropT,.dropB').forEach(e=>e.classList.remove('dropL','dropR','dropT','dropB'))};
- const okTab=()=>tab==='books'&&(booksTab==='done'||booksTab==='want')&&(S.shStyle||'live')!=='rainbow'&&!shEdit;
+ const okTab=()=>tab==='books'&&(booksTab==='done'||booksTab==='want'||booksTab==='bought')&&(S.shStyle||'live')!=='rainbow'&&!shEdit;
  document.addEventListener('touchstart',e=>{if(!okTab()||e.touches.length>1)return;const el=e.target.closest('.spshelf [data-a=bookOpen]');if(!el)return;
    sx=e.touches[0].clientX;sy=e.touches[0].clientY;const id=el.dataset.id;clearTimeout(lp);
    lp=setTimeout(()=>{lp=null;bkSnapOnce=true;try{if(window._shList)shelfFor(window._shList)}finally{bkSnapOnce=false}const src=el;if(!src.isConnected)return;
@@ -4517,7 +4524,7 @@ function spineShelf(list,groups){shST=S.shStyle||'live';spFace=new Set();
   const n=shUnlocked(),dn=liveDone().length,left=Math.max(1,shNeed(n)-dn);
   const SS=shSet(),bm=BOYM();const hint=booksTab==='done'&&!ed?`<div class="sh-hint" data-a="shelfPets">${bm?'🌹':'🐾'} ${n<SS.length?(bm?L(`Через ${left} ${plural(left,BK)} он оставит на полке новый подарок`,`He’ll leave a new gift after ${left} more ${left===1?'book':'books'}`):L(`Через ${left} ${plural(left,BK)} на полке поселится новый житель`,`A new dweller moves in after ${left} more ${left===1?'book':'books'}`)):(bm?L('Все его подарки уже на полке','All his gifts are on your shelf'):L('Все жители полки уже с тобой','All shelf dwellers are with you'))} · ${n}/${SS.length} ›</div>`:'';
   let tools='';
-  if(bkEdit&&(booksTab==='done'||booksTab==='want')){const sb=bkSelId&&S.books[bkSelId],md=sb?bkModeOf(bkSelId):'';
+  if(bkEdit&&(booksTab==='done'||booksTab==='want'||booksTab==='bought')){const sb=bkSelId&&S.books[bkSelId],md=sb?bkModeOf(bkSelId):'';
     tools=`<div class="bk-bar">${sb?`<div class="bk-t"><b>${esc(sb.title)}</b><button class="bk-x" data-a="bkUnsel" aria-label="close">✕</button></div><div class="bk-b">${shST==='vitrine'?'':`<button class="chip ${md==='spine'?'on':''}" data-a="bkMode" data-v="spine">${L('Корешком','Spine')}</button><button class="chip ${md==='face'?'on':''}" data-a="bkMode" data-v="face">${L('Обложкой','Cover')}</button><button class="chip ${md==='lie'?'on':''}" data-a="bkMode" data-v="lie">${L('Положить','Lay flat')}</button>`}</div>`:`<div class="bk-t"><span>${L('Зажми книгу и перетащи. Нажми на книгу, чтобы поставить ее обложкой или положить','Hold and drag a book. Tap a book to change how it stands')}</span></div><div class="bk-b"><button class="chip" data-a="bkReset">↺ ${L('Как было','Reset')}</button><button class="chip on" data-a="bkDone">✓ ${L('Готово','Done')}</button></div>`}</div>`}
   else if(booksTab==='done'){if(ed){const placed=new Set(free.map(it=>it.v));
       tools=`<div class="sh-edit"><div class="sh-edit-t"><b>${L('Расстановка','Arrange')}</b><button class="chip on" data-a="shEditDone">✓ ${L('Готово','Done')}</button></div>
@@ -4539,6 +4546,7 @@ document.addEventListener('click',e=>{window._lc=e},true);
 
 function shelfFor(list){window._shList=list;if(booksTab==='reading'||booksTab==='later')return shelfHTML(list);
   if(booksTab==='want')return spineShelf(list,[[L('Хочу прочитать','Want to read')+' · '+list.length,list]]);
+  if(booksTab==='bought')return spineShelf(list,[[L('Куплено','Bought')+' · '+list.length,list]]);
   const by={};list.forEach(b=>{const y=b.finishedAt?new Date(b.finishedAt).getFullYear():L('Без даты','No date');(by[y]=by[y]||[]).push(b)});const tm=b=>b.finishedAt?new Date(b.finishedAt).getTime():0;Object.keys(by).forEach(y=>{const a=by[y].sort((x,z)=>tm(z)-tm(x)),g=new Map();a.forEach(b=>{const k=serOf(b)?'s|'+norm(serOf(b)):(norm(b.author||'')||b.id);if(!g.has(k))g.set(k,[]);g.get(k).push(b)});by[y]=[...g.values()].map(x=>serOf(x[0])?x.sort((p,q)=>serNum(p)-serNum(q)):x).flat()});
   return spineShelf(list,Object.keys(by).sort((a,b)=>(+b||0)-(+a||0)).map(y=>[`${y} · ${by[y].length} ${plural(by[y].length,BK)}`,by[y]]))}
 function shelfHTML(list){let h='';for(let i=0;i<list.length;i+=3){const row=list.slice(i,i+3);
@@ -4547,13 +4555,13 @@ function shelfHTML(list){let h='';for(let i=0;i<list.length;i+=3){const row=list
   return `<div class="shelf">${h}</div>`}
 let boId=null,boS=[],boI=0,boBusy=false;
 function boSpreads(b){const pr=Math.round(fracOf(b)*100),F=FMT[b.format||'paper'];
-  const st={reading:'Читаю',want:'Хочу прочитать',done:'Прочитано'}[b.status];
+  const st={reading:'Читаю',want:'Хочу прочитать',bought:'Куплено',done:'Прочитано'}[b.status];
   const kv=(k,v)=>`<div class="bkv"><span>${k}</span><b>${v}</b></div>`;
   const hd=t=>`<div class="bp-h">${t}</div>`;
   const L1=`<div class="bp-t" translate="no">${esc(b.title)}</div><div class="bp-a" translate="no">${esc(b.author||'')}</div><div class="bp-orn">❦</div>${kv('Формат',F.icon+' '+F.label)}${kv('Статус',st)}${b.pages?kv('Страниц',b.pages):''}${unitOf(b)==='chapters'&&b.chapters?kv('Глав',b.chapters):''}${unitOf(b)==='time'&&b.duration?kv('Длительность',fmtMin(b.duration)):''}${b.startedAt?kv('Начато',fmtDate(b.startedAt)):''}${b.finishedAt?kv('Прочитано',fmtDate(b.finishedAt)):''}${b.rating?`<div class="bp-stars">${starsTxt(b.rating)}</div>`:''}`;
   const R=30,C=2*Math.PI*R;
   const emo=Object.entries(b.emo||{}).filter(x=>x[1]>0).sort((x,y)=>y[1]-x[1]).slice(0,4);
-  const R1=`${hd('Прогресс')}<div class="bp-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="${R}" fill="none" stroke="#d9c7a2" stroke-width="7"/><circle cx="40" cy="40" r="${R}" fill="none" stroke="#8e1530" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pr/100)}" transform="rotate(-90 40 40)"/><text x="40" y="45" text-anchor="middle" font-size="15" font-weight="800" fill="#3a2a1a" font-family="Playfair Display,Georgia,serif">${b.status==='want'?'—':pr+'%'}</text></svg><div>${b.status==='want'?'<i>Ещё не начата</i>':esc(progressText(b))}</div></div>
+  const R1=`${hd('Прогресс')}<div class="bp-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="${R}" fill="none" stroke="#d9c7a2" stroke-width="7"/><circle cx="40" cy="40" r="${R}" fill="none" stroke="#8e1530" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pr/100)}" transform="rotate(-90 40 40)"/><text x="40" y="45" text-anchor="middle" font-size="15" font-weight="800" fill="#3a2a1a" font-family="Playfair Display,Georgia,serif">${b.status==='want'||b.status==='bought'?'—':pr+'%'}</text></svg><div>${b.status==='want'||b.status==='bought'?'<i>Ещё не начата</i>':esc(progressText(b))}</div></div>
 ${emo.length?hd('Реакции')+`<div class="bp-emo">${emo.map(([i,c])=>`<span>${EMO[i][0]} ${c}</span>`).join('')}</div>`:''}${(b.tropes||[]).length?hd('Тропы')+`<div class="bp-tr">${b.tropes.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:''}`;
   const h=b.hist||{},ks=Object.keys(h).filter(k=>h[k]>0).sort().reverse().slice(0,12);
   const L2=`${hd('📅 История чтения')}${ks.length?ks.map(k=>kv(fmtDate(keyToDate(k)),'+'+histAmt(b,h[k]))).join(''):'<p class="bp-e">Отмечай прогресс — и здесь появится, сколько ты читала в какой день.</p>'}`;
@@ -4579,7 +4587,7 @@ function boFlip(dir){if(boBusy)return;const nx=boI+dir;if(nx<0||nx>=boS.length)r
 function boClose(then){const el=$('#bo');if(!el)return;el.classList.remove('opened');void el.offsetWidth;el.classList.remove('open');el.classList.add('closing');
   setTimeout(()=>{el.remove();if(then)then()},then?0:850)}
 const libActions={
-  bookOpen:d=>Date.now()-(window._bkDragT||0)<500?0:bkEdit&&tab==='books'&&(booksTab==='done'||booksTab==='want')?bkTap(d.id):boOpen(d.id),
+  bookOpen:d=>Date.now()-(window._bkDragT||0)<500?0:bkEdit&&tab==='books'&&(booksTab==='done'||booksTab==='want'||booksTab==='bought')?bkTap(d.id):boOpen(d.id),
   boNext:()=>boFlip(1),boPrev:()=>boFlip(-1),
   boClose:()=>boClose(),
   boCard:()=>{const id=boId;boClose(()=>openSheet(bookSheet(id),'book'))},
@@ -4677,9 +4685,9 @@ const A={
     if(c.audio&&!readDur()){$('#fDurH').value=Math.floor(c.audio/60);$('#fDurM').value=c.audio%60}
     $('#sugg').classList.add('hidden');updFormHint();if(c.cover&&!pendingCover)setPendingCover(c.cover);else updCovPrev()},
   aiFind:()=>aiFind(),
-  ownShow:()=>{tab='books';booksTab='want';collF='__own';const all=Object.values(S.books).filter(b=>b.own&&b.status!=='done');if(all.length&&!all.some(b=>b.status==='want'))booksTab=all[0].status==='pause'||all[0].status==='dnf'?'later':all[0].status;render();window.scrollTo(0,0)},
+  ownShow:()=>{tab='books';const all=Object.values(S.books).filter(b=>b.own&&b.status!=='done');const bt=all.some(b=>b.status==='bought');booksTab=bt?'bought':'want';collF=bt?null:'__own';if(!bt&&all.length&&!all.some(b=>b.status==='want'))booksTab=all[0].status==='pause'||all[0].status==='dnf'?'later':all[0].status;render();window.scrollTo(0,0)},
   fOwn:()=>{const e=$('#fOwn');if(e)e.classList.toggle('on')},
-  fStatus:d=>{const seg=$('#fStatus');seg.dataset.v=d.v;seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===d.v));const w=$('#fCurW');if(w)w.classList.toggle('hidden',d.v!=='reading')},
+  fStatus:d=>{{const o=$('#fOwn');if(o)o.classList.toggle('hidden',d.v==='bought')}const seg=$('#fStatus');seg.dataset.v=d.v;seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===d.v));const w=$('#fCurW');if(w)w.classList.toggle('hidden',d.v!=='reading')},
   rmCover:()=>{pendingCover=null;$('#fCovPrev').innerHTML=coverHTML({title:$('#fTitle').value||'?',author:$('#fAuthor').value,color:formColor})},
   saveBook:d=>{
     const title=$('#fTitle').value.trim();if(!title){$('#fTitle').focus();toast('Напиши название книги');return}
@@ -4689,13 +4697,13 @@ const A={
     if(unit==='chapters'&&!chapters){$('#fChap').focus();toast('Укажи, сколько глав в аудиокниге');return}
     let b=d.id?S.books[d.id]:null;const now=Date.now();
     if(b){const was=b.status,oldFrac=fracOf(b),oldUnit=unitOf(b);
-      Object.assign(b,{genre:fGenreV(),title,author,pages,format,unit,duration,chapters,desc:($('#fDesc').value||'').trim(),touchedAt:now});{const o=!!($('#fOwn')&&$('#fOwn').classList.contains('on'));if(o&&!b.own)b.ownAt=now;b.own=o?1:0}
+      Object.assign(b,{genre:fGenreV(),title,author,pages,format,unit,duration,chapters,desc:($('#fDesc').value||'').trim(),touchedAt:now});{const o=status==='bought'||!!($('#fOwn')&&$('#fOwn').classList.contains('on'));if(o&&!b.own)b.ownAt=now;b.own=o?1:0}
       if(unit!==oldUnit){const t=totalOf(b);b.current=t?Math.round(oldFrac*t):0}
       {const t=totalOf(b);if(t&&b.current>t)b.current=t}
       if(status!==was){b.status=status;if(status==='pause'||status==='dnf')b.pausedAt=now;if(status==='want')day().want++;if(status==='reading'&&!b.startedAt)b.startedAt=now;if(status==='done'){closeSheet(true);b.live=was==='reading'?1:0;finishBook(b);}else if(was==='done'){b.finishedAt=null}}
     }else{const id='b'+uid();let cur=0;
       if(status==='reading'){if(unit==='time')cur=(parseInt(($('#fCurH')||{}).value)||0)*60+(parseInt(($('#fCurM')||{}).value)||0);else cur=Math.max(0,parseInt(($('#fCur')||{}).value)||0)}
-      b={id,genre:fGenreV(),title,author,pages,format,unit,duration,chapters,desc:($('#fDesc').value||'').trim(),current:0,status,addedAt:now,touchedAt:now,startedAt:status==='reading'?now:null,finishedAt:status==='done'?now:null,rating:0,notes:[],color:formColor,hasCover:false,own:($('#fOwn')&&$('#fOwn').classList.contains('on'))?1:0};if(b.own)b.ownAt=now;
+      b={id,genre:fGenreV(),title,author,pages,format,unit,duration,chapters,desc:($('#fDesc').value||'').trim(),current:0,status,addedAt:now,touchedAt:now,startedAt:status==='reading'?now:null,finishedAt:status==='done'?now:null,rating:0,notes:[],color:formColor,hasCover:false,own:(status==='bought'||($('#fOwn')&&$('#fOwn').classList.contains('on')))?1:0};if(b.own)b.ownAt=now;
       const t=totalOf(b);b.current=status==='done'?t:(t?Math.min(cur,t):cur);
       S.books[id]=b;if(status==='want')day().want++;
       if(status==='done'){closeSheet(true);celebrate(`<div style="display:flex;justify-content:center">${coverHTML(b,true)}</div><h2 class="center" style="margin:14px 0 6px">Добавлено в прочитанное</h2><div class="rate" id="rateBox">${rateBtns(b)}</div><div id="reactWrap"></div><p class="center hint" style="margin:0 0 10px">Поставь оценку</p><p class="center hint" style="margin:0 0 18px;font-size:12.5px">📚 ${L('Книга встала на полку и в статистику. Подарки и новые существа открываются за книги, которые ты дочитываешь здесь: добавь книгу в «Читаю» и отмечай страницы.','The book is on your shelf and in your stats. Gifts and new creatures unlock for books you finish here: add a book to “Reading” and log pages.')}</p><button class="btn primary big" data-a="close">Готово</button>`);checkEggs()}}
