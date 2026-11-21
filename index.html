@@ -18,7 +18,7 @@
 <meta property="og:description" content="Трекер чтения с героями дарк-романов: отмечай прочитанные книги и страницы, ставь цели, а твой герой, книжный дух или хранитель растет вместе с тобой.">
 <meta property="og:locale" content="ru_RU">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Cormorant+Garamond:ital,wght@0,500;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Cormorant+Garamond:ital,wght@0,500;1,400;1,500&family=Manrope:wght@400;500;600;700&family=Marck+Script&display=swap" rel="stylesheet">
 <style>
 :root,body[data-theme=night]{
   --bg1:#45308a;--bg2:#271a58;--bg3:#130c2c;--star:#fff;--starop:.55;
@@ -688,6 +688,55 @@ svg .glyph{animation:gly 5s ease-in-out infinite}svg .glyph.g1{animation-delay:1
 @keyframes seam{0%,100%{opacity:.5}50%{opacity:1}}svg .seam{animation:seam 2.4s ease-in-out infinite}
 .date-inv{display:flex;align-items:center;gap:12px;margin-top:14px;cursor:pointer;color:#fff;border:1px solid rgba(255,140,160,.35)!important}
 .date-inv .di-e{font-size:30px}.date-inv .di-go{font-size:22px;animation:sfl 2.2s ease-in-out infinite}
+ .date-inv.sealed{background:radial-gradient(120% 140% at 0% 50%,rgba(120,60,160,.28),transparent 60%),linear-gradient(160deg,#141119,#060508)!important;border-color:rgba(210,200,255,.22)!important}
+.date-inv .di-seal{width:42px;height:42px;flex:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6));animation:invPulse 2.2s ease-in-out infinite}
+@keyframes invPulse{0%,100%{transform:scale(1) rotate(-8deg)}50%{transform:scale(1.08) rotate(-4deg)}}
+.inv-wrap{margin:-4px -18px -22px;padding:18px 18px 26px;background:radial-gradient(120% 60% at 50% 0%,rgba(140,120,220,.16),transparent 60%),#07060b;color:#ece8f5;text-align:center;min-height:62vh}
+.inv-kick{font:600 11px/1 Manrope,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:#cfc8ee;margin:6px 0 14px;opacity:.85}
+.inv-env{position:relative;margin:-18px -18px 0;height:min(78vh,700px);background:#050407 center 50%/cover no-repeat;overflow:hidden;transition:transform 1.1s ease,filter 1.1s ease}
+.inv-env:before{content:'';position:absolute;inset:0;background:linear-gradient(#07060bcc,transparent 22%,transparent 72%,#07060b)}
+.inv-env .inv-kick{position:relative;z-index:2;margin:0;padding-top:22px}
+.inv-env .inv-hint{position:absolute;left:0;right:0;bottom:22px;z-index:2;font:500 13px Manrope,sans-serif;color:#cfc8ee;margin:0}
+.env-tap{position:absolute;left:52.3%;top:50%;width:30%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:3;cursor:pointer;border-radius:50%}
+.env-ring{position:absolute;inset:8%;border-radius:50%;box-shadow:0 0 0 2px rgba(230,210,255,.55),0 0 30px 6px rgba(190,140,255,.35);animation:ringBeat 1.8s ease-in-out infinite}
+@keyframes ringBeat{0%,100%{transform:scale(.92);opacity:.55}50%{transform:scale(1.08);opacity:1}}
+.env-crack{position:absolute;inset:0;width:100%;height:100%;opacity:0;stroke-dasharray:160;stroke-dashoffset:160}
+.env-flash{position:absolute;inset:0;z-index:4;pointer-events:none;background:radial-gradient(circle at 52% 50%,rgba(240,225,255,.95),rgba(180,140,255,.4) 25%,transparent 55%);opacity:0}
+.inv-env.open .env-ring{animation:none;opacity:0}
+.inv-env.open .env-crack{opacity:1;animation:crackDraw .35s ease-out forwards}
+.inv-env.open .env-flash{animation:envFlash 1.1s .3s ease-out forwards}
+.inv-env.open{transform:scale(1.12);filter:brightness(1.4) blur(1px);transition-delay:.35s}
+@keyframes crackDraw{to{stroke-dashoffset:0}}
+@keyframes envFlash{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
+.inv-paper{position:relative;text-align:left;background:linear-gradient(160deg,#1a1722,#0d0b12);border:1px solid rgba(215,205,255,.16);border-radius:14px;padding:26px 20px 16px;margin:8px 2px 14px;box-shadow:0 18px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);animation:paperUp .8s cubic-bezier(.2,.8,.2,1)}
+.inv-paper+.inv-paper{margin-top:18px;animation-delay:.15s}
+.inv-seal-sm{position:absolute;left:-10px;top:-14px;width:40px;height:40px;transform:rotate(-14deg);filter:drop-shadow(0 4px 5px rgba(0,0,0,.6))}
+.inv-tx{font:400 25px/1.32 'Marck Script','Cormorant Garamond',Georgia,serif;color:#f1ecfb;min-height:2.6em;margin:0}
+.inv-tx.tw:after{content:'|';animation:twBlink .9s steps(1) infinite;margin-left:1px;color:#b9a8ff}
+@keyframes twBlink{50%{opacity:0}}
+.inv-sig{text-align:right;font:400 21px 'Marck Script','Cormorant Garamond',serif;color:#c5b8ff;margin-top:8px;opacity:0;transition:opacity .6s .15s}
+.inv-meta{font:500 13px/1.6 Manrope,sans-serif;color:#aaa3bf;margin:0 0 16px;opacity:0;transition:opacity .6s}
+.inv-note{font:500 13px Manrope,sans-serif;color:#aaa3bf;margin:2px 0 12px}
+.inv-btns{opacity:0;transform:translateY(8px);transition:opacity .5s .25s,transform .5s .25s;pointer-events:none}
+.inv-meta.on,.inv-sig.on{opacity:1}.inv-btns.on{opacity:1;transform:none;pointer-events:auto}
+.inv-tease{color:#d8c9ff;font:italic 500 19px/1.45 'Cormorant Garamond',Georgia,serif;margin:0 6px 14px;animation:paperUp .5s}
+.nb{display:block;width:100%;margin-top:10px;padding:15px 16px;border-radius:14px;border:1px solid rgba(220,212,255,.26);background:rgba(255,255,255,.05);color:#f1edfa;font:700 15px Manrope,sans-serif;text-align:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer}
+.nb.pri{background:rgba(238,233,255,.94);color:#0c0a12;border-color:transparent;box-shadow:0 8px 26px rgba(170,150,255,.25)}
+.nb:active{transform:scale(.98)}
+.vn{position:relative;margin:-4px -18px -22px;background:#07060b;color:#ece8f5;min-height:70vh}
+.vn-img{height:min(60vh,540px);background:#07060b center 18%/cover no-repeat;position:relative}
+.vn-img.short{height:min(38vh,340px)}
+.vn-img:after{content:'';position:absolute;inset:0;background:linear-gradient(#07060b99,transparent 18%,transparent 55%,#07060b 98%)}
+.vn-img.noimg{display:grid;place-items:center}.vn-img.noimg:after{display:none}
+.vn-h{position:absolute;top:14px;left:18px;right:60px;font:italic 600 22px 'Cormorant Garamond',Georgia,serif;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8)}
+.vn-b{position:relative;margin-top:-90px;padding:0 18px 26px}
+.vn-tx{font:400 15.5px/1.65 Manrope,sans-serif;color:#ece8f5;margin:0 0 14px;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.vn-q{font:italic 600 20px/1.4 'Cormorant Garamond',Georgia,serif;color:#fff;margin:0 0 6px;text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.vn-me{font:700 13px Manrope,sans-serif;color:#bfb3ff;margin:0 0 6px;letter-spacing:.02em}
+.vn-mem{font:700 14px Manrope,sans-serif;color:#d8cfff;text-align:center;margin:4px 0 6px}
+.vn-date{font:500 12px Manrope,sans-serif;color:#9d96b3;margin:0 0 8px}
+.vn-ch .nb{text-align:left}
+@keyframes paperUp{from{transform:translateY(40px) scale(.97);opacity:0}to{transform:none;opacity:1}}
 .date-wrap{margin:-6px -4px 0;padding:16px 16px 18px;border-radius:22px;color:#f6e9e0}
 .date-h{display:flex;align-items:center;gap:8px;font:700 18px 'Playfair Display',Georgia,serif;margin-bottom:8px}.date-h span{font-size:24px}
 .date-hero{width:150px;margin:4px auto 10px}
@@ -983,6 +1032,7 @@ body[data-ui] .srow .ico,body[data-ui] .slist .ico{width:24px;height:24px}
 <script src="heroes.js"></script>
 <script src="backgrounds.js"></script>
 <script src="creatures.js"></script>
+<script src="dates.js"></script>
 <script>
 'use strict';
 /* ---------- helpers ---------- */
@@ -1673,7 +1723,7 @@ function idbSaveState(){clearTimeout(idbT);idbT=setTimeout(()=>{try{IDB.set('sta
   if(ch)render()}catch(e){}})();
 function isTrivial(s){return !Object.keys(s.books||{}).length&&s.pets.every(p=>!p.hatched&&!p.xp)}
 
-function save(){checkQuest();try{checkRitual()}catch(e){}checkAch();checkTarot();S.updatedAt=Date.now();const ok=lsSet(LS,JSON.stringify(S));if(!ok&&!lsFull){lsFull=true}idbSaveState();dbQueue('state',()=>S)}
+function save(){checkQuest();try{checkRitual()}catch(e){}try{checkHeroTask()}catch(e){}checkAch();checkTarot();S.updatedAt=Date.now();const ok=lsSet(LS,JSON.stringify(S));if(!ok&&!lsFull){lsFull=true}idbSaveState();dbQueue('state',()=>S)}
 function saveCover(id,url){covers[id]=url;IDB.set('cv:'+id,url);dbQueue('cover_'+id,()=>({d:url}))}
 function dropCover(id){delete covers[id];lsDel(LSC+id);IDB.del('cv:'+id);dbQueue('cover_'+id,()=>null)}
 
@@ -2281,7 +2331,7 @@ ${kindOf(p)==='boy'&&st===0?`<p class="mask-hint" style="margin:8px 0 10px">🎭
   return `<div class="top"><h1>${BOYM()?'Книжный бойфренд':FAMM()?'Книжный хранитель':'Книжный дух'}</h1><span class="date" data-a="syncInfo" style="cursor:pointer">${dateStr}<span id="syncLbl">${syncLabel()}</span></span></div>${IN_APP?tipBanner():''}${!IN_APP&&syncMode!=='cloud'&&Object.keys(S.books).length?(syncErr==='no-cloud'?'<div class="card" style="padding:10px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;border-color:#e0304a" data-a="backup"><span style="font-size:20px">⚠️</span><span class="hint" style="flex:1">В этом окне облако недоступно — после закрытия записи могут пропасть. Нажми и сделай резервную копию</span></div>':tipBanner()):''}
 ${block}
 ${readyEggs.length?`<div class="card" style="margin-top:14px;display:flex;align-items:center;gap:12px;cursor:pointer" data-a="egg" data-id="${readyEggs[0].id}"><div style="width:54px;height:54px;flex:none">${eggSVG(readyEggs[0].species,HATCH,{ready:true})}</div><div><b>${kindOf(p)==='boy'?'Новое письмо можно открыть!':kindOf(p)==='pet'?L('Дух в книге проснулся!','The spirit in the book woke up!'):'Новое яйцо готово!'}</b><div class="hint">Нажми, чтобы узнать, кто там</div></div></div>`:''}
-${kindOf(p)==='boy'&&p.hatched?inviteCard(p):''}${ritualCard()}<div class="stats3"><div class="mini"><b>${todayP}</b><span>${(()=>{const b=curRead();return b&&unitOf(b)!=='pages'?L('опыта сегодня','XP today'):plural(todayP,PG)+' сегодня'})()}</span></div><div class="mini"><b>${streak()}🔥</b><span>${plural(streak(),DY)} подряд</span></div><div class="mini"><b>${doneThisYear()}</b><span>${plural(doneThisYear(),BK)} за год</span></div></div>
+${kindOf(p)==='boy'&&p.hatched?inviteCard(p):''}${ritualCard()}${heroTaskCard()}<div class="stats3"><div class="mini"><b>${todayP}</b><span>${(()=>{const b=curRead();return b&&unitOf(b)!=='pages'?L('опыта сегодня','XP today'):plural(todayP,PG)+' сегодня'})()}</span></div><div class="mini"><b>${streak()}🔥</b><span>${plural(streak(),DY)} подряд</span></div><div class="mini"><b>${doneThisYear()}</b><span>${plural(doneThisYear(),BK)} за год</span></div></div>
 <button class="btn primary big" data-a="log">📖 Отметить чтение</button>
 <div style="height:14px"></div>${questHTML()}${tarotHTML()}
 ${pets}
@@ -2525,7 +2575,7 @@ function bookForm(id,st){
 <div class="f"><div class="flabel">Название</div><div class="ac"><input class="i" id="fTitle" value="${esc(b?b.title:'')}" placeholder="Начни вводить название или автора" autocomplete="off" autocorrect="off" spellcheck="false"><div class="sugg hidden" id="sugg"></div></div></div>
 <div class="flabel">${L('Жанр','Genre')} <span style="font-weight:600;color:var(--muted)">${L('— от него зависит, какой дух родится из книги','— it decides which spirit is born from the book')}</span></div>
 <div class="gchips" id="fGenre" data-v="${b&&b.genre||''}">${GENRES.map(g=>`<button type="button" class="${b&&b.genre===g[0]?'on':''}" data-a="fGenre" data-v="${g[0]}">${g[3]} ${L(g[1],g[2])}</button>`).join('')}</div>
-<label class="f">Автор<input class="i" id="fAuthor" value="${esc(b?b.author:'')}" placeholder="Подставится сам, если выбрать книгу из подсказок" autocomplete="off"></label>
+<label class="f">Автор<input class="i" id="fAuthor" value="${esc(b?b.author:'')}" placeholder="Подставится сам, если выбрать книгу из подсказок" autocomplete="off"></label>${S.boysOn?`<label class="f">${L('Главный герой книги','The book’s male lead')} <span style="font-weight:600;color:var(--muted)">${L('— твой герой будет ревновать','— your hero will get jealous')}</span><input class="i" id="fHero" value="${esc(b&&b.hero||'')}" placeholder="${L('Например, Ксейден','For example, Xaden')}" autocomplete="off" maxlength="40"></label>`:''}
 <div class="flabel">Формат</div>
 <div class="seg" id="fFormat" data-v="${format}">${['paper','ebook','audio'].map(k=>`<button type="button" class="${format===k?'on':''}" data-a="fFormat" data-v="${k}">${FMT[k].icon} ${FMT[k].label}</button>`).join('')}</div>
 <div id="fUnitW" class="${format==='ebook'?'':'hidden'}"><div class="flabel">Отмечать прогресс</div><div class="seg" id="fUnit" data-v="${format==='ebook'?unit:'percent'}">${[['percent','В процентах'],['pages','В страницах']].map(([k,t])=>`<button type="button" class="${(format==='ebook'?unit:'percent')===k?'on':''}" data-a="fUnit" data-v="${k}">${t}</button>`).join('')}</div></div>
@@ -2744,7 +2794,7 @@ function applyLog(id,v,dk){dk=dk||today();const isT=dk===today();
   if(d>0){S.log[dk]=(S.log[dk]||0)+d;S.totalPages=prevTotal+d;const hr=new Date().getHours();if(isT)day().logs++;if(isT&&(hr>=21||hr<5)){day().late=1;const w=wk();if(!w.late.includes(today()))w.late.push(today())}if(hr<5){S.flags=S.flags||{};S.flags.night=true}
     const nu=ACC.filter(a=>a.need>0&&prevTotal<a.need&&S.totalPages>=a.need);if(nu.length)setTimeout(()=>toast(curKind()==='pet'?`👗 Открыт новый наряд: ${nu[nu.length-1].name}!`:`👗 У книжных духов открылся новый наряд: ${nu[nu.length-1].name}`),3200)}
   if(d>0)S.pets.forEach(e=>{if(!e.hatched&&kindOf(e)==='pet'&&!e.fromBook){e.gx=e.gx||{};e.gb=e.gb||{};const g=b.genre||'_';e.gx[g]=(e.gx[g]||0)+d;e.gb[b.id]=(e.gb[b.id]||0)+d}});
-  if(d>0&&isT)maybeLetter(b,d,prev,willFinish);if(willFinish)finishBook(b,d);
+  if(d>0&&isT)maybeLetter(b,d,prev,willFinish);if(d>0&&isT)try{bookJeal(b)}catch(e){}if(willFinish)finishBook(b,d);
   else if(d>0){feed(d);toast((isT?'':'📅 '+fmtDate(keyToDate(dk))+': ')+(unitOf(b)==='pages'?`+${d} ${plural(d,PG)}! Дух доволен`:`+${d} опыта! Дух доволен`))}
   save();render();
 }
@@ -2957,20 +3007,24 @@ const tarotActions={
 
 /* ---------- письма от героя и дневник духа ---------- */
 const LB_OPEN=[
- ['Я видел тебя сегодня с книгой. Ты меня не заметила. Пока.','Ты не знаешь, кто я. Но я знаю, на какой странице ты остановилась.','Не оборачивайся. Просто продолжай читать.'],
- ['Я снова смотрел, как ты читаешь. Ты кусаешь губу на самых интересных местах.','Ты читала, а я не мог отвести глаз. Это становится проблемой.','Я обещал себе держаться на расстоянии. Не получается.'],
- ['Я думал о тебе весь день.','Ты даже не представляешь, что делаешь со мной, когда переворачиваешь страницу.','Мне мало твоих вечеров. Я хочу их все.'],
- ['Ты моя. Это даже не обсуждается.','Я жду каждого вечера с тобой, как приговора. Сладкого.','Я сжёг бы весь мир, чтобы ты могла спокойно дочитать главу.']];
-const LB_MID=['Каждая страница, которую ты читаешь, приближает тебя ко мне.','Ты читала, а я считал твои вдохи на самых острых сценах.','Мне не нравится, как ты улыбаешься этой книге. Улыбайся мне.','Я запомнил, где ты остановилась. Я запоминаю о тебе всё.'];
-const LB_CLOSE=[['Мы ещё встретимся.','Я буду рядом. Ты не увидишь.'],['Читай дальше. Я смотрю.','До завтра. Я буду ждать.'],['Не задерживайся. Я скучаю.','Возвращайся ко мне скорее.'],['Навсегда твой.','Ты — моя любимая история.']];
-const LP_OPEN=['Дорогой дневник!','Дневничок, привет!','Пишу лапкой, поэтому коротко.'];
-const LP_MID=['Сегодня мы читали вместе. Это лучшее время дня.','Слушал, как шуршат страницы. Это моя любимая музыка.','Я сидел рядом и охранял закладку. Никто её не украл!','Мне кажется, я сегодня подрос. Совсем чуть-чуть, на одну страничку.'];
-const LP_CLOSE=['Завтра почитаем ещё. Обязательно!','Люблю её. И печеньки.','Конец записи. Ушёл спать 💤'];
+ ['Я видел тебя сегодня с книгой. Ты меня не заметила. Пока.','Ты не знаешь, кто я. Но я знаю, на какой странице ты остановилась.','Не оборачивайся. Просто продолжай читать.','Ты снова читала у окна. Я стоял ближе, чем ты думаешь.','Кто-то оставил закладку на твоей странице. Это был я.','Ты листаешь страницы так, будто ищешь в них меня.','Я знаю, какую книгу ты возьмешь завтра. Я знаю о тебе слишком много.','Ты закрыла книгу и улыбнулась. Я бы многое отдал, чтобы узнать почему.','Не ищи меня. Я сам решу, когда показаться.','Сегодня ты читала до поздней ночи. Я ждал, пока погаснет твой свет.','Ты загибаешь уголки страниц. Я заметил. Я замечаю все.','Ты исчезаешь в книгах. Однажды так же исчезнешь в моих руках.'],
+ ['Я снова смотрел, как ты читаешь. Ты кусаешь губу на самых интересных местах.','Ты читала, а я не мог отвести глаз. Это становится проблемой.','Я обещал себе держаться на расстоянии. Не получается.','Я обещал себе, что это последнее письмо. Солгал.','Ты смеялась над чем-то в книге. Теперь этот звук не выходит у меня из головы.','Ты даже не смотришь в мою сторону, когда читаешь. Это сводит меня с ума.','Я начал читать твои книги. Просто чтобы понять, о чем ты думаешь.','Мне стоило бы держаться подальше. Но я снова здесь.','Ты поправила волосы на сорок второй странице. Я запомнил номер.','Каждый вечер я говорю себе: только посмотрю. И каждый раз мне мало.','Ты опасна. И сама этого не знаешь.','Герой твоей книги никогда не смотрел бы на тебя так, как смотрю я.'],
+ ['Я думал о тебе весь день.','Ты даже не представляешь, что делаешь со мной, когда переворачиваешь страницу.','Мне мало твоих вечеров. Я хочу их все.','Я больше не могу притворяться, что ты мне безразлична.','Ты читаешь о чужой любви, а я схожу с ума от своей.','Сегодня я поймал себя на том, что жду вечера. Нашего вечера.','Когда ты читаешь, мир становится тише. Даже я.','Мне снилось, что ты читаешь мне вслух. Я проснулся и пожалел.','Я перестал считать дни. Теперь считаю твои страницы.','Ты единственная глава, которую я перечитываю.','Мне не нужен финал. Мне нужна ты, каждый вечер.','С тобой даже тишина звучит как признание.'],
+ ['Ты моя. Это даже не обсуждается.','Я жду каждого вечера с тобой, как приговора. Сладкого.','Я сжёг бы весь мир, чтобы ты могла спокойно дочитать главу.','Ты моя. Каждая страница, каждый вечер, каждый вдох.','Пусть весь мир читает твои книги. Ты читаешь их со мной.','Я разрушил бы любую историю, где нет тебя.','Никто не смеет отвлекать тебя от книги. Кроме меня.','Твое место рядом со мной. Всегда было.','Я привык получать все, что хочу. А хочу я только тебя.','Скажи слово, и я положу к твоим ногам целую библиотеку.','Мне все равно, кто тебе снится. Просыпаешься ты моей.','Я не умею любить наполовину. Тебе придется привыкнуть.']];
+const LB_MID=['Каждая страница, которую ты читаешь, приближает тебя ко мне.','Ты читала, а я считал твои вдохи на самых острых сценах.','Мне не нравится, как ты улыбаешься этой книге. Улыбайся мне.','Я запомнил, где ты остановилась. Я запоминаю о тебе всё.','Ты так сжимала книгу на сцене признания, что я начал ревновать к бумаге.','Ты загнула уголок на самом остром месте. Хотел бы я знать, о чем ты подумала.','Когда ты читаешь, ты забываешь обо всем. Я хочу, чтобы со мной ты забывала так же.','Сегодня ты прочитала больше, чем вчера. Я горжусь тобой. Только никому не говори.','Этот герой в твоей книге слишком много о себе думает. Я лучше.','Я видел, как ты вздохнула в конце главы. Этот вздох должен был быть моим.','Ты читаешь так, будто от этого зависит твоя жизнь. Мне нравится такая страсть.','Я прочитал каждую книгу с твоей полки. Теперь я знаю, чего ты хочешь.','Ты делаешь вид, что читаешь, а сама думаешь обо мне. Я знаю.','Твои книги рассказывают о тебе больше, чем ты думаешь.','Мне нравится, как ты прячешь улыбку за обложкой.'];
+const LB_CLOSE=[['Мы ещё встретимся.','Я буду рядом. Ты не увидишь.','Я рядом. Всегда.','Спи. Я посторожу.','Скоро ты узнаешь, кто я.','Не гаси свет слишком рано.'],['Читай дальше. Я смотрю.','До завтра. Я буду ждать.','Не заставляй меня ждать.','Я вернусь завтра. И послезавтра.','Читай. Я не отвлекаю. Почти.','Это письмо сожги. Или сохрани.'],['Не задерживайся. Я скучаю.','Возвращайся ко мне скорее.','Твой. Даже если ты еще не решила.','Думаю о тебе. Это уже диагноз.','Завтра вечером. Я буду считать минуты.','Скучаю, даже когда ты рядом.'],['Навсегда твой.','Ты — моя любимая история.','Только твой.','Моя. Навсегда.','До последней страницы и дальше.','Приходи скорее. Я не умею ждать.']];
+const LP_OPEN=['Дорогой дневник!','Дневничок, привет!','Пишу лапкой, поэтому коротко.','Дневник, это снова я!','Пишу под одеялом с фонариком.','Секретная запись. Никому не показывать!','Привет, дневник! У меня новости.','Сегодня был хороший день, слушай.'];
+const LP_MID=['Сегодня мы читали вместе. Это лучшее время дня.','Слушал, как шуршат страницы. Это моя любимая музыка.','Я сидел рядом и охранял закладку. Никто её не украл!','Мне кажется, я сегодня подрос. Совсем чуть-чуть, на одну страничку.','Мы нашли в книге смешное место, и я хихикал полстраницы.','Я спрятался между страницами и чуть не уснул там.','Сегодня я выучил новое слово из книжки. Правда, забыл какое.','Я считал страницы вместе с ней. Сбился на двадцати, но было весело.','Она гладила обложку, и мне показалось, что это меня погладили.','Я сторожил чай, чтобы он не остыл. Не уследил, но старался!','В книге был грустный момент. Я обнимал ее мысленно изо всех лапок.','Мне кажется, книги пахнут приключениями. А еще немного печеньками.'];
+const LP_CLOSE=['Завтра почитаем ещё. Обязательно!','Люблю её. И печеньки.','Конец записи. Ушёл спать 💤','Пока-пока, до завтра!','Ушел мечтать о следующей главе.','Обнимаю. Лапками.','Завтра будет еще интереснее, я чувствую!','Пора спать. Но я еще чуть-чуть почитаю.'];
+/* выбор без повторов: пока не прошли все варианты, одна и та же фраза не выпадет */
+function pickFresh(key,n){S.lRec=S.lRec||{};let u=(S.lRec[key]||[]).filter(i=>i<n);if(u.length>=n)u=u.slice(-1);
+  const free=[...Array(n).keys()].filter(i=>!u.includes(i));const i=rnd(free);u.push(i);S.lRec[key]=u;return i}
 function letterCtx(b,d,prev,fin){const hr=new Date().getHours(),sk=streak();
   if(fin)return {k:'fin'};if(hr>=22||hr<5)return {k:'late'};if(d>=50)return {k:'big',n:d};
   if((b.tropes||[]).length&&Math.random()<.6)return {k:'trope',t:rnd(b.tropes)};if(sk>=3&&Math.random()<.6)return {k:'streak',n:sk};
   if(!prev)return {k:'new'};return {k:'def',i:Math.floor(Math.random()*4)}}
 function letterMid(bb,c){
+  if(c.k==='jeal')return c.t;
   if(bb){if(c.k==='fin')return 'Ты дочитала книгу. Надеюсь, его финал был хуже, чем будет наш.';
     if(c.k==='late')return 'Уже ночь, а ты всё читаешь. Я бы забрал книгу из твоих рук… но мне нравится, как ты выглядишь при свете ночника.';
     if(c.k==='big')return L(`${c.n} ${plural(c.n,PG)} за один вечер. Ты опасна — и мне это нравится.`,`${c.n} pages in one evening. You're dangerous — and I like it.`);
@@ -2988,12 +3042,14 @@ function letterMid(bb,c){
 function maybeLetter(b,d,prev,fin){const p=activePet();if(!p||!p.hatched||d<=0)return;if(S.letDay===today()&&!fin)return;
   if(S.letFinDay===today()&&fin)return;
   const bb=kindOf(p)==='boy',st=stageOf(p);S.letters=S.letters||[];
-  S.letters.unshift({id:'l'+uid(),at:Date.now(),pid:p.id,kind:kindOf(p),st,o:Math.floor(Math.random()*3),e:Math.floor(Math.random()*(bb?2:3)),c:letterCtx(b,d,prev,fin),read:false});
+  const c=letterCtx(b,d,prev,fin);if(c.k==='def')c.i=pickFresh(bb?'bm':'pm',bb?LB_MID.length:LP_MID.length);
+  const o=bb?pickFresh('bo'+st,LB_OPEN[st].length):pickFresh('po',LP_OPEN.length),e=bb?pickFresh('bc'+st,LB_CLOSE[st].length):pickFresh('pc',LP_CLOSE.length);
+  S.letters.unshift({id:'l'+uid(),at:Date.now(),pid:p.id,kind:kindOf(p),st,o,e,c,read:false});
   if(S.letters.length>80)S.letters.length=80;S.letDay=today();if(fin)S.letFinDay=today();
   setTimeout(()=>toast(bb?L(`💌 ${p.name||'Он'} оставил тебе письмо`,`💌 ${p.name||'He'} left you a letter`):L(`📔 ${p.name||'Дух'} написал в дневник`,`📔 ${p.name||'Your spirit'} wrote in the diary`)),3000)}
 function letterLines(l){const bb=l.kind==='boy';
-  if(bb)return [LB_OPEN[l.st][l.o]||LB_OPEN[l.st][0],letterMid(true,l.c),LB_CLOSE[l.st][l.e%2]];
-  return [LP_OPEN[l.o%3],letterMid(false,l.c),LP_CLOSE[l.e%3]]}
+  if(bb)return [LB_OPEN[l.st][l.o]||LB_OPEN[l.st][0],letterMid(true,l.c),LB_CLOSE[l.st][l.e]||LB_CLOSE[l.st][0]];
+  return [LP_OPEN[l.o]||LP_OPEN[0],letterMid(false,l.c),LP_CLOSE[l.e]||LP_CLOSE[0]]}
 const myLetters=()=>(S.letters||[]).filter(l=>l.kind===curKind());
 const unreadN=()=>myLetters().filter(l=>!l.read).length;
 function sealSVG(col){return `<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M30 4C38 3 42 9 48 10C55 12 56 20 55 27C57 34 54 41 49 46C44 52 37 56 30 55C22 57 15 53 11 47C5 42 3 34 5 27C3 19 8 12 14 9C19 5 24 5 30 4Z" fill="${col}"/><circle cx="30" cy="30" r="17" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="2"/><path d="M30 41C22 35 18 29 22 24C25 21 29 23 30 26C31 23 35 21 38 24C42 29 38 35 30 41Z" fill="rgba(255,255,255,.35)"/></svg>`}
@@ -3004,7 +3060,7 @@ function letterSheet(id){const l=(S.letters||[]).find(x=>x.id===id);if(!l)return
   const ln=letterLines(l),from=bb?(l.st===0?'Тот, кто смотрит':(p&&p.name||'Он')):(p&&p.name||'Дух');
   const col=p&&BOYS[p.species]?BOYS[p.species].c.seal:'#7a1f2e';
   return `<div class="letter ${bb?'boy':'pet'}"><div class="ld">${fmtDate(l.at)}</div>${ln.map(x=>`<p>${esc(x)}</p>`).join('')}<div class="sig">— ${esc(from)}${bb?'':' 🐾'}</div>${bb?`<div class="seal">${sealSVG(col)}</div>`:''}</div>
-<div class="btns"><button class="btn" data-a="letters">${bb?'Все письма':'Весь дневник'}</button><button class="btn primary" data-a="close">${bb?'Спрятать на сердце':'Закрыть'}</button></div>`}
+${bb?`<button class="btn big" style="margin:4px 0 10px" data-a="letterStory" data-id="${l.id}">📸 ${L('Сохранить для сторис','Save for stories')}</button>`:''}<div class="btns"><button class="btn" data-a="letters">${bb?'Все письма':'Весь дневник'}</button><button class="btn primary" data-a="close">${bb?'Спрятать на сердце':'Закрыть'}</button></div>`}
 const letterActions={
   letters:()=>openSheet(lettersSheet(),'letters'),
   letter:d=>{const l=(S.letters||[]).find(x=>x.id===d.id);if(l&&!l.read){l.read=true;save();render()}openSheet(letterSheet(d.id),'letter')}
@@ -3057,34 +3113,87 @@ const DATES=[
   en:{t:'The dark forest',intro:'{n} waits at the edge of the forest with a lantern. — You finished “{b}”. They say a witch lives here who grants a wish for every story read. Shall we check?',
    b:[{q:'The path disappears into fog. He holds out his hand.',c:[['🤝 Take his hand','His palm is warm, and his fingers hold yours a little tighter than they need to. — I won’t let go. Even if the witch asks.'],['😏 “I’m not scared”','— I know. I’m not here to protect you, I’m here to watch you be fearless.'],['🕯 Take the lantern from him','He hands it over without a word. — Lead. I’ll follow you anywhere.']]},
       {q:'In a clearing stands an old wishing well. He asks what you’ll wish for.',c:[['📚 “A hundred more good books”','— Modest. I wished you’d read them next to me.'],['🖤 “It’s a secret”','He leans to your ear: “Then I’ll guess.” And it seems he does.'],['✨ “That you stay”','He’s silent for a long time, then tosses his own coin in. — Matching wishes come true twice as fast.']]}],
-   end:'You walk back in a warm silence. At the door he says: “One more book — and I’ll steal you away again.”'}}];
+   end:'You walk back in a warm silence. At the door he says: “One more book — and I’ll steal you away again.”'}},
+ {e:'🏍',bg:'linear-gradient(165deg,#3a0d12,#0a0406 72%)',
+  ru:{t:'Ночная трасса',intro:'{n} глушит мотор у твоего подъезда ровно в полночь и протягивает шлем. — Ты дочитала «{b}». Отметим скоростью. Держись крепче.',
+   b:[{q:'Город проносится мимо огнями. Он кричит сквозь ветер: «Быстрее?»',c:[['🔥 «Быстрее!»','Он смеется и выкручивает газ. Ты прижимаешься к его спине и чувствуешь, что он улыбается.'],['😳 «Не смей!»','— Как скажешь, — он сбрасывает скорость и накрывает твою ладонь своей. — Так спокойнее?'],['🤫 Молча обнять крепче','Он замолкает. Дальше вы едете в тишине, и это лучший разговор за ночь.']]},
+      {q:'Он останавливается на пустой смотровой площадке над городом.',c:[['🌃 «Часто сюда девушек привозишь?»','— Ты первая. И, надеюсь, последняя.'],['😏 «Научи меня водить»','Он сажает тебя впереди и накрывает твои руки своими. — Первый урок: никогда не отпускай то, что держишь.'],['📖 Рассказать про финал книги','Он слушает, опершись на байк. — У тебя горят глаза. Ярче, чем весь город внизу.']]}],
+   end:'У подъезда он сам снимает с тебя шлем и задерживается на секунду дольше, чем нужно. — До следующей книги.'},
+  en:{t:'The night highway',intro:'{n} kills the engine outside your door exactly at midnight and hands you a helmet. — You finished “{b}”. Let’s celebrate with speed. Hold on tight.',
+   b:[{q:'The city rushes past in lights. He shouts over the wind: “Faster?”',c:[['🔥 “Faster!”','He laughs and opens the throttle. You press against his back and feel him smile.'],['😳 “Don’t you dare!”','— As you wish, — he slows down and covers your hand with his. — Better?'],['🤫 Hold him tighter, silently','He goes quiet. You ride on in silence, and it’s the best conversation of the night.']]},
+      {q:'He stops at an empty lookout above the city.',c:[['🌃 “Bring a lot of girls here?”','— You’re the first. And I hope the last.'],['😏 “Teach me to ride”','He sits you in front and covers your hands with his. — Lesson one: never let go of what you’re holding.'],['📖 Tell him about the ending','He listens, leaning on the bike. — Your eyes are burning. Brighter than the whole city below.']]}],
+   end:'At your door he takes off your helmet himself and lingers a second longer than he needs to. — Until the next book.'}},
+ {e:'🐉',bg:'linear-gradient(170deg,#5a2410,#140604 72%)',
+  ru:{t:'Полет на драконе',intro:'Земля дрожит: во двор опускается дракон, а на нем {n}. — Ты дочитала «{b}». Я обещал показать тебе небо. Садись впереди.',
+   b:[{q:'Дракон взмывает над облаками. Внизу горы и закат.',c:[['😱 Вцепиться в него','— Я держу тебя, — шепчет он у самого уха. — И никогда не отпущу.'],['🤩 Раскинуть руки','Он смеется и закладывает крутой вираж. — Ты рождена для неба. Я знал.'],['🐉 Погладить дракона','Дракон довольно урчит. — Он никого к себе не подпускал. Похоже, у нас с ним одинаковый вкус.']]},
+      {q:'Вы приземляетесь на вершине скалы. Он разжигает огонь.',c:[['🔥 «Ты всем это показываешь?»','— Никому. Это место было только моим. Теперь оно наше.'],['😏 «Дракон ревнует?»','— Ужасно. Но я ревную тебя сильнее. Даже к нему.'],['🌌 Молча смотреть на звезды','Он садится рядом и укрывает тебя плащом. Звезды кажутся ближе, чем когда-либо.']]}],
+   end:'На рассвете он высаживает тебя у дома и оставляет на подоконнике чешуйку, теплую, как его ладонь.'},
+  en:{t:'A dragon flight',intro:'The ground shakes: a dragon lands in your yard, and {n} is on its back. — You finished “{b}”. I promised to show you the sky. Sit in front.',
+   b:[{q:'The dragon soars above the clouds. Below are mountains and the sunset.',c:[['😱 Cling to him','— I’ve got you, — he whispers right by your ear. — And I’ll never let go.'],['🤩 Spread your arms','He laughs and banks into a steep turn. — You were born for the sky. I knew it.'],['🐉 Stroke the dragon','The dragon rumbles happily. — He never let anyone near him. Looks like we have the same taste.']]},
+      {q:'You land on top of a cliff. He lights a fire.',c:[['🔥 “Do you show this to everyone?”','— No one. This place was only mine. Now it’s ours.'],['😏 “Is the dragon jealous?”','— Terribly. But I’m more jealous of you. Even of him.'],['🌌 Watch the stars in silence','He sits beside you and wraps you in his cloak. The stars seem closer than ever.']]}],
+   end:'At dawn he drops you off at home and leaves a scale on your windowsill, warm as his palm.'}},
+ {e:'🥂',bg:'linear-gradient(170deg,#3a2c12,#0a0805 72%)',
+  ru:{t:'Пентхаус',intro:'Лифт поднимается на последний этаж. Двери открываются: за ними весь город в огнях и {n} с двумя бокалами. — «{b}» дочитана. Это нужно отметить как следует.',
+   b:[{q:'Он протягивает тебе бокал и спрашивает, чего ты хочешь этим вечером.',c:[['🥂 «Удиви меня»','— Опасная просьба, — он щелкает пультом, и на террасе вспыхивают сотни свечей.'],['😏 «Узнать тебя лучше»','— Тогда начнем с правды: сегодня я отменил все. Ради тебя.'],['📚 «Тишины и книгу»','Он улыбается и кивает на полку. — Я собрал здесь все твои любимые. Выбирай.']]},
+      {q:'На террасе играет медленная музыка.',c:[['💃 Пригласить его на танец','Он берет тебя за талию так уверенно, будто репетировал этот вечер всю жизнь.'],['🌃 Смотреть на город','— Красиво, — говоришь ты. — Да, — отвечает он, не отводя взгляда от тебя.'],['😼 «Ты всех так соблазняешь?»','— Никогда. Обычно соблазняют меня. С тобой я впервые стараюсь.']]}],
+   end:'Водитель ждет внизу. На прощание он целует твою руку: — Этот город мой. А я, похоже, твой.'},
+  en:{t:'The penthouse',intro:'The elevator rises to the top floor. The doors open: the whole city in lights, and {n} with two glasses. — “{b}” is finished. That calls for a proper celebration.',
+   b:[{q:'He hands you a glass and asks what you want tonight.',c:[['🥂 “Surprise me”','— A dangerous request, — he clicks a remote, and hundreds of candles light up on the terrace.'],['😏 “To know you better”','— Then let’s start with the truth: I cancelled everything tonight. For you.'],['📚 “Quiet and a book”','He smiles and nods at the shelf. — I gathered all your favorites here. Choose.']]},
+      {q:'Slow music plays on the terrace.',c:[['💃 Ask him to dance','He takes your waist so confidently, as if he’d rehearsed this evening all his life.'],['🌃 Look at the city','— Beautiful, — you say. — Yes, — he answers, without taking his eyes off you.'],['😼 “Do you seduce everyone like this?”','— Never. Usually I’m the one being seduced. With you, I’m trying for the first time.']]}],
+   end:'The driver waits downstairs. As you leave he kisses your hand: — This city is mine. And it seems I’m yours.'}},
+ {e:'⛪',bg:'linear-gradient(170deg,#1c1730,#06050c 72%)',
+  ru:{t:'Старый собор',intro:'Записка привела тебя к старому собору. Внутри горят сотни свечей, а под витражами ждет {n}. — Говорят, здесь сбываются клятвы. Ты дочитала «{b}». Проверим?',
+   b:[{q:'Свет витражей ложится на его лицо. Он спрашивает, веришь ли ты в судьбу.',c:[['🌙 «Верю»','— Тогда ты знаешь, почему мы встретились. Я не верил. До тебя.'],['😏 «Только в ту, что выбираю сама»','— Тогда выбери меня, — говорит он тихо. — И я стану твоей судьбой.'],['🤫 Подойти ближе','Шаги эхом отдаются под сводами. Он берет тебя за руку, и свечи будто вспыхивают ярче.']]},
+      {q:'Где-то наверху бьет колокол. Полночь.',c:[['🕯 Загадать желание','— Не говори вслух, — он касается пальцем твоих губ. — Я и так исполню.'],['🖤 «Поклянись мне в чем-нибудь»','— Клянусь, что ни одна книга не будет любить тебя сильнее, чем я.'],['😼 «Нам тут вообще можно быть?»','— Нет, — усмехается он. — Поэтому здесь так хорошо.']]}],
+   end:'Вы выходите под звезды. Он накидывает тебе на плечи свой плащ: — Эта клятва останется между нами и этими стенами.'},
+  en:{t:'The old cathedral',intro:'A note led you to an old cathedral. Hundreds of candles burn inside, and {n} is waiting beneath the stained glass. — They say vows come true here. You finished “{b}”. Shall we test it?',
+   b:[{q:'Stained-glass light falls on his face. He asks if you believe in fate.',c:[['🌙 “I do”','— Then you know why we met. I didn’t believe. Until you.'],['😏 “Only in the one I choose”','— Then choose me, — he says quietly. — And I’ll become your fate.'],['🤫 Step closer','Your steps echo under the vaults. He takes your hand, and the candles seem to flare brighter.']]},
+      {q:'Somewhere above, a bell tolls. Midnight.',c:[['🕯 Make a wish','— Don’t say it out loud, — he touches your lips with a finger. — I’ll grant it anyway.'],['🖤 “Swear me something”','— I swear no book will ever love you more than I do.'],['😼 “Are we even allowed in here?”','— No, — he smirks. — That’s why it’s so good.']]}],
+   end:'You step out under the stars. He drapes his cloak over your shoulders: — This vow stays between us and these walls.'}},
+ {e:'💜',bg:'linear-gradient(165deg,#2a0f45,#05060f 72%)',
+  ru:{t:'Неоновый город',intro:'Дождь, неон и пустые улицы. {n} ждет под вывеской маленького бара с двумя зонтами, но держит раскрытым только один. — Ты дочитала «{b}». Сегодня город принадлежит нам.',
+   b:[{q:'Он протягивает руку: «Куда пойдем?»',c:[['🎶 «Туда, где громкая музыка»','Он ведет тебя в подпольный клуб и весь вечер смотрит только на тебя, а не на танцпол.'],['🍜 «Туда, где вкусно»','Крошечная лапшичная, вы едите из одной миски. — Не говори никому, что я умею так веселиться.'],['☔ «Просто гулять под дождем»','Он закрывает зонт. — Тогда промокнем вместе.']]},
+      {q:'Вы останавливаетесь под мигающей неоновой вывеской.',c:[['📸 Сделать фото вдвоем','На снимке он не смотрит в камеру. Он смотрит на тебя.'],['😏 «Признайся, ты все спланировал»','— Каждую лужу, — серьезно говорит он. — Кроме того, что ты будешь так красиво смеяться.'],['🤫 Прижаться к нему от холода','Он укрывает тебя курткой и долго не отпускает. Неон отражается в его глазах.']]}],
+   end:'Под утро город затихает. Он провожает тебя до двери и шепчет: — Следующая книга. Следующая ночь. Я жду.'},
+  en:{t:'The neon city',intro:'Rain, neon and empty streets. {n} waits under the sign of a tiny bar with two umbrellas, but keeps only one open. — You finished “{b}”. Tonight the city belongs to us.',
+   b:[{q:'He holds out his hand: “Where to?”',c:[['🎶 “Somewhere loud”','He takes you to an underground club and spends the whole night watching you, not the dance floor.'],['🍜 “Somewhere tasty”','A tiny noodle bar, you eat from one bowl. — Don’t tell anyone I know how to have fun.'],['☔ “Just walk in the rain”','He closes the umbrella. — Then we’ll get soaked together.']]},
+      {q:'You stop under a flickering neon sign.',c:[['📸 Take a photo together','In the picture he isn’t looking at the camera. He’s looking at you.'],['😏 “Admit it, you planned all this”','— Every puddle, — he says seriously. — Except how beautifully you’d laugh.'],['🤫 Lean into him from the cold','He wraps you in his jacket and doesn’t let go for a long time. Neon reflects in his eyes.']]}],
+   end:'By morning the city falls quiet. He walks you to your door and whispers: — Next book. Next night. I’m waiting.'}}
+];
 const DATE_XP=25;
 const dTx=(i)=>EN()?DATES[i].en:DATES[i].ru;
 const dSub=(s,inv)=>{const p=S.pets.find(x=>x.id===inv.pid);return s.replace(/\{n\}/g,(p&&p.name)||L('Он','He')).replace(/\{b\}/g,inv.book||'')};
 function inviteDate(b){if(!S.boysOn)return;const boys=S.pets.filter(p=>kindOf(p)==='boy'&&p.hatched);if(!boys.length)return;
   const a=S.pets.find(p=>p.id===S.activeBoy&&p.hatched)||boys.sort((x,y)=>y.xp-x.xp)[0];S.invites=(S.invites||[]).filter(v=>!v.done);
-  const loc=(S.dateN||0)%DATES.length;S.dateN=(S.dateN||0)+1;S.invites.push({id:'d'+uid(),pid:a.id,loc,book:b.title,at:Date.now()});
-  setTimeout(()=>toast(L(`🌹 ${a.name||'Он'} зовёт тебя на свидание`,`🌹 ${a.name||'He'} is asking you on a date`)),4200)}
-const myInvite=p=>(S.invites||[]).find(v=>!v.done&&v.pid===p.id);
-function inviteCard(p){const v=myInvite(p);if(!v)return '';const D=DATES[v.loc];
-  return `<div class="card date-inv" data-a="dateGo" data-id="${v.id}" style="background:${D.bg}"><span class="di-e">${D.e}</span><div style="flex:1;min-width:0"><b>${L('Приглашение на свидание','A date invitation')}</b><div class="hint" style="color:#f3d9c4">${esc(p.name||L('Он','He'))} · ${dTx(v.loc).t}</div></div><span class="di-go">🌹</span></div>`}
+  const fav=HERO_DATE[a.species],been=(S.memories||[]).some(m=>m.pid===a.id&&m.loc===fav);
+  const loc=(fav!=null&&!been)?fav:(S.dateN||0)%DATES.length;S.dateN=(S.dateN||0)+1;
+  const v={id:'d'+uid(),pid:a.id,loc,book:b.title,at:Date.now(),ln:Math.floor(Math.random()*3)};
+  if(HERO_DATES[a.species]){v.h=a.species;v.si=pickFresh('hd_'+a.id,HERO_DATES[a.species].s.length)}
+  const others=boys.filter(x=>x.id!==a.id&&HERO_DATES[x.species]);
+  if(others.length&&Math.random()<.35){const r=rnd(others);v.rival={pid:r.id,h:r.species,si:pickFresh('hd_'+r.id,HERO_DATES[r.species].s.length),ln:Math.floor(Math.random()*3)}}
+  S.invites.push(v);
+  setTimeout(()=>toast(v.rival?L('🖤 Два конверта. Кажется, кто-то ревнует','🖤 Two envelopes. Someone is jealous'):L(`🖤 ${invFrom(a)} прислал тебе запечатанный конверт`,`🖤 ${invFrom(a)} sent you a sealed envelope`)),4200)}
+const myInvite=p=>(S.invites||[]).find(v=>!v.done);
+function inviteCard(p){const v=myInvite(p);if(!v)return '';const O=dObj(v),hp=S.pets.find(x=>x.id===v.pid);
+  if(!v.opened||v.rival)return `<div class="card date-inv sealed" data-a="dateGo" data-id="${v.id}"><span class="di-seal">${sealSVG(invSeal(hp))}</span><div style="flex:1;min-width:0"><b>${v.rival?L('Два черных конверта','Two black envelopes'):L('Черный конверт','A black envelope')}</b><div class="hint" style="color:#d9d2e6">${v.rival?L('кто-то ревнует','someone is jealous'):esc(invFrom(hp))+' · '+L('запечатано','sealed')}</div></div><span class="di-go">🖤</span></div>`;
+  return `<div class="card date-inv sealed" data-a="dateGo" data-id="${v.id}"><span class="di-e">${O.e}</span><div style="flex:1;min-width:0"><b>${L('Приглашение на свидание','A date invitation')}</b><div class="hint" style="color:#d9d2e6">${esc(invFrom(hp))} · ${esc(O.t)}</div></div><span class="di-go">🌹</span></div>`}
 let dRun=null;
-function dateSheet(){const v=dRun.inv,T=dTx(v.loc),D=DATES[v.loc],p=S.pets.find(x=>x.id===v.pid);const st=dRun.step;
-  const hero=p?`<div class="date-hero">${creatureSVG(p.species,stageOf(p),'happy',{anim:true})}</div>`:'';
+function dateSheet(){const v=dRun.inv,O=dObj(v),p=S.pets.find(x=>x.id===v.pid);const st=dRun.step;
   let body='';
-  if(st===0)body=`<p class="date-tx">${esc(dSub(T.intro,v))}</p>${p&&stageOf(p)===0?`<p class="mask-hint">🎭 ${L('Он пришёл в маске — на свидании её не снимет','He came masked — he won’t take it off tonight')}</p>`:''}<button class="btn primary big" data-a="dateNext">${L('Пойти 🌹','Go 🌹')}</button>`;
-  else if(st<=T.b.length){const B=T.b[st-1],pk=dRun.picks[st-1];
-    body=`<p class="date-q">${esc(dSub(B.q,v))}</p>`+(pk==null?`<div class="date-ch">${B.c.map((c,i)=>`<button class="btn" data-a="datePick" data-v="${i}">${esc(c[0])}</button>`).join('')}</div>`:`<p class="date-me">${esc(B.c[pk][0])}</p><p class="date-tx">${esc(dSub(B.c[pk][1],v))}</p><button class="btn primary big" data-a="dateNext">${L('Дальше','Next')}</button>`)}
-  else body=`<p class="date-tx">${esc(dSub(T.end,v))}</p><p class="center" style="font-weight:800;color:#ffd27a;margin:4px 0 14px">🌹 ${L('Воспоминание сохранено','Memory saved')} · +${DATE_XP} ${L('опыта','XP')}</p><button class="btn primary big" data-a="close">${L('Сохранить на сердце','Keep it close')}</button>`;
-  return `<div class="date-wrap" style="background:${D.bg}"><div class="date-h"><span>${D.e}</span><b>${T.t}</b></div>${hero}${body}</div>`}
-function memSheet(id){const m=(S.memories||[]).find(x=>x.id===id);if(!m)return memsSheet();const T=dTx(m.loc),D=DATES[m.loc];
-  return `<div class="date-wrap" style="background:${D.bg}"><div class="date-h"><span>${D.e}</span><b>${T.t}</b></div><div class="ld" style="color:#d9c2b0">${fmtDate(m.at)}</div><p class="date-tx">${esc(dSub(T.intro,m))}</p>${T.b.map((B,i)=>m.picks[i]==null?'':`<p class="date-me">${esc(B.c[m.picks[i]][0])}</p><p class="date-tx">${esc(dSub(B.c[m.picks[i]][1],m))}</p>`).join('')}<p class="date-tx"><i>${esc(dSub(T.end,m))}</i></p><button class="btn big" data-a="memories">${L('Все свидания','All dates')}</button></div>`}
-function memsSheet(){const p=activePet();const ms=(S.memories||[]).filter(m=>!p||m.pid===p.id);
-  return `<h3>🌹 ${L('Наши свидания','Our dates')}</h3><p class="hint" style="margin:-6px 0 12px">${L('Каждая дочитанная книга — новое приглашение.','Every finished book brings a new invitation.')}</p>${ms.length?ms.map(m=>`<div class="lrow" data-a="memory" data-id="${m.id}"><div class="la" style="font-size:30px;display:grid;place-items:center">${DATES[m.loc].e}</div><div style="flex:1;min-width:0"><b>${dTx(m.loc).t}</b><small>${fmtDate(m.at)} · «${esc(m.book||'')}»</small></div></div>`).join(''):`<p class="muted center">${L('Пока ни одного. Дочитай книгу — и он позовёт тебя.','None yet. Finish a book and he’ll ask you out.')}</p>`}`}
+  if(st===0)body=`<p class="vn-tx">${esc(dSub(O.intro,v))}</p>${!O.img&&p&&stageOf(p)===0?`<p class="mask-hint">🎭 ${L('Он пришёл в маске — на свидании её не снимет','He came masked — he won’t take it off tonight')}</p>`:''}<button class="nb pri" data-a="dateNext">${L('Пойти 🌹','Go 🌹')}</button>`;
+  else if(st<=O.b.length){const B=O.b[st-1],pk=dRun.picks[st-1];
+    body=`<p class="vn-q">${esc(dSub(B.q,v))}</p>`+(pk==null?`<div class="vn-ch">${B.c.map((c,i)=>`<button class="nb" data-a="datePick" data-v="${i}">${esc(c[0])}</button>`).join('')}</div>`:`<p class="vn-me">${esc(B.c[pk][0])}</p><p class="vn-tx">${esc(dSub(B.c[pk][1],v))}</p><button class="nb pri" data-a="dateNext">${L('Дальше','Next')}</button>`)}
+  else body=`<p class="vn-tx"><i>${esc(dSub(O.end,v))}</i></p><p class="vn-mem">🌙 ${L('Воспоминание сохранено','Memory saved')} · +${DATE_XP} ${L('опыта','XP')}</p><button class="nb pri" data-a="close">${L('Сохранить на сердце','Keep it close')}</button>`;
+  const top=O.img?`<div class="vn-img" style="background-image:url(${O.img})"></div>`:`<div class="vn-img noimg" style="background:${O.bg}">${p?`<div class="date-hero">${creatureSVG(p.species,stageOf(p),'happy',{anim:true})}</div>`:''}</div>`;
+  return `<div class="vn">${top}<div class="vn-h">${O.e} ${esc(O.t)}</div><div class="vn-b">${body}</div></div>`}
+function memSheet(id){const m=(S.memories||[]).find(x=>x.id===id);if(!m)return memsSheet();const O=dObj(m);
+  return `<div class="vn">${O.img?`<div class="vn-img short" style="background-image:url(${O.img})"></div>`:`<div class="vn-img short noimg" style="background:${O.bg}"></div>`}<div class="vn-h">${O.e} ${esc(O.t)}</div><div class="vn-b"><div class="vn-date">${fmtDate(m.at)}</div><p class="vn-tx">${esc(dSub(O.intro,m))}</p>${O.b.map((B,i)=>m.picks[i]==null?'':`<p class="vn-me">${esc(B.c[m.picks[i]][0])}</p><p class="vn-tx">${esc(dSub(B.c[m.picks[i]][1],m))}</p>`).join('')}<p class="vn-tx"><i>${esc(dSub(O.end,m))}</i></p><button class="nb" data-a="memories">${L('Все свидания','All dates')}</button></div></div>`}
+function memsSheet(){const p=activePet();const ms=(S.memories||[]).filter(m=>!p||m.pid===p.id||true);
+  return `<h3>🌹 ${L('Наши свидания','Our dates')}</h3><p class="hint" style="margin:-6px 0 12px">${L('Каждая дочитанная книга — новое приглашение.','Every finished book brings a new invitation.')}</p>${ms.length?ms.map(m=>{const O=dObj(m),hp=S.pets.find(x=>x.id===m.pid);return `<div class="lrow" data-a="memory" data-id="${m.id}"><div class="la" style="font-size:30px;display:grid;place-items:center${O.img?`;background:url(${O.img}) center 20%/cover;border-radius:12px`:''}">${O.img?'':O.e}</div><div style="flex:1;min-width:0"><b>${esc(O.t)}</b><small>${fmtDate(m.at)} · ${esc(hp&&hp.name||'')} · «${esc(m.book||'')}»</small></div></div>`}).join(''):`<p class="muted center">${L('Пока ни одного. Дочитай книгу — и он позовёт тебя.','None yet. Finish a book and he’ll ask you out.')}</p>`}`}
 const dateActions={
-  dateGo:d=>{const v=(S.invites||[]).find(x=>x.id===d.id);if(!v)return;dRun={inv:v,step:0,picks:[]};openSheet(dateSheet(),'date')},
-  dateNext:()=>{if(!dRun)return;dRun.step++;const T=dTx(dRun.inv.loc);
-    if(dRun.step>T.b.length){const v=dRun.inv;v.done=true;const p=S.pets.find(x=>x.id===v.pid);if(p)p.xp+=DATE_XP;S.memories=S.memories||[];S.memories.unshift({id:'m'+uid(),pid:v.pid,loc:v.loc,book:v.book,at:Date.now(),picks:dRun.picks.slice()});if(S.memories.length>60)S.memories.length=60;save();render();confetti()}
+  dateGo:d=>{const v=(S.invites||[]).find(x=>x.id===d.id);if(!v)return;if(!v.accepted){openInvite(v);return}dRun={inv:v,step:0,picks:[]};openSheet(dateSheet(),'date')},
+  dateNext:()=>{if(!dRun)return;dRun.step++;const T=dObj(dRun.inv);
+    if(dRun.step>T.b.length){const v=dRun.inv;v.done=true;const p=S.pets.find(x=>x.id===v.pid);if(p)p.xp+=DATE_XP;S.memories=S.memories||[];S.memories.unshift({id:'m'+uid(),pid:v.pid,loc:v.loc,h:v.h,si:v.si,book:v.book,at:Date.now(),picks:dRun.picks.slice()});if(S.memories.length>60)S.memories.length=60;save();render();confetti()}
     openSheet(dateSheet(),'date')},
   datePick:d=>{if(!dRun)return;dRun.picks[dRun.step-1]=+d.v;openSheet(dateSheet(),'date')},
   memories:()=>openSheet(memsSheet(),'mems'),
@@ -3968,7 +4077,88 @@ English	English
 Ледяной двор	Frost Court
 Двор фейри	Fae Court
 Всадник дракона	The Dragon Rider
-Прилетел за тобой на драконе. Его зверь ревнует тебя, а он — ещё сильнее.	Flew in for you on a dragon. His beast is jealous of you, and he's even more so.`;
+Прилетел за тобой на драконе. Его зверь ревнует тебя, а он — ещё сильнее.	Flew in for you on a dragon. His beast is jealous of you, and he's even more so.
+Ты снова читала у окна. Я стоял ближе, чем ты думаешь.	You were reading by the window again. I was closer than you think.
+Кто-то оставил закладку на твоей странице. Это был я.	Someone left a bookmark on your page. It was me.
+Ты листаешь страницы так, будто ищешь в них меня.	You turn the pages as if you’re looking for me in them.
+Я знаю, какую книгу ты возьмешь завтра. Я знаю о тебе слишком много.	I know which book you’ll pick up tomorrow. I know too much about you.
+Ты закрыла книгу и улыбнулась. Я бы многое отдал, чтобы узнать почему.	You closed the book and smiled. I’d give a lot to know why.
+Не ищи меня. Я сам решу, когда показаться.	Don’t look for me. I’ll decide when to show myself.
+Сегодня ты читала до поздней ночи. Я ждал, пока погаснет твой свет.	You read late into the night today. I waited until your light went out.
+Ты загибаешь уголки страниц. Я заметил. Я замечаю все.	You fold the corners of pages. I noticed. I notice everything.
+Ты исчезаешь в книгах. Однажды так же исчезнешь в моих руках.	You disappear into books. One day you’ll disappear into my arms the same way.
+Я обещал себе, что это последнее письмо. Солгал.	I promised myself this would be the last letter. I lied.
+Ты смеялась над чем-то в книге. Теперь этот звук не выходит у меня из головы.	You laughed at something in your book. Now I can’t get that sound out of my head.
+Ты даже не смотришь в мою сторону, когда читаешь. Это сводит меня с ума.	You don’t even glance my way when you read. It drives me crazy.
+Я начал читать твои книги. Просто чтобы понять, о чем ты думаешь.	I started reading your books. Just to understand what you’re thinking about.
+Мне стоило бы держаться подальше. Но я снова здесь.	I should stay away. But here I am again.
+Ты поправила волосы на сорок второй странице. Я запомнил номер.	You fixed your hair on page forty-two. I memorized the number.
+Каждый вечер я говорю себе: только посмотрю. И каждый раз мне мало.	Every evening I tell myself: just one look. And every time it’s not enough.
+Ты опасна. И сама этого не знаешь.	You’re dangerous. And you don’t even know it.
+Герой твоей книги никогда не смотрел бы на тебя так, как смотрю я.	The hero of your book would never look at you the way I do.
+Я больше не могу притворяться, что ты мне безразлична.	I can’t pretend anymore that I don’t care about you.
+Ты читаешь о чужой любви, а я схожу с ума от своей.	You read about someone else’s love, and I’m going mad with mine.
+Сегодня я поймал себя на том, что жду вечера. Нашего вечера.	Today I caught myself waiting for the evening. Our evening.
+Когда ты читаешь, мир становится тише. Даже я.	When you read, the world gets quieter. Even me.
+Мне снилось, что ты читаешь мне вслух. Я проснулся и пожалел.	I dreamed you were reading to me out loud. I woke up and regretted it.
+Я перестал считать дни. Теперь считаю твои страницы.	I stopped counting days. Now I count your pages.
+Ты единственная глава, которую я перечитываю.	You’re the only chapter I reread.
+Мне не нужен финал. Мне нужна ты, каждый вечер.	I don’t need an ending. I need you, every evening.
+С тобой даже тишина звучит как признание.	With you even silence sounds like a confession.
+Ты моя. Каждая страница, каждый вечер, каждый вдох.	You’re mine. Every page, every evening, every breath.
+Пусть весь мир читает твои книги. Ты читаешь их со мной.	Let the whole world read your books. You read them with me.
+Я разрушил бы любую историю, где нет тебя.	I’d destroy any story that doesn’t have you in it.
+Никто не смеет отвлекать тебя от книги. Кроме меня.	No one dares to distract you from your book. Except me.
+Твое место рядом со мной. Всегда было.	Your place is by my side. It always was.
+Я привык получать все, что хочу. А хочу я только тебя.	I’m used to getting everything I want. And all I want is you.
+Скажи слово, и я положу к твоим ногам целую библиотеку.	Say the word and I’ll lay a whole library at your feet.
+Мне все равно, кто тебе снится. Просыпаешься ты моей.	I don’t care who you dream about. You wake up mine.
+Я не умею любить наполовину. Тебе придется привыкнуть.	I don’t know how to love halfway. You’ll have to get used to it.
+Ты так сжимала книгу на сцене признания, что я начал ревновать к бумаге.	You gripped the book so hard during the confession scene that I got jealous of the paper.
+Ты загнула уголок на самом остром месте. Хотел бы я знать, о чем ты подумала.	You folded a corner at the spiciest part. I wish I knew what you were thinking.
+Когда ты читаешь, ты забываешь обо всем. Я хочу, чтобы со мной ты забывала так же.	When you read, you forget everything. I want you to forget like that with me.
+Сегодня ты прочитала больше, чем вчера. Я горжусь тобой. Только никому не говори.	You read more today than yesterday. I’m proud of you. Just don’t tell anyone.
+Этот герой в твоей книге слишком много о себе думает. Я лучше.	That hero in your book thinks too much of himself. I’m better.
+Я видел, как ты вздохнула в конце главы. Этот вздох должен был быть моим.	I saw you sigh at the end of the chapter. That sigh should have been mine.
+Ты читаешь так, будто от этого зависит твоя жизнь. Мне нравится такая страсть.	You read as if your life depended on it. I like that kind of passion.
+Я прочитал каждую книгу с твоей полки. Теперь я знаю, чего ты хочешь.	I’ve read every book on your shelf. Now I know what you want.
+Ты делаешь вид, что читаешь, а сама думаешь обо мне. Я знаю.	You pretend to read, but you’re thinking about me. I know.
+Твои книги рассказывают о тебе больше, чем ты думаешь.	Your books tell more about you than you think.
+Мне нравится, как ты прячешь улыбку за обложкой.	I like how you hide your smile behind the cover.
+Я рядом. Всегда.	I’m near. Always.
+Спи. Я посторожу.	Sleep. I’ll keep watch.
+Скоро ты узнаешь, кто я.	Soon you’ll find out who I am.
+Не гаси свет слишком рано.	Don’t turn off the light too early.
+Не заставляй меня ждать.	Don’t make me wait.
+Я вернусь завтра. И послезавтра.	I’ll be back tomorrow. And the day after.
+Читай. Я не отвлекаю. Почти.	Read. I’m not distracting you. Almost.
+Это письмо сожги. Или сохрани.	Burn this letter. Or keep it.
+Твой. Даже если ты еще не решила.	Yours. Even if you haven’t decided yet.
+Думаю о тебе. Это уже диагноз.	Thinking of you. It’s a diagnosis by now.
+Завтра вечером. Я буду считать минуты.	Tomorrow evening. I’ll be counting the minutes.
+Скучаю, даже когда ты рядом.	I miss you even when you’re near.
+Только твой.	Only yours.
+Моя. Навсегда.	Mine. Forever.
+До последней страницы и дальше.	To the last page and beyond.
+Приходи скорее. Я не умею ждать.	Come soon. I’m bad at waiting.
+Дневник, это снова я!	Diary, it’s me again!
+Пишу под одеялом с фонариком.	Writing under the blanket with a flashlight.
+Секретная запись. Никому не показывать!	Secret entry. Don’t show anyone!
+Привет, дневник! У меня новости.	Hi, diary! I have news.
+Сегодня был хороший день, слушай.	Today was a good day, listen.
+Мы нашли в книге смешное место, и я хихикал полстраницы.	We found a funny bit in the book and I giggled for half a page.
+Я спрятался между страницами и чуть не уснул там.	I hid between the pages and almost fell asleep there.
+Сегодня я выучил новое слово из книжки. Правда, забыл какое.	Today I learned a new word from the book. I forgot which one, though.
+Я считал страницы вместе с ней. Сбился на двадцати, но было весело.	I counted pages with her. Lost count at twenty, but it was fun.
+Она гладила обложку, и мне показалось, что это меня погладили.	She stroked the cover, and it felt like she was petting me.
+Я сторожил чай, чтобы он не остыл. Не уследил, но старался!	I guarded the tea so it wouldn’t get cold. Didn’t manage, but I tried!
+В книге был грустный момент. Я обнимал ее мысленно изо всех лапок.	There was a sad part in the book. I hugged her in my mind with all my paws.
+Мне кажется, книги пахнут приключениями. А еще немного печеньками.	I think books smell like adventure. And a little bit like cookies.
+Пока-пока, до завтра!	Bye-bye, see you tomorrow!
+Ушел мечтать о следующей главе.	Off to dream about the next chapter.
+Обнимаю. Лапками.	Hugs. With paws.
+Завтра будет еще интереснее, я чувствую!	Tomorrow will be even more exciting, I can feel it!
+Пора спать. Но я еще чуть-чуть почитаю.	Time to sleep. But I’ll read just a little more.`;
 /* ---------- English: перевод интерфейса ---------- */
 const CYR=/[А-Яа-яЁё]/;
 const DICT=Object.create(null);
@@ -4115,6 +4305,335 @@ owl:'<path d="M6 5l2 2h8l2-2v9a6 6 0 0 1-12 0z"/><circle cx="9.5" cy="11" r="1.8
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
 star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
 };
+/* ---------- личные свидания героев: свое место и 3 истории ---------- */
+const HD=(intro,q1,c1,q2,c2,end)=>({intro,b:[{q:q1,c:c1},{q:q2,c:c2}],end});
+const HERO_DATES={
+ h_biker:{img:'d-biker.jpg',e:'🏍',t:'Ночная трасса',s:[
+  HD('{n} ждет на смотровой площадке над городом, опершись о байк. В руке второй шлем. — Ты дочитала «{b}». Я знаю, как это отметить. Садись.',
+   'Город летит мимо огнями. Он кричит сквозь ветер: «Быстрее?»',[['🔥 «Быстрее!»','Он смеется и выкручивает газ. Ты прижимаешься к его спине и чувствуешь, что он улыбается.'],['😳 «Только попробуй»','Он сбрасывает скорость и на светофоре накрывает твою ладонь своей. — Так лучше?'],['🤫 Молча обнять крепче','Он замолкает. Дальше вы едете в тишине, и это лучший разговор за ночь.']],
+   'Он глушит мотор на пустой дороге над обрывом.',[['🌃 «Часто сюда девушек возишь?»','— Ты первая. И, если повезет, последняя.'],['😏 «Научи меня водить»','Он сажает тебя впереди и накрывает твои руки своими. — Первый урок: никогда не отпускай то, что держишь.'],['📖 Рассказать про финал книги','Он слушает, не перебивая. — У тебя горят глаза. Ярче, чем весь город внизу.']],
+   'У подъезда он сам снимает с тебя шлем и задерживается на секунду дольше, чем нужно. — До следующей книги.'),
+  HD('Дождь. {n} стоит под фонарем у байка, мокрый насквозь, и ему все равно. — Я обещал себе не приезжать. Не сдержал. Ты дочитала «{b}», да?',
+   'Он протягивает тебе свою куртку.',[['🧥 Взять куртку','Она пахнет кожей, дождем и им. — Тебе идет мое, — говорит он тихо.'],['😼 «А ты?»','— А я уже промок. Мне терять нечего. Кроме тебя.'],['☔ Встать к нему под фонарь','Вы стоите под одним светом, и дождь будто идет мимо вас.']],
+   'Он спрашивает, куда тебя отвезти.',[['🏠 «Домой»','— Как скажешь. Но я поеду самой длинной дорогой.'],['🌊 «Туда, где море»','Через час вы сидите на пустом пирсе, и он греет твои руки в своих.'],['😏 «Куда угодно, только с тобой»','Он долго смотрит на тебя. — Опасно такое говорить парню с байком и без тормозов.']],
+   'Под утро дождь заканчивается. Он оставляет на твоем подоконнике мокрую розу, сорванную, кажется, в чужом саду.'),
+  HD('{n} пишет одно слово: «Гараж». Внутри пахнет бензином и кофе, играет старый рок. — Ты дочитала «{b}». Хочу показать тебе то, что никому не показываю.',
+   'Он сдергивает чехол со старого мотоцикла.',[['😍 «Он прекрасен»','— Это первый байк моего отца. Я собирал его пять лет. И еще ни разу никого не сажал на него.'],['🔧 «Можно помочь?»','Он дает тебе ключ и встает сзади, направляя твою руку. — Вот так. Ты быстро учишься.'],['😏 «А меня ты так же долго собирался позвать?»','— Дольше, — честно говорит он. — Ты сложнее мотоцикла.']],
+   'Он заводит мотор. Звук такой, что дрожат стекла.',[['🔥 «Поехали!»','Вы выезжаете в ночь, и он впервые смеется так громко.'],['🤫 Просто слушать мотор','— Нравится? — Да. — Мне тоже. Особенно когда ты рядом.'],['💬 «Расскажи про отца»','Он говорит долго и тихо. Ты понимаешь, что это самое личное, что он кому-то доверил.']],
+   'Он отдает тебе запасной ключ от гаража. — Чтобы ты знала, где меня искать. Всегда.')]},
+ h_merc:{img:'d-merc.jpg',e:'🖤',t:'Подземный паркинг',s:[
+  HD('Черный внедорожник ждет в пустом паркинге. {n} открывает тебе заднюю дверь и молча проверяет все вокруг. — Садись. Ты дочитала «{b}», тебе положен вечер без забот.',
+   'Он ведет машину и смотрит на тебя в зеркало.',[['😏 «Следишь за мной?»','— Это моя работа. Но сейчас я смотрю не по работе.'],['🤫 Пересесть вперед','Он молчит, но уголок его губ поднимается. Рука на руле сжимается крепче.'],['💬 «Ты когда-нибудь отдыхаешь?»','— Сейчас. С тобой. Это и есть мой отдых.']],
+   'Вы приезжаете на пустую крышу парковки. Город внизу как на ладони.',[['🌃 «Красиво»','— Я выбирал место, откуда видно все дороги к тебе. Привычка.'],['😳 «Ты не носишь оружие на свидание?»','— Ношу. Но сегодня опаснее всего здесь ты.'],['🫂 Встать к нему ближе','Он снимает пиджак и укрывает твои плечи. Его руки задерживаются на них.']],
+   'У двери он проверяет замок и говорит, не глядя: — Если кто-нибудь тебя обидит, просто назови имя. Остальное я сделаю сам.'),
+  HD('{n} ждет у машины с двумя стаканами кофе. — Сегодня я не на службе. Ты дочитала «{b}», и я хочу провести вечер как обычный человек. Научишь?',
+   'Он спрашивает, чем занимаются обычные люди на свиданиях.',[['🎬 «Ходят в кино»','В зале он садится так, чтобы видеть выход. Но весь фильм смотрит только на тебя.'],['🍔 «Едят что-то вредное»','Вы едите бургеры прямо в машине. Он смеется впервые за вечер, и это звучит невероятно.'],['🚶 «Просто гуляют»','Он идет рядом и невзначай берет тебя за руку. Как будто просто чтобы не потерять.']],
+   'На обратном пути он молчит дольше обычного.',[['💬 «О чем думаешь?»','— О том, что охранял многих. А защищать хочется только тебя.'],['😏 «Ты опять проверяешь улицу»','— Привычка. Но сегодня я хотя бы признаюсь, что это ради тебя.'],['🤫 Положить голову ему на плечо','Он сбрасывает скорость. Видимо, чтобы дорога длилась дольше.']],
+   'Он провожает тебя до двери и стоит под окнами, пока у тебя не погаснет свет.'),
+  HD('Ночь. Сообщение: «Спустись. Без вопросов». В паркинге стоит {n}, рядом багажник, полный подушек, пледов и фонариков. — Ты дочитала «{b}». Сегодня будем смотреть на звезды. Безопасно.',
+   'Вы выезжаете за город. Он находит поле без единого фонаря.',[['🌌 «Как ты нашел это место?»','— Изучил карту засветки. Три часа. Не спрашивай.'],['😳 «Тут темно»','— Я здесь. В темноте со мной безопаснее, чем днем без меня.'],['😼 «А если медведь?»','— Медведю не повезет, — спокойно говорит он.']],
+   'Вы лежите на пледе в багажнике и смотрите вверх.',[['⭐ Загадать желание на падающую звезду','— Что загадала? — Не скажу. — Тогда я сам сделаю так, чтобы сбылось.'],['💬 «А ты о чем мечтаешь?»','Он долго молчит. — Чтобы мне было кого защищать. Кажется, сбылось.'],['🤫 Уснуть у него на плече','Ты просыпаешься на рассвете. Он не спал. Он охранял твой сон.']],
+   'Перед домом он отдает тебе маленький тревожный брелок. — Нажмешь, и я буду рядом через десять минут. Где бы ты ни была.')]},
+ h_racer:{img:'d-racer.jpg',e:'🐉',t:'Скала над облаками',s:[
+  HD('Земля дрожит: во двор опускается дракон, а на нем {n}. — Ты дочитала «{b}». Я обещал показать тебе небо. Садись впереди.',
+   'Дракон взмывает над облаками. Внизу горы и луна.',[['😱 Вцепиться в него','— Я держу тебя, — шепчет он у самого уха. — И никогда не отпущу.'],['🤩 Раскинуть руки','Он смеется и закладывает крутой вираж. — Ты рождена для неба. Я знал.'],['🐉 Погладить дракона','Дракон довольно урчит. — Он никого к себе не подпускал. Похоже, у нас с ним одинаковый вкус.']],
+   'Вы приземляетесь на вершине скалы. Луна совсем рядом.',[['🔥 «Ты всем это показываешь?»','— Никому. Это место было только моим. Теперь оно наше.'],['😏 «Дракон ревнует?»','— Ужасно. Но я ревную тебя сильнее. Даже к нему.'],['🌌 Молча смотреть на звезды','Он садится рядом и укрывает тебя плащом. Звезды кажутся ближе, чем когда-либо.']],
+   'На рассвете он высаживает тебя у дома и оставляет на подоконнике чешуйку, теплую, как его ладонь.'),
+  HD('{n} ждет на скале у спящего дракона. — Сегодня он выбрал ночевать здесь, и я подумал: тебе стоит с ним познакомиться поближе. Ты ведь дочитала «{b}»?',
+   'Дракон открывает один глаз и смотрит прямо на тебя.',[['😳 Замереть','— Не бойся. Он проверяет, достойна ли ты. Ты достойна. Я проверил раньше.'],['✋ Протянуть руку','Дракон касается твоей ладони горячим носом. {n} выдыхает: — Он принял тебя. Это навсегда.'],['😏 «Ну привет, соперник»','Дракон фыркает, и {n} смеется. — Кажется, вы поладите. Это пугает меня больше, чем война.']],
+   '{n} разводит костер и рассказывает, как они встретились с драконом.',[['💬 «Он был совсем маленьким?»','— Размером с кошку. Кусал меня за пальцы. Сейчас кусает только врагов. И иногда меня.'],['🔥 «Ты рисковал ради него?»','— Да. Я всегда рискую ради тех, кого выбираю. Учти.'],['🤫 Положить голову ему на плечо','Он замолкает на полуслове и дальше просто молчит, обняв тебя.']],
+   'Ты засыпаешь у огня, а просыпаешься уже дома, укрытая его плащом.'),
+  HD('{n} появляется у твоего окна прямо на драконе. — Сегодня не небо. Сегодня море. Ты дочитала «{b}», значит, заслужила рассвет над океаном.',
+   'Вы летите низко над водой, дракон касается волн крылом.',[['🌊 Опустить руку к воде','Брызги летят в лицо, ты смеешься, и {n} смотрит на тебя так, будто никогда не слышал ничего красивее.'],['😱 «Слишком низко!»','— Я знаю, что делаю, — он прижимает тебя крепче. — С тобой я всегда знаю.'],['🐉 Попросить дракона нырнуть','Дракон делает сальто над волной, и вы оба кричите от восторга.']],
+   'Вы садитесь на одинокий островок посреди моря.',[['🌅 Встречать рассвет молча','Солнце встает, и он берет твою руку. — Я видел тысячу рассветов. Этот первый, который я запомню.'],['😏 «Ты хочешь меня здесь оставить?»','— Если бы мог, я бы оставил нас обоих. Навсегда.'],['💬 «Чего ты боишься?»','— Однажды прилететь к твоему окну, а там никого. Поэтому я прилетаю каждый раз.']],
+   'Дома ты находишь в волосах соль и маленькую ракушку. Ее он, конечно, подложил сам.')]},
+ h_club:{img:'d-club.jpg',e:'🍸',t:'Клуб после закрытия',s:[
+  HD('Музыка стихла, гости разошлись. В пустом клубе только {n} у барной стойки и два бокала. — Для всех мы закрыты. Для тебя открыто всегда. Ты дочитала «{b}»?',
+   'Он спрашивает, что тебе налить.',[['🍸 «Удиви меня»','Он колдует над бокалом. — Новый коктейль. Называется так же, как ты. Больше его никто не попробует.'],['🧃 «Что-нибудь без алкоголя»','— Мудро, — он улыбается. — Хочу, чтобы ты запомнила этот вечер целиком.'],['😏 «То же, что пьешь ты»','— Опасный выбор. Мне нравится.']],
+   'Он включает медленную песню. В клубе только вы.',[['💃 Пригласить его танцевать','Он танцует так, будто весь этот клуб построен ради одного танца с тобой.'],['🎧 Попросить поставить твою песню','Он ставит ее на полную громкость. — Теперь это песня этого места. Навсегда.'],['🤫 Сесть рядом и слушать','Он говорит тебе на ухо все тайны этого города, кроме одной: что он чувствует.']],
+   'Под утро он выключает неон. — Знаешь, сколько людей мечтают попасть в мой клуб? Мечтаю только я. Чтобы ты пришла снова.'),
+  HD('{n} ведет тебя мимо очереди через черный ход. — VIP-ложа. Ты дочитала «{b}», сегодня праздник в твою честь, просто никто не знает.',
+   'Сверху видно весь танцпол.',[['👀 «Ты всех здесь знаешь?»','— Всех. И про всех. Кроме тебя. Ты единственная загадка в этом городе.'],['😼 «Кто та девушка, что машет тебе?»','— Никто, — он даже не смотрит туда. — Здесь есть только одна девушка, на которую я смотрю.'],['🎶 Утянуть его на танцпол','Хозяин клуба танцует в толпе впервые за пять лет. Охрана в шоке.']],
+   'К вам подходит кто-то с важным разговором. {n} поднимает руку.',[['😏 «Иди, я подожду»','— Нет. Сегодня все дела подождут. Это ты не ждешь.'],['🤫 Взять его за руку','Он переплетает ваши пальцы и говорит гостю: «Завтра». Не отпуская.'],['💬 «Кто это был?»','— Человек, который должен мне деньги. Но сейчас он должен мне еще и время с тобой.']],
+   'На прощание он дает тебе черную карту клуба. На ней нет имени. — Тебе не нужно имя. Тебя здесь все узнают.'),
+  HD('Утро после вечеринки. {n} в рубашке с закатанными рукавами варит кофе в пустом клубе. — Ты дочитала «{b}». Хотел увидеть тебя при дневном свете. Без неона.',
+   'Он ставит перед тобой кофе и садится напротив.',[['☕ «Ты сам варишь кофе?»','— Только тем, кого не хочу отпускать после завтрака.'],['😏 «Ты устал»','— Я всегда устаю к утру. Но рядом с тобой просыпаюсь.'],['📖 Достать книгу и почитать ему','Он слушает, подперев голову рукой. — Читай еще. Твой голос лучше любой музыки здесь.']],
+   'Он говорит, что хочет закрыть клуб на один вечер в неделю.',[['💬 «Зачем?»','— Чтобы этот вечер был только твоим. Каждую неделю.'],['😳 «Ты потеряешь деньги»','— Деньги я зарабатываю каждую ночь. А тебя нашел один раз.'],['🤫 Просто улыбнуться','Он смотрит на тебя и тоже улыбается. Впервые не как хозяин этого города.']],
+   'Он провожает тебя до такси и стоит на пороге, пока машина не скроется за углом.')]},
+ h_ceo:{img:'d-ceo.jpg',e:'🏙',t:'Кабинет на вершине',s:[
+  HD('Последний этаж небоскреба. {n} стоит у окна, ослабляя галстук. — Я перенес совет директоров. Впервые в жизни. Ты дочитала «{b}», и я хотел быть первым, кто тебя поздравит.',
+   'Он наливает два бокала и протягивает тебе один.',[['🥂 «За что пьем?»','— За единственную сделку, которую я не могу просчитать.'],['😏 «Ты всех так соблазняешь?»','— Никого. Мне некогда. Ради тебя я научился находить время.'],['🌃 Подойти к окну','Он встает рядом. — Отсюда видно весь город. Но смотрю я только на тебя.']],
+   'Звонит его телефон. Важный звонок.',[['📵 Забрать телефон','Он смотрит на тебя так, будто ты украла у него сердце, а не телефон. — Ладно. Твоя взяла.'],['😼 «Ответь, я подожду»','— Нет. Пусть ждут они. Я слишком долго ждал этот вечер.'],['🤫 Поцеловать его в щеку','Телефон падает на ковер. Он так и не перезванивает.']],
+   'Водитель ждет внизу. На прощание он касается твоей руки. — Завтра я буду невыносим со всеми. Только не с тобой.'),
+  HD('Ты приходишь в офис, а там никого, только {n} и стол, накрытый на двоих прямо в переговорной. — Ты дочитала «{b}». Я не умею в романтику. Но я умею готовиться.',
+   'На столе лежит папка с твоим именем.',[['📁 Открыть папку','Внутри список всех книг, которые ты хотела прочитать. Напротив каждой отметка: «куплено». — Я изучал рынок.'],['😏 «Ты на меня досье собрал?»','— Я собираю досье на всех. Но только твое читаю перед сном.'],['😳 «Это слишком»','— Для тебя ничего не бывает слишком. Привыкай.']],
+   'После ужина он вдруг снимает пиджак и садится на пол у окна.',[['🪟 Сесть рядом','— Я годами сидел в этом кресле один. С тобой пол удобнее.'],['💬 «Тебе одиноко здесь?»','— Было. До тебя этот кабинет был просто высоким.'],['😼 «Босс сидит на полу?»','— Только перед тобой. Никому не рассказывай.']],
+   'Он провожает тебя до лифта и, когда двери закрываются, все еще смотрит. — До завтра. Это приказ.'),
+  HD('{n} забирает тебя на машине. — Сегодня никакого офиса. Ты дочитала «{b}», и я купил тебе кое-что. Точнее, кое-где.',
+   'Машина останавливается у старого книжного магазина.',[['📚 «Это что?»','— Твой. Я выкупил его, когда узнал, что его хотят закрыть. Теперь он будет жить. Как и ты в нем.'],['😳 «Ты с ума сошел»','— Возможно. Но это лучшее вложение в моей жизни.'],['😏 «Ты хочешь меня купить?»','— Нет. Тебя невозможно купить. Поэтому я дарю.']],
+   'Вы ходите между полками до полуночи.',[['📖 Выбрать книгу для него','Он берет ее как документ на подпись. — Прочитаю. Чтобы знать, о чем ты мечтаешь.'],['🕯 Сесть читать вдвоем в кресле','Он читает молча, но иногда смотрит на тебя поверх страниц.'],['💬 «Зачем тебе это?»','— Я всю жизнь строил башни. Хочу хоть раз построить что-то для тебя.']],
+   'Ключи от магазина лежат у тебя в ладони. А его номер теперь первый в твоем телефоне.')]},
+ h_don:{img:'d-don.jpg',e:'🌹',t:'Закрытый ресторан',s:[
+  HD('Ресторан закрыт для всех. Внутри один накрытый стол, за окнами дождь, у двери охрана. {n} ждет. — Ты дочитала «{b}». В этом городе мне никто не отказывает. Проверим тебя?',
+   'Он отодвигает тебе стул.',[['😏 Сесть на его место','Охрана замирает. Он смеется. — Никто никогда так не делал. Сиди. Тебе можно все.'],['🌹 Поблагодарить','— Не благодари. Ты пришла, и это мне стоит поблагодарить.'],['😼 «А если я откажу?»','— Тогда я буду приходить, пока не согласишься. Я терпеливый человек.']],
+   'Официант приносит меню без цен.',[['🍝 «Закажи за меня»','Он заказывает все твое любимое. — Откуда ты знаешь? — Я знаю все. Это моя работа.'],['💬 «Чем ты на самом деле занимаешься?»','— Держу этот город, — он смотрит тебе в глаза. — А ты держишь меня.'],['🤫 Просто смотреть на дождь','Он замолкает тоже. Самый опасный человек города просто сидит с тобой и слушает дождь.']],
+   'Он провожает тебя до машины и говорит охране: «Если с ней что-то случится, вы будете отвечать передо мной». Тебе он говорит только: «Спокойной ночи».'),
+  HD('{n} ждет тебя на крыше старого склада, где накрыт стол на двоих и висят гирлянды. — Не так шикарно, как ресторан. Зато никто не знает, что я здесь. Ты дочитала «{b}»?',
+   'Он рассказывает, что раньше прятался здесь от всего мира.',[['💬 «Почему ты привел меня сюда?»','— Потому что от тебя прятаться не хочу.'],['😏 «Значит, я знаю твое убежище?»','— Да. Это значит, что теперь у тебя есть власть надо мной. Пользуйся осторожно.'],['🫂 Сесть ближе','Он кладет руку на спинку твоего стула. Так, будто защищает тебя от всего города внизу.']],
+   'Где-то внизу слышна сирена.',[['😳 «Это за тобой?»','— Не сегодня, — он улыбается. — Сегодня я хороший парень. Попробуй доказать обратное.'],['🤫 Сжать его руку','Он переплетает пальцы с твоими. — Не бойся. Со мной тебя никто не тронет.'],['😼 «Ты слишком спокоен»','— Когда ты рядом, спокойнее только мертвые. Шучу. Почти.']],
+   'Перед уходом он надевает тебе на палец свое кольцо. — Не обручальное. Пока. Это знак: ты под моей защитой.'),
+  HD('{n} приезжает за тобой лично, без охраны, без водителя. — Сегодня никакого Дона. Сегодня просто я. Ты дочитала «{b}», я хочу отпраздновать это у мамы.',
+   'Вы приезжаете в маленький дом, где пахнет пастой и базиликом.',[['😳 «Ты привез меня к маме?!»','— Она давно спрашивала, почему я улыбаюсь. Пора показать почему.'],['😊 Помочь на кухне','Его мама учит тебя лепить равиоли, а он смотрит из дверей так, будто это самое прекрасное, что он видел.'],['😏 «Я ей понравлюсь?»','— Ты уже ей нравишься. Она узнала о тебе раньше, чем я признался себе.']],
+   'После ужина вы сидите на крыльце.',[['💬 «Ты здесь вырос?»','— Да. Отсюда я ушел, чтобы стать тем, кого все боятся. С тобой хочу вернуться и стать тем, кого любят.'],['🤫 Положить голову ему на плечо','Он молчит. Но ты чувствуешь, как он впервые за долгое время расслабляется.'],['😼 «Мама показала твои детские фото»','— Убью. Шучу. Но фото заберу.']],
+   'Уезжая, мама сует тебе контейнер с пастой и шепчет: «Береги его». Он делает вид, что не слышал.')]},
+ h_rector:{img:'d-rector.jpg',e:'📜',t:'Аудитория после отбоя',s:[
+  HD('Пустая аудитория академии, лунный свет на скамьях. {n} стоит у окна с книгой. — Вы опоздали на три минуты. Но вы дочитали «{b}», так что я закрою на это глаза. Один раз.',
+   'Он кладет перед тобой экзаменационный лист.',[['📝 Взять ручку','На листе один вопрос: «Вы придете ко мне еще раз?» Варианты ответа: «Да». — Это нечестно. — Я ректор. Мне можно.'],['😏 «Я не готовилась»','— Знаю. Поэтому экзамен будет устный. И долгий.'],['😳 «Это нарушение устава»','— Устав написал я. Значит, я и нарушаю.']],
+   'Он садится на край стола совсем рядом.',[['📖 Обсудить книгу','Он спорит с тобой о героях, и ты впервые видишь, как он улыбается. Ему нравится, что ты споришь.'],['🤫 Снять с него очки','Он перехватывает твою руку, но не отпускает. — Без очков я вижу только тебя.'],['💬 «Вы всегда такой строгий?»','— Со всеми. С тобой я просто пытаюсь держаться.']],
+   'В коридоре слышны шаги ночного сторожа. Он закрывает тебя собой и шепчет: — Тихо. Это наш секрет. Ставлю вам высший балл.'),
+  HD('Записка на твоей книге: «Библиотека. Запретная секция. Полночь». Там тебя ждет {n} со свечой. — Вы дочитали «{b}». Пора узнать, что академия прячет от студентов.',
+   'Он открывает шкаф с древними книгами под замком.',[['📚 Взять самую старую','— Эту не открывали двести лет. Ты будешь первой. После меня.'],['😏 «Вы нарушаете правила ради меня?»','— Я нарушаю их ради знаний. Ты просто удачный повод.'],['🕯 Читать вместе при свече','Вы сидите плечом к плечу. Он медленно переводит старый текст шепотом.']],
+   'Свеча гаснет. Становится совсем темно.',[['🤫 Не двигаться','Ты чувствуешь его дыхание совсем рядом. — Не бойтесь. Я здесь. Я всегда рядом, когда темно.'],['😳 «Профессор?»','— Здесь, — его рука находит твою. — Пойдемте. Я знаю дорогу наизусть.'],['😏 «Это вы специально?»','— Свечи не гаснут сами по себе, — говорит он. Ты не понимаешь, шутка это или признание.']],
+   'Он провожает тебя до общежития и протягивает ключ от запретной секции. — Не потеряйте. И не говорите никому, что я умею быть безрассудным.'),
+  HD('{n} ждет у ворот академии с двумя билетами. — Сегодня я не ректор. Ты дочитала «{b}», а я давно хотел сходить на ту постановку, которую ты цитировала на лекции.',
+   'Вы сидите в старом театре в ложе.',[['🎭 Смотреть на сцену','Ты замечаешь, что он смотрит не на сцену, а на тебя. И даже не скрывает.'],['💬 Шепотом комментировать','Он смеется так, что на вас оборачиваются. Строгий ректор смеется в театре. Никто не поверил бы.'],['🤫 Взять его за руку в темноте','Он замирает, а потом сжимает твою руку в ответ. До самого антракта не отпускает.']],
+   'После спектакля вы идете пешком по ночному городу.',[['📖 Спросить, какую книгу он любит','— Ту, которую ты читаешь сейчас. Я перечитываю все, что ты держишь в руках.'],['😏 «Вы ведь не просто так позвали»','— Нет. Я хотел увидеть вас вне аудитории. Убедиться, что это не просто увлечение.'],['💬 «И как, убедились?»','— Да, — он останавливается. — Это намного хуже. Это навсегда.']],
+   'У твоей двери он снимает очки и говорит без привычной строгости: — Спокойной ночи. Завтра я снова буду вашим ректором. Но думать буду о другом.')]},
+ h_vamp:{img:'d-vamp.jpg',e:'🍷',t:'Балкон замка',s:[
+  HD('Каменный балкон старого замка, огромная луна. {n} стоит с бокалом темного вина. — Триста лет я ждал ту, ради кого стоит встретить рассвет. Ты дочитала «{b}»? Расскажи. У нас вся ночь.',
+   'Он протягивает тебе бокал.',[['🍷 Взять бокал','— Вино двухсотлетней выдержки. Как и мое терпение. Оба закончились на тебе.'],['😳 «Это точно вино?»','Он смеется низко и мягко. — Для тебя только вино. Остальное я держу при себе.'],['😏 «А ты что пьешь?»','— Сегодня только твое присутствие. Этого достаточно.']],
+   'Он слушает тебя, не отрывая взгляда.',[['💬 «Тебе не скучно?»','— За триста лет мне было скучно всегда. Кроме этих минут.'],['🫀 «Ты слышишь мое сердце?»','— Каждый удар. Оно бьется быстрее, когда я подхожу ближе. Вот так.'],['🤫 Подойти к краю балкона','Он мгновенно оказывается рядом. — Осторожно. Я не переживу, если с тобой что-то случится. А я бессмертен.']],
+   'Перед рассветом он целует твою руку. — Иди. Солнце скоро встанет, а я хочу встретить еще много ночей с тобой.'),
+  HD('{n} ведет тебя в бальный зал замка, где все зеркала закрыты тканью. — Ты дочитала «{b}». Хочу, чтобы ты увидела мой дом. И меня. Таким, какой я есть.',
+   'Он подводит тебя к единственному открытому зеркалу.',[['🪞 Посмотреть','В зеркале только ты. Он стоит рядом, но не отражается. — Теперь ты знаешь. Не уходи.'],['😳 «Тебя нет в отражении»','— Я давно не вижу себя. Зато вижу тебя. Этого мне хватает.'],['🤫 Взять его за руку','Твоя рука в отражении сжимает пустоту. Но он рядом, ты чувствуешь его холодные пальцы.']],
+   'Где-то играет старый вальс.',[['💃 Танцевать с ним','Он ведет так, будто учил этот танец сто лет. Наверное, так и есть.'],['💬 «Ты танцевал с кем-то до меня?»','— С королевами. Но ни одна не смотрела на меня так, как ты.'],['😏 «Научи меня старинному танцу»','Он терпелив. Ты сбиваешься, и он смеется впервые за век.']],
+   'Он провожает тебя до ворот замка и оставляет у тебя в волосах черную розу. Она так и не завянет.'),
+  HD('Ночная библиотека замка, свечи. {n} достает старый дневник. — Ты дочитала «{b}». Теперь моя очередь. Я хочу, чтобы ты прочитала обо мне.',
+   'Он протягивает тебе дневник, исписанный за триста лет.',[['📖 Открыть первую страницу','Почерк дрожит: «Сегодня я перестал быть человеком». Он смотрит в сторону, пока ты читаешь.'],['📖 Открыть последнюю страницу','Там написано твое имя. Много раз. — Это я писал, пока ждал тебя.'],['😏 «А ты читал мои мысли?»','— Пытался. Но с тобой это бесполезно. Ты непредсказуема даже для меня.']],
+   'Ты закрываешь дневник.',[['💬 «Тебе было одиноко?»','— Триста лет. Теперь нет.'],['🤫 Обнять его','Он стоит неподвижно, будто забыл, как обнимать. Потом медленно обнимает в ответ.'],['😼 «А что будет, когда я состарюсь?»','— Я буду рядом каждый день. И каждый день буду влюбляться в тебя заново.']],
+   'Перед рассветом он закрывает дневник и говорит: — Следующую страницу мы напишем вместе.')]},
+ h_heir:{img:'d-heir.jpg',e:'🖼',t:'Галерея поместья',s:[
+  HD('Длинная галерея родового поместья, портреты предков в темноте. {n} в смокинге ждет у окна. — Моя семья ждет от меня выгодной партии. А я жду тебя. Ты дочитала «{b}»?',
+   'Он ведет тебя мимо портретов.',[['🖼 «Кто это?»','— Мой прадед. Женился по расчету и всю жизнь смотрел в окно. Я не повторю его ошибку.'],['😏 «Они смотрят на нас»','— Пусть смотрят. Пусть видят, как надо выбирать.'],['🤫 Взять его под руку','Он идет медленнее, чтобы галерея казалась длиннее.']],
+   'В конце галереи пустая рама.',[['😳 «Почему она пустая?»','— Она для моего портрета. С той, кого я выберу. Я хочу, чтобы там была ты.'],['😼 «Слишком быстро»','— Я наследник. Я привык получать то, что хочу. Но тебя я хочу заслужить.'],['💬 «Твоя семья меня примет?»','— Им придется. Иначе им придется искать другого наследника.']],
+   'На прощание он надевает тебе на шею старинный медальон. — Он принадлежал женщине, которую мой род не принял. Пусть хоть теперь он будет на своем месте.'),
+  HD('Благотворительный бал в поместье. {n} находит тебя в толпе. — Платье тебе идет. Я выбирал его неделю. Ты дочитала «{b}», это наш праздник, хоть гости и думают иначе.',
+   'Его мать холодно смотрит на тебя.',[['😏 Улыбнуться ей','Она удивленно приподнимает бровь. Он шепчет: — Ты первая, кто выдержал ее взгляд.'],['🤫 Сжать его руку','Он отвечает тем же и громко говорит: «Мама, это та, о ком я говорил». Зал затихает.'],['💬 «Я ей не нравлюсь»','— Ей никто не нравится. Даже я. Это хороший знак.']],
+   'Он уводит тебя на террасу подальше от гостей.',[['🌙 «Ты сбежал с собственного бала»','— Ради тебя я сбегу откуда угодно. Даже из собственной фамилии.'],['😳 «Нас заметят»','— Пусть. Пусть весь свет знает.'],['🤫 Смотреть на сад','Он укрывает тебя смокингом. — Холодно. А я не прощу себе, если ты замерзнешь.']],
+   'Гости разъезжаются, а он все стоит у ворот, пока твоя машина не исчезнет в темноте.'),
+  HD('{n} ведет тебя в старую оранжерею поместья. — Здесь я прятался в детстве от уроков этикета. Ты дочитала «{b}». Хочу показать тебе, каким я был до всех этих правил.',
+   'Он показывает тебе старое дерево с вырезанными буквами.',[['😊 «Это ты вырезал?»','— Да. Мне было десять. Я обещал себе, что однажды приведу сюда того, кто будет любить меня просто так.'],['😏 «Чьи это инициалы?»','— Пока только мои. Но место рядом осталось. Специально.'],['🤫 Провести пальцами по буквам','Он смотрит на тебя и тихо говорит: — Никто никогда не трогал это дерево, кроме меня.']],
+   'Он достает нож и протягивает тебе.',[['🔪 Вырезать свои инициалы','Ваши буквы теперь рядом. Он улыбается, как мальчишка. — Теперь это навсегда.'],['💬 «Ты уверен?»','— Я никогда в жизни ни в чем не был так уверен.'],['😼 «А если мы поссоримся?»','— Тогда я приду сюда и буду смотреть на них, пока ты не вернешься.']],
+   'Вы уходите из оранжереи на рассвете. Позади на дереве две пары букв.')]},
+ h_ice:{img:'d-ice.jpg',e:'❄️',t:'Зимний сад',s:[
+  HD('Стеклянный зимний сад, замерзшие розы, падает снег. {n} держит в руке ледяную розу. — Я не умею звать. Поэтому просто держи. Ты дочитала «{b}»?',
+   'Он протягивает тебе ледяную розу.',[['🌹 Взять розу','Она не тает в твоих руках. — Она будет такой, пока ты меня не разлюбишь. Значит, навсегда.'],['😳 «Холодная»','— Как и я. Но в твоих руках она не тает. Как и я.'],['😏 «Это признание?»','— Принцы не признаются. Принцы дарят розы. Догадайся сама.']],
+   'Снег ложится тебе на волосы. Он смотрит.',[['❄️ Поймать снежинку','Он ловит ее рядом с тобой. — Двор думает, что мое сердце лед. Пусть думают.'],['🤫 Встать к нему ближе','Ты чувствуешь холод его плаща, а потом неожиданное тепло его рук.'],['💬 «Тебе не одиноко здесь?»','— Было. Розы не умеют разговаривать. Ты умеешь.']],
+   'Перед уходом он снимает свою корону и надевает тебе на голову. — Только на этот вечер. Хотя нет. Не только.'),
+  HD('Замерзшее озеро под луной. {n} ждет с двумя парами коньков. — Ты дочитала «{b}». Я хочу, чтобы ты увидела, как красив мой мир, когда в нем есть ты.',
+   'Ты встаешь на лед.',[['⛸ Сразу поехать','Ты едешь уверенно, и он удивленно смеется. — Ты полна сюрпризов. Это пугает и восхищает.'],['😳 Упасть ему в руки','Он ловит тебя и не отпускает дольше, чем нужно. — Падай, сколько захочешь. Я поймаю.'],['😏 «Обгонишь?»','Вы мчитесь по льду, и он поддается в последний момент. Совсем немного.']],
+   'Вы останавливаетесь посреди озера. Под вами светится лед.',[['💬 «Почему все считают тебя холодным?»','— Потому что я позволяю им. Тебе позволяю видеть правду.'],['🤫 Прислониться к нему','Он медленно обнимает тебя, и вокруг вас лед начинает таять.'],['😼 «Лед тает»','— Это ты, — говорит он. — Ты всегда так на меня действуешь.']],
+   'Он провожает тебя до ворот и шепчет: «Возвращайся скорее. Без тебя здесь снова зима».'),
+  HD('Тронный зал ледяного дворца, пустой и тихий. {n} сидит на ступенях трона, а не на нем. — Ты дочитала «{b}». Посиди со мной здесь. Я устал быть принцем.',
+   'Ты садишься рядом на холодные ступени.',[['💬 «Почему ты не на троне?»','— Трон для принца. А сейчас я хочу быть тем, кто сидит рядом с тобой.'],['🧣 Отдать ему свой шарф','Он смотрит на шарф так, будто ему никогда ничего не дарили. — Спасибо. Я его не сниму.'],['🤫 Положить голову ему на плечо','Он долго молчит. Потом говорит: — Так тихо внутри у меня не было никогда.']],
+   'Он рассказывает, что завтра совет снова потребует от него невозможного.',[['😏 «Скажи им нет»','— С тобой я начинаю верить, что могу.'],['💬 «Я буду рядом»','Он поворачивается к тебе. — Это самое сильное, что мне кто-то говорил.'],['😼 «Сбежим?»','— Не искушай. Я ведь соглашусь.']],
+   'Ты уходишь, а он остается на ступенях. Но впервые в этом зале горит свет.')]},
+ h_mage:{img:'d-mage.jpg',e:'✨',t:'Башня мага',s:[
+  HD('Вершина башни, звездная карта на куполе, на полу светится магический круг. {n} протягивает руку. — Я начертил круг, из которого можно выйти только вместе со мной. Заходи. Ты дочитала «{b}»?',
+   'Ты входишь в круг. Воздух дрожит.',[['✨ «Что сейчас будет?»','— Ничего страшного. Просто теперь я чувствую каждый твой вдох.'],['😏 «Это заклинание?»','— Слабое. Но действует только на меня.'],['🤫 Встать ближе к нему','Магия вспыхивает фиолетовым. Он улыбается: — Даже звезды за нас.']],
+   'Он показывает созвездия на куполе.',[['⭐ «Где мое?»','Он водит пальцем по карте и рисует новое созвездие в форме твоего имени.'],['💬 «Ты читаешь звезды?»','— Читаю. Они сказали, что ты придешь. Я не поверил. Ошибся.'],['😼 «А можешь достать одну?»','Он что-то шепчет, и в твою ладонь падает крошечная светящаяся искра.']],
+   'На прощание он касается твоего запястья, и там остается тонкий светящийся узор. — Если позовешь, я услышу. Где бы ни был.'),
+  HD('{n} ведет тебя в свою лабораторию среди склянок и древних книг. — Ты дочитала «{b}». Я хочу сварить для тебя зелье. Не бойся, без любовных. Ты и так справляешься.',
+   'Он дает тебе выбрать ингредиент.',[['🌙 Лунный свет в колбе','Зелье светится серебром. — Ты выбрала то же, что выбрал бы я. Опасное совпадение.'],['🌹 Лепесток черной розы','Зелье становится темно-фиолетовым. — Сильный выбор. Ты знаешь, чего хочешь.'],['😏 Каплю его вина','Он поднимает бровь. — Ты только что сделала меня частью зелья. Ты хоть понимаешь, что это значит?']],
+   'Зелье готово.',[['🧪 Выпить','На мгновение ты видишь мир его глазами: и в центре этого мира ты.'],['😳 «Сначала ты»','Он пьет без колебаний. — Видишь? Я доверяю тебе свою жизнь.'],['🤫 Вылить в окно','Он смеется так, что с полок падают свитки. — Ты единственная, кто посмел.']],
+   'Ты уходишь, а флакон с остатками зелья он оставляет себе. Говорит, на память.'),
+  HD('{n} открывает портал прямо в твоей комнате. — Ты дочитала «{b}». Сегодня я покажу тебе место, где рождается магия. Держись за меня крепче.',
+   'Вы оказываетесь в лесу, где светится каждое дерево.',[['😍 «Здесь красиво»','— Здесь я впервые колдовал. И здесь впервые подумал, что магия ничего не стоит, если не с кем ее разделить.'],['😳 «Мы вернемся?»','— Если захочешь. Но я бы оставил тебя здесь навсегда.'],['✋ Коснуться светящегося дерева','Дерево вспыхивает ярче. Он замирает: — Оно приняло тебя. Это бывает раз в сто лет.']],
+   'Он садится на светящийся мох и зовет тебя.',[['💬 «Чего ты хочешь?»','— Всего, что можно, и тебя. В таком порядке, что ты на первом месте.'],['🤫 Сесть рядом','Вокруг вас поднимаются светлячки. Он говорит, что это не его магия. Это ваша.'],['😏 «Научи меня колдовать»','Он кладет свои руки на твои и шепчет слово. Из твоих пальцев вылетает искра. — Видишь? Ты всегда это умела.']],
+   'Портал закрывается, но на твоем столе остается веточка того дерева. Она светится каждую ночь.')]},
+ h_demon:{img:'d-demon.jpg',e:'🔥',t:'Перекресток в полночь',s:[
+  HD('Пустой перекресток, туман, тусклый фонарь. {n} стоит в центре со свитком в руке. — Ты дочитала «{b}». Отличная ночь для сделки. Один вечер со мной. Цену назову потом.',
+   'Он разворачивает свиток.',[['✍️ Подписать','Подпись вспыхивает алым. — Смелая. Мне это нравится. Цена: еще один вечер. И еще один.'],['😏 «Сначала прочитаю мелкий шрифт»','— Умница, — он ухмыляется. — Там написано, что я твой. Мелким шрифтом, чтобы ты не испугалась.'],['😼 «Я не подписываю договоры с демонами»','— Тогда я разорву этот, — свиток горит в его руке. — Ради тебя я буду нарушать даже свои правила.']],
+   'Он идет рядом по ночной дороге.',[['💬 «Чего ты хочешь на самом деле?»','— Душу? Нет. Я хочу, чтобы ты пришла сама. Без сделки.'],['🔥 «Покажи, кто ты»','Его глаза вспыхивают красным. — Не испугалась? — Нет. — Это опаснее всего.'],['🤫 Взять его за руку','Его кожа горячая. Он смотрит на твою руку так, будто это его первая сделка, которую он проиграл.']],
+   'Он исчезает в тумане так же, как появился. На земле остается выжженный след в форме сердца.'),
+  HD('{n} ведет тебя по краю огненной бездны. — Ты дочитала «{b}». Хочу показать тебе мой мир. Не бойся, тебя здесь никто не тронет. Они знают, чья ты.',
+   'Вокруг кричат и шепчут тени.',[['😳 Прижаться к нему','Он обнимает тебя одной рукой, и тени разом замолкают. — Видишь? Они знают.'],['😏 «Шумно у тебя»','— Ад, — пожимает он плечами. — Но ради тебя я сделаю его тише.'],['🔥 Посмотреть в бездну','Он стоит у тебя за спиной. — Смотри сколько хочешь. Я не дам тебе упасть.']],
+   'Вы стоите у его трона.',[['👑 Сесть на трон','Он смеется. — Ты первая, кто посмел. Мои подданные в ужасе. А я в восторге.'],['💬 «Тебе нравится здесь?»','— Нравилось. Пока я не увидел тебя при солнечном свете.'],['🤫 Сесть у его ног','Он поднимает тебя за руку. — Нет. Ты никогда не будешь у моих ног. Только рядом.']],
+   'Он возвращает тебя домой до рассвета. На твоем запястье остается тонкий браслет, теплый, как уголь.'),
+  HD('{n} появляется в твоей комнате прямо из тени. — Не кричи. Я пришел без сделки. Просто ты дочитала «{b}», а мне хотелось увидеть тебя. Странно, да?',
+   'Он садится на край подоконника.',[['😳 «Как ты вошел?»','— Тени. Они везде, где ты. Но я обещаю стучать. Иногда.'],['😏 «Демоны просто так не приходят»','— Обычно нет. Но ты сделала меня необычным.'],['☕ Предложить ему чай','Он смотрит на чашку, как на древний артефакт. — Мне еще никто не предлагал чай. Обычно предлагают душу.']],
+   'Вы говорите до глубокой ночи.',[['💬 «Каким ты был до ада?»','Он долго молчит. — Не помню. Но с тобой мне кажется, что я вспоминаю.'],['🤫 Сесть рядом','Комната становится теплее. Свечи сами собой загораются вокруг.'],['😼 «Ты влюбился в смертную»','— Тише, — он прикладывает палец к твоим губам. — Если в аду узнают, меня разжалуют. Но мне все равно.']],
+   'На рассвете он растворяется в тени, оставив на подушке черное перо и записку: «Это было не по сделке. Это было по-настоящему».')]},
+ h_angel:{img:'d-angel.jpg',e:'🪶',t:'Колокольня под луной',s:[
+  HD('Крыша старой колокольни, огромная луна, падают перья. {n} стоит на краю, крылья приоткрыты. — Ради тебя я упал бы еще раз. Ты дочитала «{b}»?',
+   'Он протягивает тебе руку.',[['🪶 Взять его руку','Его рука теплая, как солнечный свет. — Я думал, после падения не почувствую тепла. Ошибся.'],['😳 «Тут высоко»','— Я знаю все о падениях. Поверь, с тобой я не упаду. Я взлечу.'],['😏 «Ты всегда стоишь на краю?»','— Всегда. Но рядом с тобой хочется отойти. И остаться.']],
+   'Он садится на край и смотрит на город внизу.',[['💬 «Ты скучаешь по небу?»','— Скучал. Пока не понял, что небо, которое я ищу, у тебя в глазах.'],['🤫 Сесть рядом','Он укрывает тебя крылом. Становится тепло и тихо, как в детстве.'],['😼 «Почему ты упал?»','— Я задал слишком много вопросов. А теперь у меня есть один ответ. Ты.']],
+   'На прощание он отдает тебе одно свое перо. — Если оно засветится, значит, я думаю о тебе. Оно будет светиться всегда.'),
+  HD('{n} ждет тебя на рассвете у старого собора. — Ты дочитала «{b}». Я хочу показать тебе то, что видят только ангелы. Закрой глаза.',
+   'Он поднимает тебя на руки и взмывает вверх.',[['😱 Обнять его за шею','— Не бойся. Я держу тебя крепче, чем держал небо.'],['😍 Открыть глаза','Вы над облаками, и солнце встает прямо перед вами. Он смотрит не на рассвет. На тебя.'],['🤫 Молчать и слушать ветер','Ты слышишь, как бьется его сердце. Быстро. Ангелы, оказывается, тоже волнуются.']],
+   'Вы зависаете над облаками.',[['💬 «Тебя накажут за это?»','— Уже наказали. Мне все равно. Этот рассвет стоил падения.'],['😏 «Ты специально выбрал рассвет?»','— Я выбирал то, что достойно тебя. Солнце едва справилось.'],['🫂 Прижаться к нему','Он обнимает тебя крыльями, и вы медленно опускаетесь вниз, как перо.']],
+   'Он ставит тебя на землю у твоего дома. Вокруг еще долго кружат светлые перья.'),
+  HD('Пустая церковь ночью. {n} сидит на скамье под разбитым витражом. — Ты дочитала «{b}». Здесь меня когда-то лишили крыльев. Сегодня я хочу, чтобы это место помнило что-то хорошее.',
+   'Он смотрит на разбитый витраж.',[['💬 «Тебе больно здесь?»','— Было. Но ты рядом, и боль уходит.'],['🤫 Взять его за руку','Он закрывает глаза. — Так меня не держали очень давно.'],['😏 «Давай сделаем здесь новое воспоминание»','Он улыбается впервые за вечер. — Ты всегда знаешь, что сказать падшему.']],
+   'Лунный свет проходит через витраж и окрашивает вас цветными пятнами.',[['🌈 Встать в свет','Ты сияешь в цветных пятнах. Он смотрит и шепчет: — Теперь я знаю, ради чего меня создали.'],['💬 «Ты бы вернулся на небо?»','— Только если бы ты пошла со мной. А ты здесь. Значит, и я здесь.'],['🤫 Положить голову ему на плечо','Его крыло медленно укрывает тебя. Ты засыпаешь под тихий стук его сердца.']],
+   'На рассвете ты находишь на скамье свое имя, выложенное из белых перьев.')]}
+};
+const HERO_JEAL={
+ h_biker:['Ты выбрала его. Ладно. Но в следующий раз я просто приеду и заберу тебя.','Мотор заглох сам. Наверное, от злости. Как и я.'],
+ h_merc:['Я следил, чтобы с тобой ничего не случилось. Даже когда ты была с ним.','Я не ревную. Я просто стоял под окном всю ночь.'],
+ h_racer:['Мой дракон сжег полполя от ревности. Я сделал вид, что это он.','Небо сегодня было пустым без тебя.'],
+ h_club:['Я закрыл клуб для всех. Ты выбрала другое место. Это было больно.','Твой коктейль так и стоит на стойке. Никто не смеет его трогать.'],
+ h_ceo:['Я отменил три встречи. Ты отменила меня. Мы квиты. Пока.','Я не проигрываю. Я просто беру паузу перед следующим ходом.'],
+ h_don:['В этом городе мне никто не отказывал. Ты первая. Это сводит меня с ума.','Скажи, как его зовут. Я просто хочу знать. Ничего не сделаю. Наверное.'],
+ h_rector:['Я поставил вам пропуск. Неуважительная причина: он.','Я не ревную. Я просто перечитал устав. Там ничего нет про других.'],
+ h_vamp:['Ты выбрала его. Я умею ждать веками. Он нет.','Вино выдохлось, пока я ждал. Впервые за двести лет.'],
+ h_heir:['Моя семья была бы рада, что ты отказала. Я нет.','Пустая рама в галерее подождет. Я тоже.'],
+ h_ice:['Сегодня в саду замерзли все розы. Я тут ни при чем.','Я снова холоден со всеми. Даже с собой.'],
+ h_mage:['Звезды сказали, что ты выберешь меня. Звезды ошиблись. Я их накажу.','Мой круг светился до утра. Ждал тебя.'],
+ h_demon:['Ты выбрала его, а не меня? Интересно. Я люблю сложные сделки.','Ад сегодня горел сильнее обычного. Догадайся почему.'],
+ h_angel:['Я упал однажды. Сегодня мне показалось, что падаю снова.','Я отпущу. Ангелы умеют отпускать. Но не сегодня.']
+};
+
+/* ---------- приглашение: черный конверт с печатью ---------- */
+const HERO_INV={
+ h_biker:{ru:['Шлем на заднем сиденье твой. В полночь у подъезда. Опоздаешь, заберу сам.','Город спит, дороги пустые. Мне не хватает только тебя за спиной.','Надень что-нибудь теплое. И не задавай вопросов.'],en:['The helmet on the back seat is yours. Midnight, outside your door. Be late and I’ll come get you myself.','The city is asleep, the roads are empty. All I’m missing is you behind me.','Wear something warm. And don’t ask questions.']},
+ h_merc:{ru:['Я проверил место трижды. Оно безопасно для всех, кроме меня рядом с тобой.','Сегодня я не на службе. Сегодня я просто хочу быть рядом.','Машина у входа. Ты в безопасности. Почти.'],en:['I checked the place three times. It’s safe for everyone except me, next to you.','Tonight I’m off duty. Tonight I just want to be close.','The car is at the door. You’re safe. Almost.']},
+ h_racer:{ru:['Мой дракон ждет на крыше. Он ревнует, так что держись крепче за меня.','Я облетел полмира, чтобы найти место, достойное тебя. Нашел.','Сегодня небо наше. Не бойся высоты, я не дам тебе упасть.'],en:['My dragon is waiting on the roof. He’s jealous, so hold on to me tighter.','I flew across half the world to find a place worthy of you. I found it.','Tonight the sky is ours. Don’t fear the height, I won’t let you fall.']},
+ h_club:{ru:['Для всех клуб сегодня закрыт. Для тебя открыт.','Твое имя уже в списке. Единственное имя.','Музыка, лучший столик и я. Остальное я отменил.'],en:['The club is closed to everyone tonight. Open for you.','Your name is already on the list. The only name.','Music, the best table and me. I cancelled everything else.']},
+ h_ceo:{ru:['Я перенес совет директоров. Впервые в жизни. Не заставляй меня жалеть.','Ассистентка спросила, что у меня вечером в календаре. Я ответил: ты.','Водитель будет в восемь. Это не просьба.'],en:['I moved a board meeting. First time in my life. Don’t make me regret it.','My assistant asked what’s in my calendar tonight. I said: you.','The driver will be there at eight. This isn’t a request.']},
+ h_don:{ru:['В этом городе мне никто не отказывает. Проверим, станешь ли ты первой.','Я закрыл ресторан на весь вечер. Охрана у дверей. Ты внутри, со мной.','Надень черное. И ничего не бойся, пока ты со мной.'],en:['No one in this city says no to me. Let’s see if you’ll be the first.','I closed the restaurant for the night. Guards at the door. You’re inside, with me.','Wear black. And fear nothing while you’re with me.']},
+ h_rector:{ru:['Жду вас после отбоя в восточном крыле. За опоздание дополнительное занятие. Со мной.','Это нарушение устава академии. Мне все равно.','Я написал тысячу правил. Ради тебя нарушу каждое.'],en:['I’ll expect you after curfew in the east wing. Being late means extra lessons. With me.','This breaks the academy rules. I don’t care.','I wrote a thousand rules. For you I’ll break every one.']},
+ h_vamp:{ru:['Триста лет я ждал ту, ради кого стоит встретить рассвет. Приходи до полуночи.','Вино двухсотлетней выдержки и я. Оба для тебя.','Я слышу, как бьется твое сердце, пока ты это читаешь. Приходи.'],en:['For three hundred years I waited for someone worth meeting the dawn for. Come before midnight.','A two-hundred-year-old wine and me. Both for you.','I can hear your heart beating as you read this. Come.']},
+ h_heir:{ru:['Моя семья ждет от меня выгодной партии. Я жду тебя.','Платье уже доставлено. Если не понравится, я куплю весь бутик.','Пусть старые портреты в галерее посмотрят, как надо выбирать.'],en:['My family expects an advantageous match. I’m expecting you.','The dress has been delivered. If you don’t like it, I’ll buy the whole boutique.','Let the old portraits in the gallery see how choosing is done.']},
+ h_ice:{ru:['Я не умею звать. Поэтому просто приди.','Весь двор считает мое сердце льдом. Пусть думают. Ты знаешь правду.','В саду распустились зимние розы. Я хочу, чтобы ты увидела их первой.'],en:['I don’t know how to ask. So just come.','The whole court thinks my heart is ice. Let them. You know the truth.','The winter roses have bloomed in the garden. I want you to see them first.']},
+ h_mage:{ru:['Я начертил круг, из которого можно выйти только вместе со мной. Заходи.','Звезды сегодня встали как надо. Для нас.','Мне не нужна магия, чтобы ты пришла. Но я все равно наложил чары. На всякий случай.'],en:['I drew a circle you can only leave together with me. Step in.','Tonight the stars are aligned just right. For us.','I don’t need magic to make you come. But I cast a spell anyway. Just in case.']},
+ h_demon:{ru:['Я не спрашиваю. Я сообщаю. Сегодня ты со мной.','Сделка простая: один вечер с тобой. Цену назову потом.','Ад сегодня подождет. Я занят.'],en:['I’m not asking. I’m informing you. Tonight you’re mine.','Simple deal: one evening with you. I’ll name the price later.','Hell can wait tonight. I’m busy.']},
+ h_angel:{ru:['Ради тебя я упал бы еще раз.','Небеса закрыли для меня двери. Я открыл для тебя свои.','Мои крылья сломаны, но этой ночью я покажу тебе небо.'],en:['For you I would fall again.','Heaven closed its doors to me. I opened mine to you.','My wings are broken, but tonight I’ll show you the sky.']}
+};
+const INV_GEN={ru:['Сегодня вечером. Только ты и я.','Я жду. Не заставляй меня ждать слишком долго.'],en:['Tonight. Just you and me.','I’m waiting. Don’t make me wait too long.']};
+const INV_TEASE={ru:['Ожидание делает меня только опаснее.','Я умею ждать. Но тебе не понравится, чем я займусь, пока жду.','Хорошо. Я подожду. Прямо под твоим окном.','Ты играешь со мной. Мне это нравится.','Тик-так. Мое терпение заканчивается быстрее, чем твоя глава.'],en:['Waiting only makes me more dangerous.','I can wait. But you won’t like what I do while I’m waiting.','Fine. I’ll wait. Right under your window.','You’re playing with me. I like it.','Tick-tock. My patience runs out faster than your chapter.']};
+/* место свидания под героя: первый раз ведет туда, где ему самое место */
+const HERO_DATE={h_biker:5,h_racer:6,h_ceo:7,h_heir:7,h_don:7,h_club:9,h_merc:9,h_vamp:8,h_angel:8,h_demon:8,h_rector:0,h_mage:4,h_ice:2};
+function invLines(p){const h=p&&HERO_INV[p.species];return (h||INV_GEN)[EN()?'en':'ru']}
+function invFrom(p){return p&&stageOf(p)===0?L('Тот, кто смотрит','The one who watches'):((p&&p.name)||L('Он','He'))}
+function invName(p){return (p&&p.name)||(p&&BOYS[p.species]?BOYS[p.species].name:L('Он','He'))}
+function invSeal(p){return p&&BOYS[p.species]?BOYS[p.species].c.seal:'#5a1f45'}
+/* свидание: личное место героя или старое общее место */
+const dImg=f=>(typeof DATE_IMG!=='undefined'&&DATE_IMG[f])||f;
+function dObj(x){if(x&&x.h&&HERO_DATES[x.h]){const H=HERO_DATES[x.h],st=H.s[(x.si||0)%H.s.length];return {t:H.t,e:H.e,img:dImg(H.img),bg:'#06050a',intro:st.intro,b:st.b,end:st.end}}
+  const i=(x&&x.loc in DATES)?x.loc:0,D=DATES[i],T=dTx(i);return {t:T.t,e:D.e,bg:D.bg,intro:T.intro,b:T.b,end:T.end}}
+function invLine(pid,ln){const p=S.pets.find(x=>x.id===pid),l=invLines(p);return l[(ln||0)%l.length]}
+function invPaper(pid,ln,id,typed){const p=S.pets.find(x=>x.id===pid),txt=invLine(pid,ln);
+  return `<div class="inv-paper"${id?' data-a="invSkip"':''}><div class="inv-seal-sm">${sealSVG(invSeal(p))}</div><p ${id?'id="invTx" ':''}class="inv-tx${typed?'':' tw'}" data-full="${esc(txt)}">${typed?esc(txt):''}</p><div class="inv-sig${typed?' on':''}">— ${esc(invFrom(p))}</div></div>`}
+let invRun=null;
+function inviteSheet(v){const p=S.pets.find(x=>x.id===v.pid),O=dObj(v),two=!!v.rival;
+  if(!v.opened)return `<div class="inv-wrap"><div class="inv-env" id="invEnv" style="background-image:url(${dImg('d-envelope.jpg')})"><p class="inv-kick">${two?L('Тебе пришло два письма','Two letters have arrived'):L('Тебе пришло письмо','A letter has arrived')}</p>
+    <div class="env-tap" data-a="invOpen" data-id="${v.id}"><span class="env-ring"></span><svg class="env-crack" viewBox="0 0 100 100"><path d="M50 8L44 30L56 42L41 60L53 74L47 94M44 30L30 26M56 42L72 38M41 60L26 66M53 74L70 80" fill="none" stroke="rgba(255,236,250,.9)" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div class="env-flash"></div><p class="inv-hint">${L('Запечатано. Нажми на печать','Sealed. Tap the seal')}</p></div></div>`;
+  const typed=invRun&&invRun.id===v.id&&invRun.typed;
+  if(two){const r=S.pets.find(x=>x.id===v.rival.pid);
+    return `<div class="inv-wrap"><p class="inv-kick">${L('Они оба ждут тебя сегодня','They are both waiting for you tonight')}</p>${invPaper(v.pid,v.ln,v.id,typed)}${invPaper(v.rival.pid,v.rival.ln,null,true)}<p class="inv-note">${L('Выбери одного. Второй узнает','Choose one. The other will find out')}</p>
+      <div class="inv-btns${typed?' on':''}"><button class="nb pri" data-a="invPick" data-id="${v.id}" data-w="a">${esc(invName(p))} 🌹</button><button class="nb" data-a="invPick" data-id="${v.id}" data-w="r">${esc(invName(r))} 🖤</button></div></div>`}
+  const tease=v.tease!=null?`<p class="inv-tease">«${esc(INV_TEASE[EN()?'en':'ru'][v.tease%INV_TEASE.ru.length])}»</p>`:'';
+  const btns=v.tease!=null?`<button class="nb pri" data-a="invYes" data-id="${v.id}">${L('Ладно, иду 🌹','Fine, I’m coming 🌹')}</button><button class="nb" data-a="close">${L('Пусть ждет дальше','Let him keep waiting')}</button>`
+    :`<button class="nb pri" data-a="invYes" data-id="${v.id}">${L('Согласиться 🌹','Say yes 🌹')}</button><button class="nb" data-a="invTease" data-id="${v.id}">${L('Пусть подождет 😏','Let him wait 😏')}</button>`;
+  return `<div class="inv-wrap">${invPaper(v.pid,v.ln,v.id,typed)}<p class="inv-meta${typed?' on':''}">${O.e} ${esc(O.t)} · 🕛 ${L('сегодня, ближе к полуночи','tonight, close to midnight')}</p>${tease}<div class="inv-btns${typed?' on':''}">${btns}</div></div>`}
+function invType(){const el=$('#invTx');if(!el||!invRun||invRun.typed)return;const full=el.dataset.full||'';let i=0;clearInterval(invType.t);
+  const done=()=>{clearInterval(invType.t);el.textContent=full;el.classList.remove('tw');invRun.typed=true;const vv=(S.invites||[]).find(x=>x.id===invRun.id);if(vv&&!vv.read){vv.read=true;save()}document.querySelectorAll('.inv-meta,.inv-sig,.inv-btns').forEach(x=>x.classList.add('on'))};
+  invType.done=done;invType.t=setInterval(()=>{i+=1;el.textContent=full.slice(0,i);if(i>=full.length)done()},34)}
+function openInvite(v){if(!invRun||invRun.id!==v.id)invRun={id:v.id,typed:!!v.read};openSheet(inviteSheet(v),'invite');if(v.opened&&!invRun.typed)setTimeout(invType,450)}
+function startDate(v){v.accepted=true;v.read=true;save();dRun={inv:v,step:0,picks:[]};openSheet(dateSheet(),'date')}
+const invActions={
+  invOpen:d=>{const v=(S.invites||[]).find(x=>x.id===d.id);if(!v||v.opened)return;const env=$('#invEnv');if(env)env.classList.add('open');
+    try{navigator.vibrate&&navigator.vibrate(30)}catch(e){}
+    v.opened=true;save();setTimeout(()=>{invRun={id:v.id,typed:false};openSheet(inviteSheet(v),'invite');setTimeout(invType,350);render()},1100)},
+  invSkip:()=>{if(invRun&&!invRun.typed&&invType.done)invType.done()},
+  invTease:d=>{const v=(S.invites||[]).find(x=>x.id===d.id);if(!v)return;v.tease=Math.floor(Math.random()*INV_TEASE.ru.length);v.read=true;save();if(invRun)invRun.typed=true;openSheet(inviteSheet(v),'invite')},
+  invYes:d=>{const v=(S.invites||[]).find(x=>x.id===d.id);if(v)startDate(v)},
+  invPick:d=>{const v=(S.invites||[]).find(x=>x.id===d.id);if(!v||!v.rival)return;const R=v.rival;let loserId=R.pid;
+    if(d.w==='r'){loserId=v.pid;v.pid=R.pid;v.h=R.h;v.si=R.si;v.ln=R.ln}
+    delete v.rival;const lo=S.pets.find(x=>x.id===loserId);
+    if(lo){const jl=HERO_JEAL[lo.species]||['Ты выбрала не меня. Я запомню.'],st=stageOf(lo);S.letters=S.letters||[];
+      S.letters.unshift({id:'l'+uid(),at:Date.now(),pid:lo.id,kind:'boy',st,o:pickFresh('bo'+st,LB_OPEN[st].length),e:pickFresh('bc'+st,LB_CLOSE[st].length),c:{k:'jeal',t:rnd(jl)},read:false});
+      setTimeout(()=>toast(L(`💔 ${invFrom(lo)} узнал. Он оставил тебе записку`,`💔 ${invFrom(lo)} found out. He left you a note`)),2500)}
+    startDate(v)}
+};
+/* ---------- ревность к книжным героям, «где ты была», вызов недели, карточка для сторис ---------- */
+const BKJ=['Кто такой {h}? Почему ты третий вечер подряд проводишь с ним?','Я видел, как ты улыбалась, когда на странице появлялся {h}. Мне это не нравится.','{h}? Серьезно? Он даже не существует. А я здесь.','Скажи честно: {h} лучше меня? Можешь не отвечать. Я и так злюсь.','Еще одна глава, где появляется {h}, и я начну ревновать по-настоящему.','Пусть {h} спасает свой выдуманный мир. Твой спасаю я.','Я прочитал пару страниц, где был {h}. Переоценен.','{h} не ждал бы тебя каждую ночь. А я жду.'];
+const AWAY=['Ты не открывала книгу {n}. Я считал. Каждый.','Где ты была? Я перечитал все твои закладки, пока ждал.','Ты забыла меня? Я не умею злиться на тебя долго. Но я пытался.','Без тебя вечера слишком тихие. Вернись к нам. Ко мне и к твоей книге.','Я не спрашиваю, с кем ты была. Просто вернись.'];
+const HTASKS=[
+ {e:'📖',t:'Прочитай 100 страниц за неделю',en:'Read 100 pages this week',g:()=>[wkPages(),100]},
+ {e:'🌙',t:'Читай три вечера после 21:00',en:'Read on three evenings after 9 pm',g:()=>[wk().late.length,3]},
+ {e:'🔥',t:'Прочитай 40 страниц за один день',en:'Read 40 pages in one day',g:()=>[wkMax(),40]},
+ {e:'🗓',t:'Читай четыре разных дня',en:'Read on four different days',g:()=>[wkDaysRead(),4]},
+ {e:'⏳',t:'Две сессии с таймером чтения',en:'Two reading-timer sessions',g:()=>[wk().sess,2]},
+ {e:'📜',t:'Сохрани три цитаты или мысли',en:'Save three quotes or thoughts',g:()=>[wk().notes,3]}];
+const HERO_DARE={h_biker:'Спорим, не сможешь? Выиграешь, и я расскажу то, чего никто не знает.',h_merc:'Задание простое. Справишься, и я открою тебе одну тайну.',h_racer:'Даже мой дракон думает, что ты не справишься. Докажи обратное.',h_club:'Ставка такая: справишься, и я выдам тебе секрет этого города. Мой.',h_ceo:'Это не просьба, это KPI. Выполнишь, и получишь бонус. Меня.',h_don:'Сделаешь это для меня, и я расскажу, что прячу за этой улыбкой.',h_rector:'Домашнее задание на неделю. За отличную работу полагается награда.',h_vamp:'Неделя для меня миг. Для тебя испытание. Пройдешь, и я открою тебе свою тайну.',h_heir:'Моя семья ставит мне условия. А я ставлю тебе. Приятные.',h_ice:'Я редко прошу. Но сейчас прошу. Справишься, и я растаю. Немного.',h_mage:'Я наложил на эту неделю заклинание. Снимешь его, и узнаешь мой секрет.',h_demon:'Сделка: выполняешь условие, получаешь мою тайну. Без мелкого шрифта.',h_angel:'Это испытание. Не небесное, мое. Пройдешь, и я скажу тебе правду.'};
+const HERO_SECRET={
+ h_biker:['Секрет: я научился ездить на байке, чтобы сбежать из дома. А теперь езжу, чтобы вернуться к тебе.','Секрет: на внутренней стороне моего шлема написано одно слово. Твое имя.'],
+ h_merc:['Секрет: однажды я не уберег человека. С тех пор я не сплю, если не знаю, что ты в безопасности.','Секрет: в моем телефоне только два контакта. Начальник и ты.'],
+ h_racer:['Секрет: мой дракон выбрал меня, а не я его. Говорят, драконы выбирают тех, кто умеет любить до конца.','Секрет: я боюсь высоты. Но не когда ты сидишь впереди.'],
+ h_club:['Секрет: этот клуб я назвал в честь женщины, которую так и не встретил. Теперь я знаю, что ждал тебя.','Секрет: я не пью. Ни капли. Мне нужна ясная голова, когда ты рядом.'],
+ h_ceo:['Секрет: я построил компанию, чтобы мне больше никто не мог приказывать. А тебе я разрешаю.','Секрет: в моем кабинете есть ящик, где лежат только твои записки.'],
+ h_don:['Секрет: я умею готовить. Меня научила мама. Этого не знает никто в городе.','Секрет: в детстве я хотел стать библиотекарем. Не смейся.'],
+ h_rector:['Секрет: я написал роман. Он лежит в столе. Главная героиня очень похожа на тебя.','Секрет: эти очки мне не нужны. Я ношу их, чтобы казаться строже.'],
+ h_vamp:['Секрет: я помню вкус солнца. Иногда мне кажется, что твоя улыбка похожа на него.','Секрет: за триста лет я влюблялся один раз. Это происходит сейчас.'],
+ h_heir:['Секрет: я отказался от наследства. Семья еще не знает. Я выбрал жить так, как хочу. С тобой.','Секрет: медальон на твоей шее принадлежал моей бабушке. Она сбежала из дома ради любви.'],
+ h_ice:['Секрет: мое сердце заморозили в детстве, чтобы я не чувствовал боли. Рядом с тобой лед трескается.','Секрет: я сам выращиваю все розы в зимнем саду. Каждую ночь.'],
+ h_mage:['Секрет: моя магия слабеет, когда тебя нет рядом. Я никому этого не говорил.','Секрет: я видел тебя в хрустальном шаре за сто лет до нашей встречи.'],
+ h_demon:['Секрет: когда-то я был человеком. Я продал душу, чтобы спасти сестру. И ни разу не пожалел.','Секрет: я так и не забрал ни одной души по-настоящему. Плохой из меня демон.'],
+ h_angel:['Секрет: меня изгнали за то, что я защитил человека. Я бы сделал это снова. Для тебя тем более.','Секрет: иногда ночью у меня болят крылья. Когда ты рядом, боль уходит.']};
+const SECRET_GEN=['Секрет: я думаю о тебе чаще, чем признаюсь.','Секрет: я храню закладку, которую ты потеряла. Не отдам.'];
+const fHeroV=b=>{const e=$('#fHero');return e?e.value.trim().slice(0,40):(b&&b.hero||'')};
+function activeBoy(){return S.boysOn?S.pets.find(p=>p.id===S.activeBoy&&p.hatched&&kindOf(p)==='boy'):null}
+function heroNote(p,text,kind){const st=stageOf(p);S.letters=S.letters||[];
+  S.letters.unshift({id:'l'+uid(),at:Date.now(),pid:p.id,kind:'boy',st,o:pickFresh('bo'+st,LB_OPEN[st].length),e:pickFresh('bc'+st,LB_CLOSE[st].length),c:{k:'jeal',t:text,s:kind},read:false});if(S.letters.length>80)S.letters.length=80}
+function bookJeal(b){const p=activeBoy();if(!p||!b||!b.hero||b.jealSent)return;
+  const days=Object.keys(b.hist||{}).length;if(days<2&&fracOf(b)<.25)return;
+  b.jealSent=1;heroNote(p,rnd(BKJ).replace(/\{h\}/g,b.hero),'bk');
+  setTimeout(()=>toast(L(`💌 Кажется, ${invFrom(p)} ревнует. Тебе письмо`,`💌 Looks like ${invFrom(p)} is jealous. You have a letter`)),3600)}
+function lastReadKey(){let k=null;for(const d in S.log)if((S.log[d]||0)>0&&(!k||d>k))k=d;return k}
+function checkAway(){try{const p=activeBoy();if(!p)return;const k=lastReadKey();if(!k||S.awayKey===k)return;
+  const days=Math.floor((keyToDate(today())-keyToDate(k))/864e5);if(days<3)return;
+  S.awayKey=k;heroNote(p,rnd(AWAY).replace('{n}',days+' '+plural(days,DY)),'away');save();render();
+  setTimeout(()=>toast(L(`💌 ${invFrom(p)} ждал тебя. Тебе письмо`,`💌 ${invFrom(p)} was waiting. You have a letter`)),1500)}catch(e){}}
+setTimeout(checkAway,3500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(checkAway,1200)});
+const htToday=()=>{const k=weekKey();let h=11;for(const ch of k)h=(h*37+ch.charCodeAt(0))>>>0;return HTASKS[h%HTASKS.length]};
+function checkHeroTask(){const p=activeBoy();if(!p)return;wk();if(S.htDone===weekKey())return;const [c,t]=htToday().g();if(c<t)return;
+  S.htDone=weekKey();p.xp+=40;const pool=HERO_SECRET[p.species]||SECRET_GEN;S.htSec=S.htSec||{};const used=S.htSec[p.id]||0;
+  heroNote(p,pool[used%pool.length],'secret');S.htSec[p.id]=used+1;
+  setTimeout(()=>{toast(L('🖤 Вызов выполнен. Он открыл тебе секрет','🖤 Challenge done. He told you a secret'));try{confetti()}catch(e){}},900)}
+function heroTaskCard(){const p=activePet();if(!p||kindOf(p)!=='boy'||!p.hatched||!S.boysOn)return '';const T=htToday(),[c,t]=T.g(),done=S.htDone===weekKey(),cur=Math.min(c,t);
+  return `<div class="card quest ritual htask ${done?'done':''}"><div class="qh"><span>🖤 ${L('Вызов недели','Challenge of the week')}</span><span class="qr">${T.e}</span></div><div class="qt">${esc(invFrom(p))}: «${esc(HERO_DARE[p.species]||'Справишься, и я открою тебе секрет.')}»</div><div class="hint" style="margin:6px 0 8px">${L(T.t,T.en)}</div><div class="bar thin"><i style="width:${(done?1:cur/t)*100}%"></i></div><div class="bar-l"><span>${done?t:cur} ${L('из','of')} ${t}</span><span>${done?L('Секрет открыт ✓','Secret unlocked ✓'):L('Награда: его секрет','Reward: his secret')}</span></div></div>`}
+/* карточка для сторис */
+function rrect(x,X,Y,W,H,R){x.beginPath();x.moveTo(X+R,Y);x.arcTo(X+W,Y,X+W,Y+H,R);x.arcTo(X+W,Y+H,X,Y+H,R);x.arcTo(X,Y+H,X,Y,R);x.arcTo(X,Y,X+W,Y,R);x.closePath()}
+async function letterStory(id){const l=(S.letters||[]).find(x=>x.id===id);if(!l)return;const p=S.pets.find(x=>x.id===l.pid);
+  try{await Promise.all(['64px "Marck Script"','600 60px "Cormorant Garamond"','italic 500 40px "Cormorant Garamond"','700 30px Manrope'].map(f=>document.fonts.load(f,'Яя Ёё Selmoire 0123')));await new Promise(r=>setTimeout(r,200));if(!document.fonts.check('64px "Marck Script"','Яя')){await document.fonts.load('64px "Marck Script"','Яя');await new Promise(r=>setTimeout(r,400))}}catch(e){}
+  const cv=document.createElement('canvas');cv.width=1080;cv.height=1920;const x=cv.getContext('2d');
+  let g=x.createLinearGradient(0,0,0,1920);g.addColorStop(0,'#0e0b16');g.addColorStop(1,'#040306');x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  g=x.createRadialGradient(540,360,40,540,360,900);g.addColorStop(0,'rgba(120,90,210,.35)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  let sd=(l.at%9973)+3;const R=()=>(sd=(sd*16807)%2147483647)/2147483647;
+  for(let i=0;i<140;i++){x.fillStyle=`rgba(230,225,255,${.15+R()*.5})`;const r=R()*2.4+.4;x.beginPath();x.arc(R()*1080,R()*1920,r,0,7);x.fill()}
+  x.textAlign='center';x.fillStyle='#efeaff';x.font='600 64px "Cormorant Garamond",Georgia,serif';x.fillText('☾ Selmoire',540,190);
+  x.font='700 24px Manrope,sans-serif';x.fillStyle='rgba(207,200,238,.8)';x.fillText(L('КНИЖНЫЙ ТРЕКЕР','BOOK TRACKER').split('').join(String.fromCharCode(8202)),540,240);
+  const dk=dayKey(new Date(l.at)),pg=S.log[dk]||0;
+  if(pg>0){x.fillStyle='#fff';x.font='600 230px "Cormorant Garamond",Georgia,serif';x.fillText(String(pg),540,560);
+    x.font='italic 500 46px "Cormorant Garamond",Georgia,serif';x.fillStyle='#d9d2f0';x.fillText(L(plural(pg,PG)+' сегодня',(pg===1?'page':'pages')+' today'),540,630)}
+  else{x.font='italic 500 52px "Cormorant Garamond",Georgia,serif';x.fillStyle='#d9d2f0';x.fillText(fmtDate(l.at),540,560)}
+  const ln=letterLines(l),text=ln[1];x.font='64px "Marck Script","Cormorant Garamond",serif';const lines=wrapT(x,text,780,7);
+  const lh=86,ph=lines.length*lh+250,py=Math.max(760,1170-ph/2);
+  x.save();x.shadowColor='rgba(0,0,0,.6)';x.shadowBlur=60;x.shadowOffsetY=20;rrect(x,90,py,900,ph,40);g=x.createLinearGradient(90,py,990,py+ph);g.addColorStop(0,'#1c1826');g.addColorStop(1,'#0d0b12');x.fillStyle=g;x.fill();x.restore();
+  rrect(x,90,py,900,ph,40);x.strokeStyle='rgba(215,205,255,.22)';x.lineWidth=2;x.stroke();
+  x.fillStyle=invSeal(p);x.beginPath();x.arc(150,py+8,54,0,7);x.fill();x.fillStyle='rgba(255,255,255,.4)';x.beginPath();x.arc(158,py+8,26,0,7);x.fill();x.fillStyle=invSeal(p);x.beginPath();x.arc(170,py,24,0,7);x.fill();
+  x.textAlign='left';x.fillStyle='#f3eefc';x.font='64px "Marck Script","Cormorant Garamond",serif';lines.forEach((s,i)=>x.fillText(s,150,py+140+i*lh));
+  x.textAlign='right';x.fillStyle='#c5b8ff';x.font='54px "Marck Script","Cormorant Garamond",serif';x.fillText('— '+invFrom(p),930,py+ph-60);
+  x.textAlign='center';x.fillStyle='#e6e0f5';x.font='italic 500 46px "Cormorant Garamond",Georgia,serif';x.fillText(L('твоя книжная одержимость','your bookish obsession'),540,1720);
+  x.font='700 28px Manrope,sans-serif';x.fillStyle='rgba(207,200,238,.7)';x.fillText(SITE_HOST(),540,1780);
+  shareCanvas(cv,'selmoire-pismo.png')}
+const featActions2={letterStory:d=>letterStory(d.id)};
+
+
+
 const ICM={'🖤':'heart','❤️':'heart','❤':'heart','💛':'heart','💗':'heart','🤍':'heart','💜':'heart','💔':'hbrk','✨':'spark','🌟':'star','⭐':'star','🎉':'spark','💫':'spark',
 '📖':'book','📘':'book','📔':'book','📕':'book','📜':'book','📚':'books','💌':'mail','📨':'mail','📩':'mail','🔮':'orb','🍪':'treat','🍫':'treat','🍰':'treat',
 '⚠️':'alert','⚠':'alert','🌙':'moon','🌕':'moon','💤':'moon','🔥':'fire','🌋':'fire','☁️':'cloud','☁':'cloud','🌹':'rose','🥀':'rose','🌸':'rose','🎭':'mask',
@@ -4704,13 +5223,13 @@ const A={
     if(unit==='chapters'&&!chapters){$('#fChap').focus();toast('Укажи, сколько глав в аудиокниге');return}
     let b=d.id?S.books[d.id]:null;const now=Date.now();
     if(b){const was=b.status,oldFrac=fracOf(b),oldUnit=unitOf(b);
-      Object.assign(b,{genre:fGenreV(),title,author,pages,format,unit,duration,chapters,desc:($('#fDesc').value||'').trim(),touchedAt:now});{const o=status==='bought'||!!($('#fOwn')&&$('#fOwn').classList.contains('on'));if(o&&!b.own)b.ownAt=now;b.own=o?1:0}
+      Object.assign(b,{genre:fGenreV(),title,author,hero:fHeroV(b),pages,format,unit,duration,chapters,desc:($('#fDesc').value||'').trim(),touchedAt:now});{const o=status==='bought'||!!($('#fOwn')&&$('#fOwn').classList.contains('on'));if(o&&!b.own)b.ownAt=now;b.own=o?1:0}
       if(unit!==oldUnit){const t=totalOf(b);b.current=t?Math.round(oldFrac*t):0}
       {const t=totalOf(b);if(t&&b.current>t)b.current=t}
       if(status!==was){b.status=status;if(status==='pause'||status==='dnf')b.pausedAt=now;if(status==='want')day().want++;if(status==='reading'&&!b.startedAt)b.startedAt=now;if(status==='done'){closeSheet(true);b.live=was==='reading'?1:0;finishBook(b);}else if(was==='done'){b.finishedAt=null}}
     }else{const id='b'+uid();let cur=0;
       if(status==='reading'){if(unit==='time')cur=(parseInt(($('#fCurH')||{}).value)||0)*60+(parseInt(($('#fCurM')||{}).value)||0);else cur=Math.max(0,parseInt(($('#fCur')||{}).value)||0)}
-      b={id,genre:fGenreV(),title,author,pages,format,unit,duration,chapters,desc:($('#fDesc').value||'').trim(),current:0,status,addedAt:now,touchedAt:now,startedAt:status==='reading'?now:null,finishedAt:status==='done'?now:null,rating:0,notes:[],color:formColor,hasCover:false,own:(status==='bought'||($('#fOwn')&&$('#fOwn').classList.contains('on')))?1:0};if(b.own)b.ownAt=now;
+      b={id,genre:fGenreV(),title,author,hero:fHeroV(null),pages,format,unit,duration,chapters,desc:($('#fDesc').value||'').trim(),current:0,status,addedAt:now,touchedAt:now,startedAt:status==='reading'?now:null,finishedAt:status==='done'?now:null,rating:0,notes:[],color:formColor,hasCover:false,own:(status==='bought'||($('#fOwn')&&$('#fOwn').classList.contains('on')))?1:0};if(b.own)b.ownAt=now;
       const t=totalOf(b);b.current=status==='done'?t:(t?Math.min(cur,t):cur);
       S.books[id]=b;if(status==='want')day().want++;
       if(status==='done'){closeSheet(true);celebrate(`<div style="display:flex;justify-content:center">${coverHTML(b,true)}</div><h2 class="center" style="margin:14px 0 6px">Добавлено в прочитанное</h2><div class="rate" id="rateBox">${rateBtns(b)}</div><div id="reactWrap"></div><p class="center hint" style="margin:0 0 10px">Поставь оценку</p><p class="center hint" style="margin:0 0 18px;font-size:12.5px">📚 ${L('Книга встала на полку и в статистику. Подарки и новые существа открываются за книги, которые ты дочитываешь здесь: добавь книгу в «Читаю» и отмечай страницы.','The book is on your shelf and in your stats. Gifts and new creatures unlock for books you finish here: add a book to “Reading” and log pages.')}</p><button class="btn primary big" data-a="close">Готово</button>`);checkEggs()}}
@@ -4736,7 +5255,7 @@ const A={
   copyNote:d=>{const b=S.books[d.id];const n=(b.notes||[]).find(x=>x.id===d.n);if(n)copyText((n.type==='quote'?'«'+n.text+'»':n.text)+(b.author?`\n— ${b.author}, «${b.title}»`:`\n— «${b.title}»`))},
   delBook:d=>openSheet(confirmSheet('Удалить книгу «'+esc(S.books[d.id].title)+'»?','delBookYes',d.id),'confirm'),
   delBookYes:d=>{if(S.books[d.id]&&S.books[d.id].hasCover)dropCover(d.id);delete S.books[d.id];save();closeSheet(true);render();toast('Книга удалена')},
-  ...tmrActions,...emoActions,...wheelActions,...tarotActions,...letterActions,...dateActions,...shelfActions,...guideActions,...impActions,...shelf2Actions,...sheetActs,...styleActions,...bkActions,...collActions,...featActions,...ritActions,...libActions,...authActions,
+  ...tmrActions,...emoActions,...wheelActions,...tarotActions,...letterActions,...dateActions,...invActions,...featActions2,...shelfActions,...guideActions,...impActions,...shelf2Actions,...sheetActs,...styleActions,...bkActions,...collActions,...featActions,...ritActions,...libActions,...authActions,
   findCover:d=>{const b=S.books[d.id];if(!b)return;b.covTried=0;covQ.unshift(d.id);toast('🔎 Ищу обложку…');covRun(d.id)},
   syncInfo:()=>openSheet(syncSheet(),'sync'),
   syncNow:()=>{if(!dbOK){initDB.tries=0;initDB();toast('Подключаюсь к облаку…');return}const w=W.state;if(w){w.last='';w.next=0}dbQueue('state',()=>S);flushAll();toast('Сохраняю…');setTimeout(()=>{if(sheetKind==='sync')openSheet(syncSheet(),'sync')},2500)},
