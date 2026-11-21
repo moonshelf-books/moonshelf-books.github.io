@@ -3284,7 +3284,7 @@ function memSheet(id){const m=(S.memories||[]).find(x=>x.id===id);if(!m)return m
 function memsSheet(){const p=activePet();const ms=(S.memories||[]).filter(m=>!p||m.pid===p.id||true);
   return `<h3>🌹 ${L('Наши свидания','Our dates')}</h3><p class="hint" style="margin:-6px 0 12px">${L('Каждая дочитанная книга — новое приглашение.','Every finished book brings a new invitation.')}</p>${ms.length?ms.map(m=>{const O=dObj(m),hp=S.pets.find(x=>x.id===m.pid);return `<div class="lrow" data-a="memory" data-id="${m.id}"><div class="la" style="font-size:30px;display:grid;place-items:center${O.img?`;background:url(${O.img}) center 20%/cover;border-radius:12px`:''}">${O.img?'':O.e}</div><div style="flex:1;min-width:0"><b>${esc(O.t)}</b><small>${fmtDate(m.at)} · ${esc(hp&&hp.name||'')} · «${esc(m.book||'')}»</small></div></div>`}).join(''):`<p class="muted center">${L('Пока ни одного. Дочитай книгу — и он позовёт тебя.','None yet. Finish a book and he’ll ask you out.')}</p>`}`}
 const dateActions={
-  dateGo:d=>{const v=(S.invites||[]).find(x=>x.id===d.id);if(!v)return;if(!v.accepted){openInvite(v);return}dRun={inv:v,step:0,picks:[]};openSheet(dateSheet(),'date')},
+  dateGo:d=>{const v=(S.invites||[]).find(x=>x.id===d.id);if(!v)return;invUpg(v);if(!v.accepted){openInvite(v);return}dRun={inv:v,step:0,picks:[]};openSheet(dateSheet(),'date')},
   dateNext:()=>{if(!dRun)return;dRun.step++;const T=dObj(dRun.inv);
     if(dRun.step>T.b.length){const v=dRun.inv;v.done=true;const p=S.pets.find(x=>x.id===v.pid);if(p)p.xp+=DATE_XP;S.memories=S.memories||[];S.memories.unshift({id:'m'+uid(),pid:v.pid,loc:v.loc,h:v.h,si:v.si,book:v.book,at:Date.now(),picks:dRun.picks.slice()});if(S.memories.length>60)S.memories.length=60;save();render();confetti()}
     openSheet(dateSheet(),'date')},
@@ -4634,7 +4634,8 @@ function inviteSheet(v){const p=S.pets.find(x=>x.id===v.pid),O=dObj(v),two=!!v.r
 function invType(){const el=$('#invTx');if(!el||!invRun||invRun.typed)return;const full=el.dataset.full||'';let i=0;clearInterval(invType.t);
   const done=()=>{clearInterval(invType.t);el.textContent=full;el.classList.remove('tw');invRun.typed=true;const vv=(S.invites||[]).find(x=>x.id===invRun.id);if(vv&&!vv.read){vv.read=true;save()}document.querySelectorAll('.inv-meta,.inv-sig,.inv-btns').forEach(x=>x.classList.add('on'))};
   invType.done=done;invType.t=setInterval(()=>{i+=1;el.textContent=full.slice(0,i);if(i>=full.length)done()},34)}
-function openInvite(v){if(!invRun||invRun.id!==v.id)invRun={id:v.id,typed:!!v.read};openSheet(inviteSheet(v),'invite');if(v.opened&&!invRun.typed)setTimeout(invType,450)}
+function invUpg(v){if(!v||v.h||v.done)return;const p=S.pets.find(x=>x.id===v.pid);if(p&&HERO_DATES[p.species]){v.h=p.species;v.si=pickFresh('hd_'+p.id,HERO_DATES[p.species].s.length);save()}}
+function openInvite(v){invUpg(v);if(!invRun||invRun.id!==v.id)invRun={id:v.id,typed:!!v.read};openSheet(inviteSheet(v),'invite');if(v.opened&&!invRun.typed)setTimeout(invType,450)}
 function startDate(v){v.accepted=true;v.read=true;save();dRun={inv:v,step:0,picks:[]};openSheet(dateSheet(),'date')}
 const invActions={
   invOpen:d=>{const v=(S.invites||[]).find(x=>x.id===d.id);if(!v||v.opened)return;const env=$('#invEnv');if(env)env.classList.add('open');
