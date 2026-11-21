@@ -1035,7 +1035,7 @@ body[data-ui] .srow .ico,body[data-ui] .slist .ico{width:24px;height:24px}
 <script src="heroes.js"></script>
 <script src="backgrounds.js"></script>
 <script src="creatures.js"></script>
-<script src="dates.js"></script>
+<script src="dates.js" async onload="try{typeof render==='function'&&render()}catch(e){}"></script>
 <script>
 'use strict';
 /* ---------- helpers ---------- */
