@@ -854,7 +854,7 @@ svg .glyph{animation:gly 5s ease-in-out infinite}svg .glyph.g1{animation-delay:1
 @keyframes cardin{from{transform:scale(.6) rotate(-6deg);opacity:0}}
 .ack{font:800 11px Nunito,sans-serif;letter-spacing:3px;text-transform:uppercase;color:#c9a05a}.ace{font-size:52px;margin:10px 0 6px}.acn{font:italic 700 24px 'Playfair Display',Georgia,serif;color:#f3e6d0}.acd{font-size:12px;color:#bfa898;margin-top:4px}.acq{font:italic 14px Georgia,serif;color:#e9c97f;margin-top:14px;line-height:1.35}.acm{font:italic 700 12px Georgia,serif;color:#c9a05a;margin-top:auto;padding-top:10px;letter-spacing:1px}
 .ach[data-a]{cursor:pointer}.ach .aimg{width:54px;height:54px;object-fit:contain;filter:drop-shadow(0 3px 5px rgba(0,0,0,.6))}.ach.locked .aimg{filter:grayscale(.85) brightness(.75);opacity:.85}.acimg{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.7))}
-.shtitle{display:flex;justify-content:space-between;align-items:baseline;padding:14px 18px 6px}.shtitle b{font:700 28px 'Playfair Display',Georgia,serif;color:#f3e6d0}.shtitle span{font:italic 700 16px Georgia,serif;color:#c9a05a}
+.shtitle{display:flex;justify-content:space-between;align-items:baseline;padding:14px 18px 6px}.shtitle b{font:700 28px 'Playfair Display',Georgia,serif;color:#f3e6d0}.shtitle .shbrand{display:flex;flex-direction:column;align-items:flex-end;gap:4px}.shtitle .shbrand i{font:800 14px/1 Nunito,sans-serif;font-style:normal;letter-spacing:.4em;color:var(--accent)}.shtitle .shbrand em{font:700 12px/1 Nunito,sans-serif;font-style:normal;color:rgba(255,255,255,.85);letter-spacing:.04em}body[data-ui=noir] .shtitle .shbrand i{color:#ff3a4a}body[data-ui=shine] .shtitle .shbrand i{color:#ff8fe0}
 .dospaper{position:relative;width:min(300px,88%);aspect-ratio:500/734;margin:0 auto;background:center/100% 100% no-repeat;filter:drop-shadow(0 10px 18px rgba(0,0,0,.6))}
 .dpphoto{position:absolute;left:14.6%;top:12.9%;width:71.8%;height:46.6%;background:center/cover no-repeat;display:flex;align-items:flex-end;justify-content:center;cursor:pointer;box-shadow:inset 0 0 12px rgba(0,0,0,.5)}
 .dpphoto span{margin-bottom:8px;font-size:12px;color:#f3e6d0;background:rgba(0,0,0,.55);padding:2px 9px;border-radius:10px}
@@ -2043,20 +2043,49 @@ async function drawCover(x,b,cx,cy,cw,ch,rad){x.save();x.shadowColor='rgba(0,0,0
     x.fillStyle='rgba(255,255,255,.95)';const fs=Math.round(cw/8.5);x.font=FC(700,fs);const ls=wrapT(x,b.title,cw*.8,5);ls.forEach((l,i)=>x.fillText(l,cx+cw/2,cy+ch/2-(ls.length-1)*fs*.6+i*fs*1.2));
     x.font=FN(900,Math.round(fs*.5));x.fillText((b.author||'').toUpperCase().slice(0,28),cx+cw/2,cy+ch-fs*.9);x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=Math.max(2,cw/140);rr(x,cx+cw*.04,cy+cw*.04,cw*.92,ch-cw*.08,rad*.6);x.stroke()}
   x.restore()}
+/* знак Selmoire на карточках */
+function brandMark(x,y){const ui=document.body.dataset.ui||'',t='SELMOIRE',sp=22;x.save();x.textAlign='left';x.font='400 52px Nunito, system-ui, sans-serif';const mw=x.measureText('☾').width+18;x.font='800 44px Nunito, system-ui, sans-serif';
+  let w=mw;for(const ch of t)w+=x.measureText(ch).width+sp;w-=sp;let cx=540-w/2;
+  if(ui==='shine'){const g=x.createLinearGradient(cx,0,cx+w,0);g.addColorStop(0,'#c79bff');g.addColorStop(.45,'#ff6fd8');g.addColorStop(1,'#7fd8ff');x.fillStyle=g}else x.fillStyle=ui==='noir'?'#ff3a4a':(cssVar('--accent')||'#c79bff');
+  x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=14;x.font='400 52px Nunito, system-ui, sans-serif';x.fillText('☾',cx,y+2);cx+=mw;x.font='800 44px Nunito, system-ui, sans-serif';for(const ch of t){x.fillText(ch,cx,y);cx+=x.measureText(ch).width+sp}
+  x.textAlign='center';x.fillStyle='rgba(255,255,255,.88)';x.font='700 32px Nunito, system-ui, sans-serif';x.fillText('@selmoire',540,y+58);x.restore()}
+const CARD_HERO_DONE=['Я ревновал к нему все {d}','Надеюсь, он был хуже меня','Ты вздыхала на каждой странице. Я все слышал','Теперь моя очередь','Закрыла книгу? Иди сюда','Я видел, как ты улыбалась. Не мне','Он вымышленный. Я нет','Еще одна книга, и я начну ревновать всерьез'];
+const CARD_HERO_READ=['Читай, я рядом','Не отвлекайся. Хотя нет, отвлекись на меня','Я подожду. Но недолго','Он тебе нравится больше меня?','Дочитаешь, и сразу ко мне'];
+const CARD_PET_DONE=['Мы справились!','Я грел тебе место все {d}','Еще одну? Ну пожалуйста','Я горжусь тобой'];
+const CARD_PET_READ=['Я рядом, читай','Переверни страницу, мне интересно','Мы почти дочитали'];
+async function drawBuddy(x,p,X,Y,W,H){x.save();x.translate(X+W/2,Y+H/2);x.rotate(.05);x.translate(-W/2,-H/2);
+  x.save();x.shadowColor='rgba(170,120,255,.8)';x.shadowBlur=70;rr(x,0,0,W,H,28);x.fillStyle='#0c0912';x.fill();x.restore();
+  x.save();rr(x,0,0,W,H,28);x.clip();
+  try{const F=kindOf(p)==='boy'&&p.hatched&&typeof HERO_FULL!=='undefined'&&HERO_FULL[p.species];
+    if(F){const im=await loadImg(stageOf(p)===0&&F[1]?F[1]:F[0]);const k=Math.max(W/im.width,H/im.height);x.drawImage(im,(W-im.width*k)/2,(H-im.height*k)/2,im.width*k,im.height*k)}
+    else{const g=x.createRadialGradient(W/2,H*.45,20,W/2,H*.45,W);g.addColorStop(0,cssVar('--card2')||'#2a2238');g.addColorStop(1,'#0c0912');x.fillStyle=g;x.fillRect(0,0,W,H);
+      const svg=p.hatched?creatureSVG(p.species,stageOf(p),'happy',{outfit:p.outfit}):eggSVG(p.species,Math.min(p.xp,HATCH));const im=await loadImg(svgUrl(svg));const sz=W*.92;x.drawImage(im,(W-sz)/2,(H-sz)/2,sz,sz)}}catch(e){}
+  x.restore();rr(x,0,0,W,H,28);x.strokeStyle='rgba(225,205,255,.6)';x.lineWidth=3;x.stroke();x.restore()}
 async function bookCard(b){const [cv,x]=cardBase();const T=cssVar('--text'),Mu=cssVar('--muted'),Ac=cssVar('--accent');
-  x.fillStyle=T;x.font=FC(700,66);x.fillText(b.status==='done'?'Книга прочитана! ✨':'Сейчас читаю 📖',540,190);
-  await drawCover(x,b,320,250,440,640,28);
-  let y=990;x.fillStyle=T;x.font=FC(700,54);wrapT(x,b.title,940,2).forEach(l=>{x.fillText(l,540,y);y+=66});
-  x.fillStyle=Mu;x.font=FN(700,38);if(b.author){x.fillText(b.author,540,y);y+=72}else y+=20;
-  if(b.rating){x.fillStyle=Ac;x.font=FN(900,80);x.fillText('★'.repeat(b.rating)+'☆'.repeat(5-b.rating),540,y+14);y+=100}
-  const f=[];if(b.pages)f.push(`${b.pages} стр.`);if(b.startedAt&&b.finishedAt){const dd=Math.max(1,Math.round((b.finishedAt-b.startedAt)/864e5));f.push(`за ${dd} ${plural(dd,DY)}`)}if(b.format==='audio')f.push('🎧 аудио');
+  try{await Promise.all(['46px "Marck Script"','italic 500 40px "Cormorant Garamond"'].map(f=>document.fonts.load(f,'Яя Ёё')));}catch(e){}
+  const done=b.status==='done',p=activePet(),boy=p&&kindOf(p)==='boy'&&p.hatched;
+  x.fillStyle=T;x.font=FC(700,66);x.fillText(done?'Книга прочитана! ✨':'Сейчас читаю 📖',540,170);
+  await drawCover(x,b,90,240,470,700,28);
+  let dd=0;if(b.startedAt&&b.finishedAt)dd=Math.max(1,Math.round((b.finishedAt-b.startedAt)/864e5));
+  if(p){await drawBuddy(x,p,610,560,380,500);
+    x.fillStyle=boy?'#e6dcff':T;x.font='italic 500 40px "Cormorant Garamond",Georgia,serif';x.fillText(boy?'читал со мной 🖤':'читали вместе 🐾',800,1115);
+    let pool=boy?(done?CARD_HERO_DONE:CARD_HERO_READ):(done?CARD_PET_DONE:CARD_PET_READ);if(!(done&&dd))pool=pool.filter(s=>!s.includes('{d}'));
+    const line=pool[hsh(b.id+(b.finishedAt||''))%pool.length].replace('{d}',dd+' '+plural(dd,DY));
+    const bx=590,by=250,bw=420;x.font='46px "Marck Script","Cormorant Garamond",serif';const ls=wrapT(x,line,350,3),bh=ls.length*58+(boy?110:60);
+    x.save();x.shadowColor='rgba(0,0,0,.5)';x.shadowBlur=30;rr(x,bx,by,bw,bh,34);x.fillStyle='rgba(22,16,34,.92)';x.fill();x.beginPath();x.moveTo(bx+260,by+bh-2);x.lineTo(bx+300,by+bh+40);x.lineTo(bx+320,by+bh-2);x.closePath();x.fill();x.restore();
+    rr(x,bx,by,bw,bh,34);x.strokeStyle='rgba(215,200,255,.35)';x.lineWidth=2;x.stroke();
+    x.textAlign='left';x.fillStyle='#f3eefc';ls.forEach((l,i)=>x.fillText(l,bx+36,by+76+i*58));
+    if(boy){x.textAlign='right';x.fillStyle='#c5b8ff';x.font='40px "Marck Script","Cormorant Garamond",serif';x.fillText('— '+invFrom(p),bx+bw-34,by+bh-30)}x.textAlign='center'}
+  let y=1205;x.fillStyle=T;x.font=FC(700,54);wrapT(x,b.title,940,2).forEach(l=>{x.fillText(l,540,y);y+=62});
+  x.fillStyle=Mu;x.font=FN(700,38);if(b.author){x.fillText(b.author,540,y);y+=70}else y+=16;
+  if(b.rating){x.fillStyle=Ac;x.font=FN(900,70);x.fillText('★'.repeat(b.rating)+'☆'.repeat(5-b.rating),540,y+10);y+=88}
+  const f=[];if(b.pages)f.push(`${b.pages} стр.`);if(dd)f.push(`за ${dd} ${plural(dd,DY)}`);if(b.format==='audio')f.push('🎧 аудио');
   const et=Object.entries(b.emo||{}).sort((a,c)=>c[1]-a[1]).slice(0,4).map(([i])=>EMO[i][0]).join(' ');
-  if(f.length){x.fillStyle=T;x.font=FN(800,36);x.fillText(f.join('  ·  '),540,y);y+=62}
-  if(et){x.font=FN(400,60);x.fillText(et,540,y+10);y+=86}
-  const q=(b.notes||[]).find(n=>n.type==='quote');
-  if(q&&y<1500){x.font='italic 600 36px Nunito, system-ui, sans-serif';const ls=wrapT(x,'«'+q.text+'»',600,Math.max(2,Math.floor((1780-y)/52)-1));const h=ls.length*50+56;rr(x,70,y,680,h,30);x.fillStyle=cssVar('--card2');x.fill();x.fillStyle=T;x.textAlign='left';ls.forEach((l,i)=>x.fillText(l,108,y+60+i*50));x.textAlign='center'}
-  await drawPet(x,710,1450,360);
-  x.fillStyle=Mu;x.font=FN(800,30);x.fillText('Selmoire 🌙',540,1846);x.globalAlpha=.75;x.font=FN(600,22);x.fillText(L('книжный трекер','book tracker'),540,1884);x.globalAlpha=1;return cv}
+  if(f.length){x.fillStyle=T;x.font=FN(800,36);x.fillText(f.join('  ·  '),540,y);y+=60}
+  if(et){x.font=FN(400,56);x.fillText(et,540,y+6);y+=76}
+  const q=(b.notes||[]).find(n=>n.type==='quote');const ml=Math.floor((1772-y-48)/48);
+  if(q&&ml>=1){x.font='italic 600 36px Nunito, system-ui, sans-serif';const ls=wrapT(x,'«'+q.text+'»',820,Math.min(4,ml));const h=ls.length*48+44;rr(x,110,y,860,h,30);x.fillStyle=cssVar('--card2');x.fill();x.fillStyle=T;ls.forEach((l,i)=>x.fillText(l,540,y+56+i*48))}
+  brandMark(x,1830);return cv}
 async function monthCard(){const [cv,x]=cardBase();const T=cssVar('--text'),Mu=cssVar('--muted'),Ac=cssVar('--accent');
   const now=new Date(),yy=now.getFullYear(),m=now.getMonth(),pre=`${yy}-${String(m+1).padStart(2,'0')}-`;
   const pages=Object.keys(S.log).filter(k=>k.startsWith(pre)).reduce((a,k)=>a+S.log[k],0),days=Object.keys(S.log).filter(k=>k.startsWith(pre)&&S.log[k]>0).length;
@@ -2067,7 +2096,7 @@ async function monthCard(){const [cv,x]=cardBase();const T=cssVar('--text'),Mu=c
   tiles.forEach(([v,l],i)=>{const tx=80+(i%2)*470,ty=840+Math.floor(i/2)*250;rr(x,tx,ty,450,220,36);x.fillStyle=cssVar('--card2');x.fill();x.fillStyle=Ac;x.font=FC(700,96);x.fillText(String(v),tx+225,ty+120);x.fillStyle=T;x.font=FN(800,32);x.fillText(l,tx+225,ty+180)});
   if(done.length){x.fillStyle=Mu;x.font=FN(800,34);x.fillText('Прочитано:',540,1420);const show=done.slice(0,5),cw=160,gap=24,tw=show.length*cw+(show.length-1)*gap;let cx=540-tw/2;for(const b of show){await drawCover(x,b,cx,1460,cw,232,16);cx+=cw+gap}}
   else{x.fillStyle=Mu;x.font=FN(700,38);x.fillText('Впереди ещё много историй ✨',540,1500)}
-  x.fillStyle=Mu;x.font=FN(800,30);x.fillText('Selmoire 🌙',540,1846);x.globalAlpha=.75;x.font=FN(600,22);x.fillText(L('книжный трекер','book tracker'),540,1884);x.globalAlpha=1;return cv}
+  brandMark(x,1830);return cv}
 async function showCard(kind,id){openSheet('<h3 class="center">Рисую карточку…</h3><div class="center" style="font-size:44px;margin:20px 0">🎨</div>','card');
   try{const cv=kind==='book'?await bookCard(S.books[id]):await monthCard();let url;try{url=cv.toDataURL('image/png')}catch(e){const st={};Object.keys(covers).forEach(k=>{if(/^https?:/.test(covers[k])){st[k]=covers[k];delete covers[k]}});const cv2=kind==='book'?await bookCard(S.books[id]):await monthCard();Object.assign(covers,st);url=cv2.toDataURL('image/png')}lastCard={url,name:kind==='book'?'kniga.png':'itogi-mesyaca.png'};
     if(sheetKind!=='card')return;
@@ -2450,12 +2479,16 @@ async function achShareImg(id){const a=ACH.find(x=>x.id===id);const cv=document.
   if(ACH_IMG[a.id]){try{const im=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=ACH_IMG[a.id]});x.drawImage(im,390,cy+190,300,300)}catch(e){x.font='160px serif';x.fillText(a.e,540,cy+390)}}else{x.font='160px serif';x.fillText(a.e,540,cy+390)}x.fillStyle='#f3e6d0';x.font='italic 700 72px Georgia,serif';x.fillText(a.n,540,cy+540);
   x.fillStyle='#bfa898';x.font='700 34px Nunito,sans-serif';x.fillText(a.d,540,cy+610);
   x.fillStyle='#e9c97f';x.font='italic 40px Georgia,serif';const q='«'+achLine(a.id)+'»';const words=q.split(' ');let line='',y=cy+720;words.forEach(w=>{if(x.measureText(line+w).width>540){x.fillText(line,540,y);line='';y+=52}line+=w+' '});x.fillText(line,540,y);
-  x.fillStyle='#c9a05a';x.font='italic 700 44px Georgia,serif';x.fillText('Selmoire',540,1715);x.font='italic 400 28px Georgia,serif';x.fillText(L('книжный трекер','book tracker'),540,1758);x.font='700 30px Nunito,sans-serif';x.fillStyle='#8a6a5a';x.fillText(SITE_HOST(),540,1812);
+  brandMark(x,1790);
   shareCanvas(cv,'selmoire-'+id+'.png')}
 const SITE_HOST=()=>{const h=location.host||'';return /\./.test(h)&&!/claude|localhost|usercontent|127\./.test(h)?h:'moonshelf-books.github.io'};
-async function shareCanvas(cv,name){const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
-  try{const f=new File([blob],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e&&e.name==='AbortError')return}
-  const url=cv.toDataURL('image/png');openSheet(`<h3>📸 ${L('Картинка готова','Image ready')}</h3><p class="hint">${L('Зажми картинку и выбери «Сохранить в Фото»','Long-press the image and choose “Save to Photos”')}</p><img src="${url}" style="width:100%;border-radius:14px;margin-top:8px">`,'img')}
+let shareFile=null;
+async function shareCanvas(cv,name){let blob=null;try{blob=await new Promise(r=>cv.toBlob(r,'image/png'))}catch(e){}
+  let url='';try{url=blob?URL.createObjectURL(blob):cv.toDataURL('image/png')}catch(e){}
+  if(!url||url==='data:,'){toast(L('Не получилось сделать картинку, попробуй еще раз','Could not make the image'));return}
+  shareFile=null;try{if(blob){const f=new File([blob],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))shareFile=f}}catch(e){}
+  openSheet(`<h3>📸 ${L('Картинка готова','Image ready')}</h3><p class="hint">${L('Зажми картинку и выбери «Сохранить в Фото» или нажми кнопку ниже','Long-press the image and choose “Save to Photos”, or tap the button')}</p><img src="${url}" style="width:100%;border-radius:14px;margin-top:8px">${shareFile?`<button class="btn primary big" style="margin-top:12px" data-a="shareImgGo">📤 ${L('Поделиться','Share')}</button>`:''}`,'img')}
+async function shareImgGo(){if(!shareFile)return;try{await navigator.share({files:[shareFile]})}catch(e){}}
 
 /* ---------- свой корешок ---------- */
 const spines={};
@@ -2467,14 +2500,15 @@ async function shareShelf(){const el=document.querySelector('.spshelf');if(!el){
   toast(L('Делаю картинку…','Making the image…'));
   try{if(!window.html2canvas)await loadScript('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js');
     const bg=getComputedStyle(document.body).backgroundColor||'#14080c';
-    const cv=await html2canvas(el,{backgroundColor:bg&&bg!=='rgba(0, 0, 0, 0)'?bg:'#14080c',scale:2,useCORS:true,logging:false,height:Math.min(el.scrollHeight,2600),windowHeight:Math.min(el.scrollHeight,2600)+400,
+    const HH=Math.min(el.scrollHeight,2400),sc=Math.max(1,Math.min(2,Math.sqrt(9e6/(el.offsetWidth*HH))));
+    const cv=await Promise.race([new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),40000)),html2canvas(el,{backgroundColor:bg&&bg!=='rgba(0, 0, 0, 0)'?bg:'#14080c',scale:sc,useCORS:true,logging:false,imageTimeout:8000,height:HH,windowHeight:HH+400,
       ignoreElements:n=>n.classList&&(n.classList.contains('sh-hint')||n.classList.contains('sh-tools')||n.classList.contains('bk-bar')||n.classList.contains('sh-edit')),
-      onclone:d=>{const s=d.querySelector('.spshelf');if(!s)return;const t=d.createElement('div');t.className='shtitle';t.innerHTML=`<b>${L('Моя полка','My shelf')}</b><span>Selmoire · ${L('книжный трекер','book tracker')}</span>`;s.prepend(t);
+      onclone:d=>{const s=d.querySelector('.spshelf');if(!s)return;const t=d.createElement('div');t.className='shtitle';t.innerHTML=`<b>${L('Моя полка','My shelf')}</b><span class="shbrand"><i>☾ SELMOIRE</i><em>@selmoire</em></span>`;s.prepend(t);
         s.querySelectorAll('.spine').forEach(sp=>{const tt=sp.querySelector('.sp-t'),au=sp.querySelector('.sp-a');if(!tt&&!au)return;const W=sp.offsetWidth,H=sp.offsetHeight;
           const box=d.createElement('div');box.style.cssText=`position:absolute;left:50%;top:50%;width:${H-34}px;height:${W}px;transform:translate(-50%,-50%) rotate(-90deg);display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 4px;box-sizing:border-box`;
           const mk=(el,main)=>{const x=d.createElement('span');x.textContent=el.textContent;x.style.cssText=`font-family:${main?"'Playfair Display',Georgia,serif":'Nunito,sans-serif'};font-weight:${main?700:800};font-size:${el.style.fontSize||'11px'};color:${el.style.color||getComputedStyle(el).color};text-shadow:${el.style.textShadow||getComputedStyle(el).textShadow};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${main?'flex:1;text-align:center':'flex:none;max-width:40%;text-transform:uppercase;letter-spacing:.8px'}`;return x};
-          if(tt)box.appendChild(mk(tt,true));if(au)box.appendChild(mk(au,false));if(tt)tt.remove();if(au)au.remove();sp.appendChild(box)})}});
-    shareCanvas(cv,'selmoire-polka.png')}catch(e){toast(L('Не получилось сделать картинку — проверь интернет','Could not make the image'))}}
+          if(tt)box.appendChild(mk(tt,true));if(au)box.appendChild(mk(au,false));if(tt)tt.remove();if(au)au.remove();sp.appendChild(box)})}})]);
+    shareCanvas(cv,'selmoire-polka.png')}catch(e){toast(L('Не получилось сделать картинку. Проверь интернет и попробуй еще раз','Could not make the image'))}}
 
 const featActions={
   serEdit:d=>openSheet(serSheet(d.id),'ser'),
@@ -2491,7 +2525,7 @@ const featActions={
   achView:d=>openSheet(achViewSheet(d.v),'achv'),
   achShare:d=>achShareImg(d.v),
   spDel:d=>{delete spines[d.id];IDB.del('sp:'+d.id);const b=S.books[d.id];if(b)delete b.spOwn;save();openSheet(bookSheet(d.id),'book');render()},
-  shareShelf:()=>shareShelf()};
+  shareShelf:()=>shareShelf(),shareImgGo:()=>shareImgGo()};
 function dosKeep(){const i=$('#dosName');if(i&&dosDraft)dosDraft.n=i.value.trim()}
 function dosRe(){const sc=$('#sheet').scrollTop;openSheet(dosSheet(),'dos');$('#sheet').scrollTop=sc}
 document.addEventListener('change',async e=>{const t=e.target;if(!t)return;
@@ -4641,8 +4675,8 @@ async function letterStory(id){const l=(S.letters||[]).find(x=>x.id===id);if(!l)
   x.fillStyle=invSeal(p);x.beginPath();x.arc(150,py+8,54,0,7);x.fill();x.fillStyle='rgba(255,255,255,.4)';x.beginPath();x.arc(158,py+8,26,0,7);x.fill();x.fillStyle=invSeal(p);x.beginPath();x.arc(170,py,24,0,7);x.fill();
   x.textAlign='left';x.fillStyle='#f3eefc';x.font='64px "Marck Script","Cormorant Garamond",serif';lines.forEach((s,i)=>x.fillText(s,150,py+140+i*lh));
   x.textAlign='right';x.fillStyle='#c5b8ff';x.font='54px "Marck Script","Cormorant Garamond",serif';x.fillText('— '+invFrom(p),930,py+ph-60);
-  x.textAlign='center';x.fillStyle='#e6e0f5';x.font='italic 500 46px "Cormorant Garamond",Georgia,serif';x.fillText(L('твоя книжная одержимость','your bookish obsession'),540,1720);
-  x.font='700 28px Manrope,sans-serif';x.fillStyle='rgba(207,200,238,.7)';x.fillText(SITE_HOST(),540,1780);
+  x.textAlign='center';x.fillStyle='#e6e0f5';x.font='italic 500 46px "Cormorant Garamond",Georgia,serif';x.fillText(L('твоя книжная одержимость','your bookish obsession'),540,1700);
+  brandMark(x,1810);
   shareCanvas(cv,'selmoire-pismo.png')}
 const featActions2={letterStory:d=>letterStory(d.id),
   giftStyle:d=>{S.giftStyle=d.v;save();render();openSheet(shelfPetsSheet(),'shpets')},
